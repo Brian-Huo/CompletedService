@@ -45,8 +45,8 @@ func (l *CreateEmployeeLogic) CreateEmployee(req *types.CreateEmployeeRequest) (
 		ContactDetails: req.Contact_details,
 		CompanyId:      uid,
 		LinkCode:       req.Link_code,
-		WorkStatus:     int64(req.Work_status),
-		OrderId:        sql.NullInt64{int64(req.Order_id), true},
+		WorkStatus:     int64(variables.Vacant),
+		OrderId:        sql.NullInt64{req.Order_id, req.Order_id != 0},
 	}
 
 	res, err := l.svcCtx.BEmployeeModel.Insert(l.ctx, &newItem)

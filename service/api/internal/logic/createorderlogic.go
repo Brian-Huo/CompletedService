@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"cleaningservice/common/broadcast"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -58,31 +59,43 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Get time variables
-	deposite_date, err := time.Parse("2006-01-02 15:04:05", req.Deposite_date)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
-	final_payment_date, err := time.Parse("2006-01-02 15:04:05", req.Final_payment_date)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
 	reserve_date, err := time.Parse("2006-01-02 15:04:05", req.Reserve_date)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
+	// Get price from design and company
+	company_item, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, req.Company_id)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+	design_item, err := l.svcCtx.BDesignModel.FindOne(l.ctx, req.Design_id)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+	deposite_amount := float64(company_item.DepositeRate) / 100 * design_item.Price
+	final_amount := design_item.Price
+	total_fee := deposite_amount + final_amount
+
+	// Create order
 	newItem := order.BOrder{
-		CustomerId:       uid,
-		CompanyId:        req.Company_id,
-		AddressId:        req.Address_id,
-		DesignId:         req.Design_id,
-		DepositePayment:  req.Deposite_payment,
-		DepositeDate:     deposite_date,
-		FinalPayment:     sql.NullInt64{req.Final_payment, true},
-		FinalPaymentDate: sql.NullTime{final_payment_date, true},
-		OrderDescription: sql.NullString{req.Order_description, true},
-		PostDate:         time.Now(),
-		ReserveDate:      reserve_date,
+		CustomerId:          uid,
+		CompanyId:           req.Company_id,
+		AddressId:           req.Address_id,
+		DesignId:            req.Design_id,
+		DepositePayment:     req.Deposite_payment,
+		DepositeAmount:      deposite_amount,
+		CurrentDepositeRate: company_item.DepositeRate,
+		DepositeDate:        time.Now(),
+		FinalPayment:        sql.NullInt64{0, false},
+		FinalAmount:         final_amount,
+		FinalPaymentDate:    sql.NullTime{time.Now(), false},
+		TotalFee:            total_fee,
+		OrderDescription:    sql.NullString{req.Order_description, true},
+		PostDate:            time.Now(),
+		ReserveDate:         reserve_date,
+		FinishDate:          sql.NullTime{time.Now(), false},
+		Status:              int64(variables.Queuing),
 	}
 
 	res, err := l.svcCtx.BOrderModel.Insert(l.ctx, &newItem)
@@ -94,6 +107,9 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
+
+	// Timing to broadcast the order
+	go broadcast.TimerBroadcast()
 
 	return &types.CreateOrderResponse{
 		Order_id: newId,

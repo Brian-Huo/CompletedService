@@ -26,5 +26,8 @@ func NewVerifyCodeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Verify
 func (l *VerifyCodeLogic) VerifyCode(req *types.VerifyCodeRequest) (resp *types.VerifyCodeResponse, err error) {
 	// todo: add your logic here and delete this line
 
-	return
+	return &types.VerifyCodeResponse{
+		Code:    "1234",
+		Message: "Success",
+	}, nil
 }

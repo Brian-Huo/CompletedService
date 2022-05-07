@@ -41,7 +41,7 @@ func (l *CreateAddressLogic) CreateAddress(req *types.CreateAddressRequest) (res
 		Suburb:         req.Suburb,
 		Postcode:       req.Postcode,
 		StateCode:      req.State_code,
-		Country:        sql.NullString{req.Country, true},
+		Country:        sql.NullString{req.Country, req.Country != ""},
 	}
 
 	res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &newItem)

@@ -2,11 +2,15 @@ package logic
 
 import (
 	"context"
+	"database/sql"
 
+	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/employee"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/status"
 )
 
 type UpdateEmployeeLogic struct {
@@ -24,7 +28,60 @@ func NewUpdateEmployeeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Up
 }
 
 func (l *UpdateEmployeeLogic) UpdateEmployee(req *types.UpdateEmployeeRequest) (resp *types.UpdateEmployeeResponse, err error) {
-	// todo: add your logic here and delete this line
+	uid := l.ctx.Value("uid").(int64)
+	role := l.ctx.Value("role").(int)
 
-	return
+	if role == variables.Customer {
+		return nil, status.Error(401, "Not Company/Employee.")
+	} else if role == variables.Employee {
+		empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, uid)
+		if err != nil {
+			if err == employee.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Employee not found.")
+			}
+			return nil, status.Error(500, err.Error())
+		}
+
+		err = l.svcCtx.BEmployeeModel.Update(l.ctx, &employee.BEmployee{
+			EmployeeId:     uid,
+			EmployeePhoto:  sql.NullString{req.Employee_photo, req.Employee_photo != ""},
+			EmployeeName:   req.Employee_name,
+			ContactDetails: req.Contact_details,
+			CompanyId:      empl.CompanyId,
+			LinkCode:       empl.LinkCode,
+			WorkStatus:     empl.WorkStatus,
+			OrderId:        empl.OrderId,
+		})
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+	} else if role == variables.Company {
+		empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, req.Employee_id)
+		if err != nil {
+			if err == employee.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Employee not found.")
+			}
+			return nil, status.Error(500, err.Error())
+		}
+
+		if empl.CompanyId != uid {
+			return nil, status.Error(404, "Invalid, Employee not found.")
+		}
+
+		err = l.svcCtx.BEmployeeModel.Update(l.ctx, &employee.BEmployee{
+			EmployeeId:     req.Employee_id,
+			EmployeePhoto:  sql.NullString{req.Employee_photo, req.Employee_photo != ""},
+			EmployeeName:   req.Employee_name,
+			ContactDetails: req.Contact_details,
+			CompanyId:      empl.CompanyId,
+			LinkCode:       empl.LinkCode,
+			WorkStatus:     empl.WorkStatus,
+			OrderId:        empl.OrderId,
+		})
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+	}
+
+	return &types.UpdateEmployeeResponse{}, nil
 }

@@ -38,10 +38,10 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 
 	newItem := company.BCompany{
 		CompanyName:       req.Company_name,
-		PaymentId:         sql.NullInt64{req.Payment_id, false},
-		DirectorName:      sql.NullString{req.Director_name, true},
+		PaymentId:         sql.NullInt64{req.Payment_id, req.Payment_id != 0},
+		DirectorName:      sql.NullString{req.Director_name, req.Director_name != ""},
 		ContactDetails:    req.Contact_details,
-		RegisteredAddress: sql.NullInt64{req.Registered_address, false},
+		RegisteredAddress: sql.NullInt64{req.Registered_address, req.Registered_address != 0},
 		DepositeRate:      int64(req.Deposite_rate),
 	}
 

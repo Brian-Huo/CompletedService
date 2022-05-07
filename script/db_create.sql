@@ -123,7 +123,7 @@ CREATE TABLE `b_order` (
     post_date datetime NOT NUll,
     reserve_date datetime NOT NUll,
     finish_date datetime,
-    status tinyint(3) NOT NULL,
+    status int(5) unsigned NOT NULL,
     PRIMARY KEY(order_id)
 );
 ALTER TABLE `b_order` ADD FOREIGN KEY (customer_id) REFERENCES b_customer(customer_id); 

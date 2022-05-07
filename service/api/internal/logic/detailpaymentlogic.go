@@ -72,7 +72,7 @@ func (l *DetailPaymentLogic) DetailPayment(req *types.DetailPaymentRequest) (res
 		Payment_id:    res.PaymentId,
 		Card_number:   res.CardNumber,
 		Holder_name:   res.HolderName,
-		Expiry_time:   res.ExpiryTime.Format("2006-01-02 15:04:05"),
+		Expiry_time:   res.ExpiryTime.Format("02/01/2006"),
 		Security_code: res.SecurityCode,
 	}, nil
 }

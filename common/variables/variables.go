@@ -7,7 +7,23 @@ const (
 	Customer
 )
 
+// operation enum
 const (
 	Decline int = iota
 	Accept
+)
+
+// workstatus enum
+const (
+	Vacant int = iota
+	InWork
+)
+
+// order status enum
+const (
+	Queuing int = iota
+	Waiting
+	Working
+	Completed
+	Cancelled
 )

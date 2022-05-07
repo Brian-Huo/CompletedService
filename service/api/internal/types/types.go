@@ -37,7 +37,7 @@ type CreateAddressRequest struct {
 	Suburb          string `json:"suburb"`
 	Postcode        string `json:"postcode"`
 	State_code      string `json:"state_code"`
-	Country         string `json:"country"`
+	Country         string `json:"country,optional"`
 }
 
 type CreateAddressResponse struct {
@@ -99,10 +99,10 @@ type CreateCompanyResponse struct {
 type UpdateCompanyRequest struct {
 	Company_id         int64  `json:"company_id"`
 	Company_name       string `json:"company_name"`
-	Payment_id         int64  `json:"payment_id"`
-	Director_name      string `json:"director_name"`
+	Payment_id         int64  `json:"payment_id,optional"`
+	Director_name      string `json:"director_name,optional"`
 	Contact_details    string `json:"contact_details"`
-	Registered_address int64  `json:"registered_address"`
+	Registered_address int64  `json:"registered_address,optional"`
 	Deposite_rate      int    `json:"deposite_rate"`
 }
 
