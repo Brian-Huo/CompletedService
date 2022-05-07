@@ -8,6 +8,7 @@ import (
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/employee"
+	"cleaningservice/util"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -40,13 +41,13 @@ func (l *CreateEmployeeLogic) CreateEmployee(req *types.CreateEmployeeRequest) (
 	}
 
 	newItem := employee.BEmployee{
-		EmployeePhoto:  sql.NullString{req.Employee_photo, true},
+		EmployeePhoto:  sql.NullString{req.Employee_photo, req.Employee_photo != ""},
 		EmployeeName:   req.Employee_name,
 		ContactDetails: req.Contact_details,
 		CompanyId:      uid,
-		LinkCode:       req.Link_code,
+		LinkCode:       util.RandStringBytesMaskImprSrcUnsafe(8),
 		WorkStatus:     int64(variables.Vacant),
-		OrderId:        sql.NullInt64{req.Order_id, req.Order_id != 0},
+		OrderId:        sql.NullInt64{0, false},
 	}
 
 	res, err := l.svcCtx.BEmployeeModel.Insert(l.ctx, &newItem)

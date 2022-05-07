@@ -179,9 +179,6 @@ type CreateEmployeeRequest struct {
 	Employee_name   string `json:"employee_name"`
 	Contact_details string `json:"contact_details"`
 	Company_id      int64  `json:"company_id"`
-	Link_code       string `json:"link_code"`
-	Work_status     int    `json:"work_status"`
-	Order_id        int64  `json:"order_id"`
 }
 
 type CreateEmployeeResponse struct {
@@ -194,9 +191,6 @@ type UpdateEmployeeRequest struct {
 	Employee_name   string `json:"employee_name"`
 	Contact_details string `json:"contact_details"`
 	Company_id      int64  `json:"company_id"`
-	Link_code       string `json:"link_code"`
-	Work_status     int    `json:"work_status"`
-	Order_id        int64  `json:"order_id"`
 }
 
 type UpdateEmployeeResponse struct {
