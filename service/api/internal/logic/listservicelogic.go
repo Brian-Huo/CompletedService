@@ -5,8 +5,10 @@ import (
 
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/service"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/status"
 )
 
 type ListServiceLogic struct {
@@ -24,7 +26,27 @@ func NewListServiceLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListS
 }
 
 func (l *ListServiceLogic) ListService(req *types.ListServiceRequest) (resp *types.ListServiceResponse, err error) {
-	// todo: add your logic here and delete this line
+	res, err := l.svcCtx.BServiceModel.List(l.ctx)
+	if err != nil {
+		if err == service.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Service not found.")
+		}
+		return nil, status.Error(500, err.Error())
+	}
 
-	return
+	allItems := []types.DetailServiceResponse{}
+
+	for _, item := range res {
+		newItem := types.DetailServiceResponse{
+			Service_id:          item.ServiceId,
+			Service_type:        item.ServiceType,
+			Service_description: item.ServiceDescription.String,
+		}
+
+		allItems = append(allItems, newItem)
+	}
+
+	return &types.ListServiceResponse{
+		Items: allItems,
+	}, nil
 }

@@ -282,7 +282,7 @@ type DetailOrderResponse struct {
 	Design_id             int64   `json:"desgin_id"`
 	Deposite_payment      int64   `json:"deposite_payment"`
 	Deposite_amount       float64 `json:"deposite_amount"`
-	Current_deposite_rate int     `json:"current_deposite_rate"`
+	Current_deposite_rate int   `json:"current_deposite_rate"`
 	Deposite_date         string  `json:"deposite_date"`
 	Final_payment         int64   `json:"final_payment"`
 	Final_amount          float64 `json:"final_amount"`
@@ -316,9 +316,7 @@ type ListServiceRequest struct {
 }
 
 type ListServiceResponse struct {
-	Service_id          int64  `json:"service_id"`
-	Service_type        string `json:"service_type"`
-	Service_description string `json:"service_description"`
+	Items		[]DetailServiceResponse `json:"items"`
 }
 
 type CreateDesignRequest struct {
@@ -442,6 +440,7 @@ type DetailOperationResponse struct {
 }
 
 type ListOperationRequest struct {
+	Employee_id  int64  `json:"employee_id"`
 }
 
 type ListOperationResponse struct {

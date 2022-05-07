@@ -28,6 +28,7 @@ type (
 	bServiceModel interface {
 		Insert(ctx context.Context, data *BService) (sql.Result, error)
 		FindOne(ctx context.Context, serviceId int64) (*BService, error)
+		List(ctx context.Context) ([]*BService, error)
 		Update(ctx context.Context, data *BService) error
 		Delete(ctx context.Context, serviceId int64) error
 	}
@@ -70,6 +71,22 @@ func (m *defaultBServiceModel) FindOne(ctx context.Context, serviceId int64) (*B
 	switch err {
 	case nil:
 		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultBServiceModel) List(ctx context.Context) ([]*BService, error) {
+	var resp []*BService
+
+	query := fmt.Sprintf("select %s from %s", bServiceRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query)
+
+	switch err {
+	case nil:
+		return resp, nil
 	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
 	default:

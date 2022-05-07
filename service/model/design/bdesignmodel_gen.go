@@ -30,6 +30,7 @@ type (
 		FindOne(ctx context.Context, designId int64) (*BDesign, error)
 		FindAllByCompany(ctx context.Context, companyId int64) ([]*BDesign, error)
 		FindAllByService(ctx context.Context, serviceId int64) ([]*BDesign, error)
+		List(ctx context.Context) ([]*BDesign, error)
 		Update(ctx context.Context, data *BDesign) error
 		Delete(ctx context.Context, designId int64) error
 		DeleteAllByCompany(ctx context.Context, companyId int64) error
@@ -104,6 +105,22 @@ func (m *defaultBDesignModel) FindAllByService(ctx context.Context, serviceId in
 
 	query := fmt.Sprintf("select %s from %s where `service_id` = ?", bDesignRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, serviceId)
+
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultBDesignModel) List(ctx context.Context) ([]*BDesign, error) {
+	var resp []*BDesign
+
+	query := fmt.Sprintf("select %s from %s", bDesignRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query)
 
 	switch err {
 	case nil:

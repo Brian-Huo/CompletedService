@@ -319,9 +319,7 @@ type (
 	ListServiceRequest {
 	}
 	ListServiceResponse {
-		Service_id          int64  `json:"service_id"`
-		Service_type        string `json:"service_type"`
-		Service_description string `json:"service_description"`
+		Items []DetailServiceResponse `json:"items"`
 	}
 
 	// -------------------- Design (Company-Service) -------------------------

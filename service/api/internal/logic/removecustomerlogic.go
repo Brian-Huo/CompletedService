@@ -35,7 +35,7 @@ func (l *RemoveCustomerLogic) RemoveCustomer(req *types.RemoveCustomerRequest) (
 
 	go l.svcCtx.RCustomerPaymentModel.DeleteByCustomer(l.ctx, uid)
 	go l.svcCtx.RCustomerAddressModel.DeleteByCustomer(l.ctx, uid)
-	go l.svcCtx.BCustomerModel.Delete(l.ctx, uid)
+	// go l.svcCtx.BCustomerModel.Delete(l.ctx, uid)
 
 	return
 }

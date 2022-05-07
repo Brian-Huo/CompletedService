@@ -7,6 +7,7 @@ import (
 	"cleaningservice/service/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/status"
 )
 
 type ListAddressLogic struct {
@@ -26,5 +27,5 @@ func NewListAddressLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListA
 func (l *ListAddressLogic) ListAddress(req *types.ListAddressRequest) (resp *types.ListAddressResponse, err error) {
 	// todo: add your logic here and delete this line
 
-	return
+	return nil, status.Error(500, "Invalid, Currently not available")
 }
