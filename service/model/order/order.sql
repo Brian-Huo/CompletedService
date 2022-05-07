@@ -1,0 +1,21 @@
+CREATE TABLE `b_order` (
+    order_id int unsigned NOT NULL AUTO_INCREMENT,
+    customer_id int unsigned NOT NULL,
+    company_id int unsigned NOT NUll,
+    address_id int unsigned NOT NULL,
+    design_id int unsigned NOT NUll,
+    deposite_payment int unsigned NOT NUll,
+    deposite_amount float unsigned NOT NUll,
+    current_deposite_rate int(2) unsigned NOT NUll,
+    deposite_date datetime NOT NULL,
+    final_payment int unsigned,
+    final_amount float unsigned NOT NULL,
+    final_payment_date datetime,
+    total_fee float unsigned NOT NUll,
+    order_description longtext,
+    post_date datetime NOT NUll,
+    reserve_date datetime NOT NUll,
+    finish_date datetime,
+    status tinyint(3) NOT NULL,
+    PRIMARY KEY(order_id)
+);
