@@ -1,0 +1,2828 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "",
+    "version": ""
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/address/create": {
+      "post": {
+        "operationId": "CreateAddress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateAddressResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Address -------------------------,  Create Address",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateAddressRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/address/detail": {
+      "post": {
+        "operationId": "DetailAddress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DetailAddressResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Detail Address",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailAddressRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/address/list": {
+      "post": {
+        "operationId": "ListAddress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListAddressResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " List Address",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListAddressRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/address/remove": {
+      "post": {
+        "operationId": "RemoveAddress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RemoveAddressResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Remove Address",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RemoveAddressRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/address/update": {
+      "post": {
+        "operationId": "UpdateAddress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateAddressResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Update Address",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateAddressRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/company/create": {
+      "post": {
+        "operationId": "CreateCompany",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateCompanyResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Company -------------------------,  Create Company",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateCompanyRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/company/detail": {
+      "post": {
+        "operationId": "DetailCompany",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DetailCompanyResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Detail Company",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailCompanyRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/company/list": {
+      "post": {
+        "operationId": "ListCompany",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListCompanyResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " List Company",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListCompanyRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/company/remove": {
+      "post": {
+        "operationId": "RemoveCompany",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RemoveCompanyResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Remove Company",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RemoveCompanyRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/company/update": {
+      "post": {
+        "operationId": "UpdateCompany",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateCompanyResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Update Company",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateCompanyRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/customer/create": {
+      "post": {
+        "operationId": "CreateCustomer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateCustomerResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Customer -------------------------,  Create Customer",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateCustomerRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/customer/detail": {
+      "post": {
+        "operationId": "DetailCustomer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DetailCustomerResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Detail Customer",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailCustomerRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/customer/remove": {
+      "post": {
+        "operationId": "RemoveCustomer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RemoveCustomerResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Remove Customer",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RemoveCustomerRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/customer/update": {
+      "post": {
+        "operationId": "UpdateCustomer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateCustomerResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Update Customer",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateCustomerRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/design/create": {
+      "post": {
+        "operationId": "CreateDesign",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateDesignResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Design (Company-Service) -------------------------,  Create Design",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateDesignRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/design/detail": {
+      "post": {
+        "operationId": "DetailDesign",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DetailDesignResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Detail Design",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailDesignRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/design/list": {
+      "post": {
+        "operationId": "ListDesign",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListDesignResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " List Design",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListDesignRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/design/remove": {
+      "post": {
+        "operationId": "RemoveDesign",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RemoveDesignResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Remove Design",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RemoveDesignRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/design/update": {
+      "post": {
+        "operationId": "UpdateDesign",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateDesignResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Update Design",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateDesignRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/employee/create": {
+      "post": {
+        "operationId": "CreateEmployee",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateEmployeeResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Employee -------------------------,  Create Employee",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateEmployeeRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/employee/detail": {
+      "post": {
+        "operationId": "DetailEmployee",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DetailEmployeeResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Detail Employee",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailEmployeeRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/employee/list": {
+      "post": {
+        "operationId": "ListEmployee",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListEmployeeResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " List Employee",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListEmployeeRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/employee/remove": {
+      "post": {
+        "operationId": "RemoveEmployee",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RemoveEmployeeResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Remove Employee",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RemoveEmployeeRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/employee/update": {
+      "post": {
+        "operationId": "UpdateEmployee",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateEmployeeResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Update Employee",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateEmployeeRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/employee_service/create": {
+      "post": {
+        "operationId": "CreateEmployeeService",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateEmployeeServiceResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Employee Service -------------------------, Create Employee Service",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateEmployeeServiceRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/employee_service/list": {
+      "post": {
+        "operationId": "ListEmployeeService",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListEmployeeServiceResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " List Employee Service",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListEmployeeServiceRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/employee_service/remove": {
+      "post": {
+        "operationId": "RemoveEmployeeService",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RemoveEmployeeServiceResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Remove Employee Service",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RemoveEmployeeServiceRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/operation/create": {
+      "post": {
+        "operationId": "CreateOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateOperationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Operation -------------------------,  Create Operation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateOperationRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/operation/detail": {
+      "post": {
+        "operationId": "DetailOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DetailOperationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Detail Operation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailOperationRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/operation/list": {
+      "post": {
+        "operationId": "ListOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListOperationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " List Operation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListOperationRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/order/create": {
+      "post": {
+        "operationId": "CreateOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateOrderResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Order -------------------------,  Create Order",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateOrderRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/order/detail": {
+      "post": {
+        "operationId": "DetailOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DetailOrderResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Detail Order",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailOrderRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/order/list": {
+      "post": {
+        "operationId": "ListOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListOrderResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " List Order",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListOrderRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/order/remove": {
+      "post": {
+        "operationId": "RemoveOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RemoveOrderResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Remove Order",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RemoveOrderRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/order/update": {
+      "post": {
+        "operationId": "UpdateOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateOrderResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Update Order",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateOrderRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/payment/create": {
+      "post": {
+        "operationId": "CreatePayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreatePaymentResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Payment -------------------------,  Create Payment",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreatePaymentRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/payment/detail": {
+      "post": {
+        "operationId": "DetailPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DetailPaymentResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Detail Payment",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailPaymentRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/payment/list": {
+      "post": {
+        "operationId": "ListPayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListPaymentResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " List Payment",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListPaymentRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/payment/remove": {
+      "post": {
+        "operationId": "RemovePayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RemovePaymentResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Remove Payment",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RemovePaymentRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/payment/update": {
+      "post": {
+        "operationId": "UpdatePayment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdatePaymentResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Update Payment",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdatePaymentRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/service/detail": {
+      "post": {
+        "operationId": "DetailService",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DetailServiceResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Service -------------------------, Detail Service",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DetailServiceRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/service/list": {
+      "post": {
+        "operationId": "ListService",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListServiceResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " List Service",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListServiceRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/user/login_customer": {
+      "post": {
+        "operationId": "LoginCustomer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/LoginCustomerResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginCustomerRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/user/login_service": {
+      "post": {
+        "operationId": "LoginService",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/LoginServiceResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginServiceRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/user/verify_code": {
+      "post": {
+        "operationId": "VerifyCode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/VerifyCodeResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " -------------------- Login -------------------------",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyCodeRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "CreateAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address_details": {
+          "type": "string"
+        },
+        "suburb": {
+          "type": "string"
+        },
+        "postcode": {
+          "type": "string"
+        },
+        "state_code": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        }
+      },
+      "title": "CreateAddressRequest",
+      "required": [
+        "address_details",
+        "suburb",
+        "postcode",
+        "state_code",
+        "country"
+      ]
+    },
+    "CreateAddressResponse": {
+      "type": "object",
+      "properties": {
+        "address_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateAddressResponse",
+      "required": [
+        "address_id"
+      ]
+    },
+    "CreateCompanyRequest": {
+      "type": "object",
+      "properties": {
+        "company_name": {
+          "type": "string"
+        },
+        "payment_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "director_name": {
+          "type": "string"
+        },
+        "contact_details": {
+          "type": "string"
+        },
+        "registered_address": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deposite_rate": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "CreateCompanyRequest",
+      "required": [
+        "company_name",
+        "payment_id",
+        "director_name",
+        "contact_details",
+        "registered_address",
+        "deposite_rate"
+      ]
+    },
+    "CreateCompanyResponse": {
+      "type": "object",
+      "properties": {
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateCompanyResponse",
+      "required": [
+        "company_id"
+      ]
+    },
+    "CreateCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "customer_name": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "contact_details": {
+          "type": "string"
+        }
+      },
+      "title": "CreateCustomerRequest",
+      "required": [
+        "customer_name",
+        "country_code",
+        "contact_details"
+      ]
+    },
+    "CreateCustomerResponse": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateCustomerResponse",
+      "required": [
+        "customer_id"
+      ]
+    },
+    "CreateDesignRequest": {
+      "type": "object",
+      "properties": {
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "service_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "comments": {
+          "type": "string"
+        }
+      },
+      "title": "CreateDesignRequest",
+      "required": [
+        "company_id",
+        "service_id",
+        "price",
+        "comments"
+      ]
+    },
+    "CreateDesignResponse": {
+      "type": "object",
+      "properties": {
+        "design_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateDesignResponse",
+      "required": [
+        "design_id"
+      ]
+    },
+    "CreateEmployeeRequest": {
+      "type": "object",
+      "properties": {
+        "employee_photo": {
+          "type": "string"
+        },
+        "employee_name": {
+          "type": "string"
+        },
+        "contact_details": {
+          "type": "string"
+        },
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "link_code": {
+          "type": "string"
+        },
+        "work_status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateEmployeeRequest",
+      "required": [
+        "employee_photo",
+        "employee_name",
+        "contact_details",
+        "company_id",
+        "link_code",
+        "work_status",
+        "order_id"
+      ]
+    },
+    "CreateEmployeeResponse": {
+      "type": "object",
+      "properties": {
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateEmployeeResponse",
+      "required": [
+        "employee_id"
+      ]
+    },
+    "CreateEmployeeServiceRequest": {
+      "type": "object",
+      "properties": {
+        "service_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateEmployeeServiceRequest",
+      "required": [
+        "service_id"
+      ]
+    },
+    "CreateEmployeeServiceResponse": {
+      "type": "object",
+      "title": "CreateEmployeeServiceResponse"
+    },
+    "CreateOperationRequest": {
+      "type": "object",
+      "properties": {
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "operation": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "issue_date": {
+          "type": "string"
+        }
+      },
+      "title": "CreateOperationRequest",
+      "required": [
+        "employee_id",
+        "order_id",
+        "operation",
+        "issue_date"
+      ]
+    },
+    "CreateOperationResponse": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateOperationResponse",
+      "required": [
+        "operation_id"
+      ]
+    },
+    "CreateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "address_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "desgin_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deposite_payment": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deposite_date": {
+          "type": "string"
+        },
+        "final_payment": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "final_payment_date": {
+          "type": "string"
+        },
+        "order_description": {
+          "type": "string"
+        },
+        "post_date": {
+          "type": "string"
+        },
+        "reserve_date": {
+          "type": "string"
+        },
+        "finish_date": {
+          "type": "string"
+        }
+      },
+      "title": "CreateOrderRequest",
+      "required": [
+        "customer_id",
+        "company_id",
+        "address_id",
+        "desgin_id",
+        "deposite_payment",
+        "deposite_date",
+        "post_date",
+        "reserve_date"
+      ]
+    },
+    "CreateOrderResponse": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateOrderResponse",
+      "required": [
+        "order_id"
+      ]
+    },
+    "CreatePaymentRequest": {
+      "type": "object",
+      "properties": {
+        "card_number": {
+          "type": "string"
+        },
+        "holder_name": {
+          "type": "string"
+        },
+        "expiry_time": {
+          "type": "string"
+        },
+        "security_code": {
+          "type": "string"
+        }
+      },
+      "title": "CreatePaymentRequest",
+      "required": [
+        "card_number",
+        "holder_name",
+        "expiry_time",
+        "security_code"
+      ]
+    },
+    "CreatePaymentResponse": {
+      "type": "object",
+      "properties": {
+        "payment_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreatePaymentResponse",
+      "required": [
+        "payment_id"
+      ]
+    },
+    "DetailAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailAddressRequest",
+      "required": [
+        "address_id"
+      ]
+    },
+    "DetailAddressResponse": {
+      "type": "object",
+      "properties": {
+        "address_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "address_details": {
+          "type": "string"
+        },
+        "suburb": {
+          "type": "string"
+        },
+        "postcode": {
+          "type": "string"
+        },
+        "state_code": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        }
+      },
+      "title": "DetailAddressResponse",
+      "required": [
+        "address_id",
+        "address_details",
+        "suburb",
+        "postcode",
+        "state_code",
+        "country"
+      ]
+    },
+    "DetailCompanyRequest": {
+      "type": "object",
+      "properties": {
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailCompanyRequest",
+      "required": [
+        "company_id"
+      ]
+    },
+    "DetailCompanyResponse": {
+      "type": "object",
+      "properties": {
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "payment_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "director_name": {
+          "type": "string"
+        },
+        "contact_details": {
+          "type": "string"
+        },
+        "registered_address": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deposite_rate": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "DetailCompanyResponse",
+      "required": [
+        "company_id",
+        "company_name",
+        "payment_id",
+        "director_name",
+        "contact_details",
+        "registered_address",
+        "deposite_rate"
+      ]
+    },
+    "DetailCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailCustomerRequest",
+      "required": [
+        "customer_id"
+      ]
+    },
+    "DetailCustomerResponse": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "customer_name": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "contact_details": {
+          "type": "string"
+        }
+      },
+      "title": "DetailCustomerResponse",
+      "required": [
+        "customer_id",
+        "customer_name",
+        "country_code",
+        "contact_details"
+      ]
+    },
+    "DetailDesignRequest": {
+      "type": "object",
+      "properties": {
+        "design_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailDesignRequest",
+      "required": [
+        "design_id"
+      ]
+    },
+    "DetailDesignResponse": {
+      "type": "object",
+      "properties": {
+        "design_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "service_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "comments": {
+          "type": "string"
+        }
+      },
+      "title": "DetailDesignResponse",
+      "required": [
+        "design_id",
+        "company_id",
+        "service_id",
+        "price",
+        "comments"
+      ]
+    },
+    "DetailEmployeeRequest": {
+      "type": "object",
+      "properties": {
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailEmployeeRequest",
+      "required": [
+        "employee_id"
+      ]
+    },
+    "DetailEmployeeResponse": {
+      "type": "object",
+      "properties": {
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "employee_photo": {
+          "type": "string"
+        },
+        "employee_name": {
+          "type": "string"
+        },
+        "contact_details": {
+          "type": "string"
+        },
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "link_code": {
+          "type": "string"
+        },
+        "work_status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailEmployeeResponse",
+      "required": [
+        "employee_id",
+        "employee_photo",
+        "employee_name",
+        "contact_details",
+        "company_id",
+        "link_code",
+        "work_status",
+        "order_id"
+      ]
+    },
+    "DetailOperationRequest": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailOperationRequest",
+      "required": [
+        "operation_id"
+      ]
+    },
+    "DetailOperationResponse": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "operation": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "issue_date": {
+          "type": "string"
+        }
+      },
+      "title": "DetailOperationResponse",
+      "required": [
+        "operation_id",
+        "employee_id",
+        "order_id",
+        "operation",
+        "issue_date"
+      ]
+    },
+    "DetailOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailOrderRequest",
+      "required": [
+        "order_id"
+      ]
+    },
+    "DetailOrderResponse": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "customer_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "address_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "desgin_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deposite_payment": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deposite_amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "current_deposite_rate": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "deposite_date": {
+          "type": "string"
+        },
+        "final_payment": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "final_amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "final_payment_date": {
+          "type": "string"
+        },
+        "total_fee": {
+          "type": "number",
+          "format": "double"
+        },
+        "order_description": {
+          "type": "string"
+        },
+        "post_date": {
+          "type": "string"
+        },
+        "reserve_date": {
+          "type": "string"
+        },
+        "finish_date": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "DetailOrderResponse",
+      "required": [
+        "order_id",
+        "customer_id",
+        "company_id",
+        "address_id",
+        "desgin_id",
+        "deposite_payment",
+        "deposite_amount",
+        "current_deposite_rate",
+        "deposite_date",
+        "final_payment",
+        "final_amount",
+        "final_payment_date",
+        "total_fee",
+        "order_description",
+        "post_date",
+        "reserve_date",
+        "finish_date",
+        "status"
+      ]
+    },
+    "DetailPaymentRequest": {
+      "type": "object",
+      "properties": {
+        "payment_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailPaymentRequest",
+      "required": [
+        "payment_id"
+      ]
+    },
+    "DetailPaymentResponse": {
+      "type": "object",
+      "properties": {
+        "payment_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "card_number": {
+          "type": "string"
+        },
+        "holder_name": {
+          "type": "string"
+        },
+        "expiry_time": {
+          "type": "string"
+        },
+        "security_code": {
+          "type": "string"
+        }
+      },
+      "title": "DetailPaymentResponse",
+      "required": [
+        "payment_id",
+        "card_number",
+        "holder_name",
+        "expiry_time",
+        "security_code"
+      ]
+    },
+    "DetailServiceRequest": {
+      "type": "object",
+      "properties": {
+        "service_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DetailServiceRequest",
+      "required": [
+        "service_id"
+      ]
+    },
+    "DetailServiceResponse": {
+      "type": "object",
+      "properties": {
+        "service_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "service_type": {
+          "type": "string"
+        },
+        "service_description": {
+          "type": "string"
+        }
+      },
+      "title": "DetailServiceResponse",
+      "required": [
+        "service_id",
+        "service_type",
+        "service_description"
+      ]
+    },
+    "ListAddressRequest": {
+      "type": "object",
+      "title": "ListAddressRequest"
+    },
+    "ListAddressResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DetailAddressResponse"
+          }
+        }
+      },
+      "title": "ListAddressResponse",
+      "required": [
+        "items"
+      ]
+    },
+    "ListCompanyRequest": {
+      "type": "object",
+      "title": "ListCompanyRequest"
+    },
+    "ListCompanyResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DetailCompanyResponse"
+          }
+        }
+      },
+      "title": "ListCompanyResponse",
+      "required": [
+        "items"
+      ]
+    },
+    "ListDesignRequest": {
+      "type": "object",
+      "properties": {
+        "service_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "ListDesignRequest"
+    },
+    "ListDesignResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DetailDesignResponse"
+          }
+        }
+      },
+      "title": "ListDesignResponse",
+      "required": [
+        "items"
+      ]
+    },
+    "ListEmployeeRequest": {
+      "type": "object",
+      "title": "ListEmployeeRequest"
+    },
+    "ListEmployeeResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DetailEmployeeResponse"
+          }
+        }
+      },
+      "title": "ListEmployeeResponse",
+      "required": [
+        "items"
+      ]
+    },
+    "ListEmployeeServiceRequest": {
+      "type": "object",
+      "properties": {
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "ListEmployeeServiceRequest",
+      "required": [
+        "employee_id"
+      ]
+    },
+    "ListEmployeeServiceResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DetailServiceResponse"
+          }
+        }
+      },
+      "title": "ListEmployeeServiceResponse",
+      "required": [
+        "items"
+      ]
+    },
+    "ListOperationRequest": {
+      "type": "object",
+      "title": "ListOperationRequest"
+    },
+    "ListOperationResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DetailOperationResponse"
+          }
+        }
+      },
+      "title": "ListOperationResponse",
+      "required": [
+        "items"
+      ]
+    },
+    "ListOrderRequest": {
+      "type": "object",
+      "title": "ListOrderRequest"
+    },
+    "ListOrderResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DetailOrderResponse"
+          }
+        }
+      },
+      "title": "ListOrderResponse",
+      "required": [
+        "items"
+      ]
+    },
+    "ListPaymentRequest": {
+      "type": "object",
+      "title": "ListPaymentRequest"
+    },
+    "ListPaymentResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DetailPaymentResponse"
+          }
+        }
+      },
+      "title": "ListPaymentResponse",
+      "required": [
+        "items"
+      ]
+    },
+    "ListServiceRequest": {
+      "type": "object",
+      "title": "ListServiceRequest"
+    },
+    "ListServiceResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DetailServiceResponse"
+          }
+        }
+      },
+      "title": "ListServiceResponse",
+      "required": [
+        "items"
+      ]
+    },
+    "LoginCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "contact_details": {
+          "type": "string"
+        },
+        "verify_code": {
+          "type": "string"
+        }
+      },
+      "title": "LoginCustomerRequest",
+      "required": [
+        "contact_details",
+        "verify_code"
+      ]
+    },
+    "LoginCustomerResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "access_token": {
+          "type": "string"
+        }
+      },
+      "title": "LoginCustomerResponse",
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "LoginServiceRequest": {
+      "type": "object",
+      "properties": {
+        "contact_details": {
+          "type": "string"
+        },
+        "verify_code": {
+          "type": "string"
+        }
+      },
+      "title": "LoginServiceRequest",
+      "required": [
+        "contact_details",
+        "verify_code"
+      ]
+    },
+    "LoginServiceResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "access_token": {
+          "type": "string"
+        }
+      },
+      "title": "LoginServiceResponse",
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "RemoveAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "RemoveAddressRequest",
+      "required": [
+        "address_id"
+      ]
+    },
+    "RemoveAddressResponse": {
+      "type": "object",
+      "title": "RemoveAddressResponse"
+    },
+    "RemoveCompanyRequest": {
+      "type": "object",
+      "properties": {
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "RemoveCompanyRequest",
+      "required": [
+        "company_id"
+      ]
+    },
+    "RemoveCompanyResponse": {
+      "type": "object",
+      "title": "RemoveCompanyResponse"
+    },
+    "RemoveCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "RemoveCustomerRequest",
+      "required": [
+        "customer_id"
+      ]
+    },
+    "RemoveCustomerResponse": {
+      "type": "object",
+      "title": "RemoveCustomerResponse"
+    },
+    "RemoveDesignRequest": {
+      "type": "object",
+      "properties": {
+        "design_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "RemoveDesignRequest",
+      "required": [
+        "design_id"
+      ]
+    },
+    "RemoveDesignResponse": {
+      "type": "object",
+      "title": "RemoveDesignResponse"
+    },
+    "RemoveEmployeeRequest": {
+      "type": "object",
+      "properties": {
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "RemoveEmployeeRequest",
+      "required": [
+        "employee_id"
+      ]
+    },
+    "RemoveEmployeeResponse": {
+      "type": "object",
+      "title": "RemoveEmployeeResponse"
+    },
+    "RemoveEmployeeServiceRequest": {
+      "type": "object",
+      "properties": {
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "service_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "RemoveEmployeeServiceRequest",
+      "required": [
+        "employee_id",
+        "service_id"
+      ]
+    },
+    "RemoveEmployeeServiceResponse": {
+      "type": "object",
+      "title": "RemoveEmployeeServiceResponse"
+    },
+    "RemoveOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "RemoveOrderRequest",
+      "required": [
+        "order_id"
+      ]
+    },
+    "RemoveOrderResponse": {
+      "type": "object",
+      "title": "RemoveOrderResponse"
+    },
+    "RemovePaymentRequest": {
+      "type": "object",
+      "properties": {
+        "payment_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "RemovePaymentRequest",
+      "required": [
+        "payment_id"
+      ]
+    },
+    "RemovePaymentResponse": {
+      "type": "object",
+      "title": "RemovePaymentResponse"
+    },
+    "UpdateAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "address_details": {
+          "type": "string"
+        },
+        "suburb": {
+          "type": "string"
+        },
+        "postcode": {
+          "type": "string"
+        },
+        "state_code": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        }
+      },
+      "title": "UpdateAddressRequest",
+      "required": [
+        "address_id",
+        "address_details",
+        "suburb",
+        "postcode",
+        "state_code",
+        "country"
+      ]
+    },
+    "UpdateAddressResponse": {
+      "type": "object",
+      "title": "UpdateAddressResponse"
+    },
+    "UpdateCompanyRequest": {
+      "type": "object",
+      "properties": {
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "payment_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "director_name": {
+          "type": "string"
+        },
+        "contact_details": {
+          "type": "string"
+        },
+        "registered_address": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deposite_rate": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "UpdateCompanyRequest",
+      "required": [
+        "company_id",
+        "company_name",
+        "payment_id",
+        "director_name",
+        "contact_details",
+        "registered_address",
+        "deposite_rate"
+      ]
+    },
+    "UpdateCompanyResponse": {
+      "type": "object",
+      "title": "UpdateCompanyResponse"
+    },
+    "UpdateCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "customer_name": {
+          "type": "string"
+        },
+        "country_code": {
+          "type": "string"
+        },
+        "contact_details": {
+          "type": "string"
+        }
+      },
+      "title": "UpdateCustomerRequest",
+      "required": [
+        "customer_id",
+        "customer_name",
+        "country_code",
+        "contact_details"
+      ]
+    },
+    "UpdateCustomerResponse": {
+      "type": "object",
+      "title": "UpdateCustomerResponse"
+    },
+    "UpdateDesignRequest": {
+      "type": "object",
+      "properties": {
+        "design_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "service_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "comments": {
+          "type": "string"
+        }
+      },
+      "title": "UpdateDesignRequest",
+      "required": [
+        "design_id",
+        "company_id",
+        "service_id",
+        "price",
+        "comments"
+      ]
+    },
+    "UpdateDesignResponse": {
+      "type": "object",
+      "title": "UpdateDesignResponse"
+    },
+    "UpdateEmployeeRequest": {
+      "type": "object",
+      "properties": {
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "employee_photo": {
+          "type": "string"
+        },
+        "employee_name": {
+          "type": "string"
+        },
+        "contact_details": {
+          "type": "string"
+        },
+        "company_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "link_code": {
+          "type": "string"
+        },
+        "work_status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "UpdateEmployeeRequest",
+      "required": [
+        "employee_id",
+        "employee_photo",
+        "employee_name",
+        "contact_details",
+        "company_id",
+        "link_code",
+        "work_status",
+        "order_id"
+      ]
+    },
+    "UpdateEmployeeResponse": {
+      "type": "object",
+      "title": "UpdateEmployeeResponse"
+    },
+    "UpdateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "customer_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "final_payment": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "final_payment_date": {
+          "type": "string"
+        },
+        "order_description": {
+          "type": "string"
+        },
+        "reserve_date": {
+          "type": "string"
+        },
+        "finish_date": {
+          "type": "string"
+        }
+      },
+      "title": "UpdateOrderRequest",
+      "required": [
+        "order_id",
+        "customer_id",
+        "order_description",
+        "reserve_date"
+      ]
+    },
+    "UpdateOrderResponse": {
+      "type": "object",
+      "title": "UpdateOrderResponse"
+    },
+    "UpdatePaymentRequest": {
+      "type": "object",
+      "properties": {
+        "payment_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "card_number": {
+          "type": "string"
+        },
+        "holder_name": {
+          "type": "string"
+        },
+        "expiry_time": {
+          "type": "string"
+        },
+        "security_code": {
+          "type": "string"
+        }
+      },
+      "title": "UpdatePaymentRequest",
+      "required": [
+        "payment_id",
+        "card_number",
+        "holder_name",
+        "expiry_time",
+        "security_code"
+      ]
+    },
+    "UpdatePaymentResponse": {
+      "type": "object",
+      "title": "UpdatePaymentResponse"
+    },
+    "VerifyCodeRequest": {
+      "type": "object",
+      "properties": {
+        "contact_details": {
+          "type": "string"
+        }
+      },
+      "title": "VerifyCodeRequest",
+      "required": [
+        "contact_details"
+      ]
+    },
+    "VerifyCodeResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "title": "VerifyCodeResponse",
+      "required": [
+        "code",
+        "message"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "apiKey": {
+      "type": "apiKey",
+      "description": "Enter JWT Bearer token **_only_**",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "apiKey": []
+    }
+  ]
+}

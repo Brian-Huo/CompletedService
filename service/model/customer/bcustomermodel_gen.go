@@ -28,7 +28,7 @@ type (
 	bCustomerModel interface {
 		Insert(ctx context.Context, data *BCustomer) (sql.Result, error)
 		FindOne(ctx context.Context, customerId int64) (*BCustomer, error)
-		FindOnebyPhone(ctx context.Context, customerId int64) (*BCustomer, error)
+		FindOnebyPhone(ctx context.Context, contactDetails string) (*BCustomer, error)
 		Update(ctx context.Context, data *BCustomer) error
 		Delete(ctx context.Context, customerId int64) error
 	}
@@ -79,7 +79,7 @@ func (m *defaultBCustomerModel) FindOne(ctx context.Context, customerId int64) (
 	}
 }
 
-func (m *defaultBCustomerModel) FindOnebyPhone(ctx context.Context, contactDetails int64) (*BCustomer, error) {
+func (m *defaultBCustomerModel) FindOnebyPhone(ctx context.Context, contactDetails string) (*BCustomer, error) {
 	bCustomerContactDetails := fmt.Sprintf("%s%v", "cache:bCustomer:contactDetails:", contactDetails)
 	var resp BCustomer
 	err := m.QueryRowCtx(ctx, &resp, bCustomerContactDetails, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
