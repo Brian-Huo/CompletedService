@@ -47,6 +47,7 @@ type (
 		ContactDetails    string         `db:"contact_details"`
 		RegisteredAddress sql.NullInt64  `db:"registered_address"`
 		DepositeRate      int64          `db:"deposite_rate"`
+		CompanyStatus     int64          `db:"company_status"`
 	}
 )
 
@@ -60,8 +61,8 @@ func newBCompanyModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBCompanyMode
 func (m *defaultBCompanyModel) Insert(ctx context.Context, data *BCompany) (sql.Result, error) {
 	bCompanyCompanyIdKey := fmt.Sprintf("%s%v", cacheBCompanyCompanyIdPrefix, data.CompanyId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, bCompanyRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.CompanyName, data.PaymentId, data.DirectorName, data.ContactDetails, data.RegisteredAddress, data.DepositeRate)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, bCompanyRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.CompanyName, data.PaymentId, data.DirectorName, data.ContactDetails, data.RegisteredAddress, data.DepositeRate, data.CompanyStatus)
 	}, bCompanyCompanyIdKey)
 	return ret, err
 }
@@ -120,7 +121,7 @@ func (m *defaultBCompanyModel) Update(ctx context.Context, data *BCompany) error
 	bCompanyCompanyIdKey := fmt.Sprintf("%s%v", cacheBCompanyCompanyIdPrefix, data.CompanyId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `company_id` = ?", m.table, bCompanyRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.CompanyName, data.PaymentId, data.DirectorName, data.ContactDetails, data.RegisteredAddress, data.DepositeRate, data.CompanyId)
+		return conn.ExecCtx(ctx, query, data.CompanyName, data.PaymentId, data.DirectorName, data.ContactDetails, data.RegisteredAddress, data.DepositeRate, data.CompanyStatus, data.CompanyId)
 	}, bCompanyCompanyIdKey)
 	return err
 }

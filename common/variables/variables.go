@@ -17,13 +17,21 @@ const (
 const (
 	Vacant int = iota
 	InWork
+	Resigned
+)
+
+// company status enum
+const (
+	Abolished int = 0
+	Active    int = 1
 )
 
 // order status enum
 const (
 	Queuing int = iota
-	Waiting
+	Pending
 	Working
+	Unpaid
 	Completed
 	Cancelled
 )

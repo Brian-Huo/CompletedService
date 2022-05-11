@@ -69,7 +69,8 @@ func (l *ListEmployeeServiceLogic) ListEmployeeService(req *types.ListEmployeeSe
 		newItem := types.DetailServiceResponse{
 			Service_id:          serv.ServiceId,
 			Service_type:        serv.ServiceType,
-			Service_description: serv.ServiceDescription.String,
+			Service_description: serv.ServiceDescription,
+			Service_price:       serv.ServicePrice,
 		}
 
 		allItems = append(allItems, newItem)

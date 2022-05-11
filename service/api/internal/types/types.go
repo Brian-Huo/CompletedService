@@ -301,9 +301,10 @@ type DetailServiceRequest struct {
 }
 
 type DetailServiceResponse struct {
-	Service_id          int64  `json:"service_id"`
-	Service_type        string `json:"service_type"`
-	Service_description string `json:"service_description"`
+	Service_id          int64   `json:"service_id"`
+	Service_type        string  `json:"service_type"`
+	Service_description string  `json:"service_description"`
+	Service_price       float64 `json:"service_price"`
 }
 
 type ListServiceRequest struct {

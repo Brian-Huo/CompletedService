@@ -19,6 +19,12 @@ import (
 var configFile = flag.String("f", "etc/server.yaml", "the config file")
 var funcMap = template.FuncMap{}
 
+func notAllowedFn(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")                                // 允许访问所有域
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type,Authorization,true") // header的类型
+	w.Header().Add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+}
+
 func main() {
 	flag.Parse()
 
@@ -26,7 +32,7 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 
 	ctx := svc.NewServiceContext(c)
-	server := rest.MustNewServer(c.RestConf)
+	server := rest.MustNewServer(c.RestConf, rest.WithCustomCors(nil, notAllowedFn))
 	defer server.Stop()
 
 	handler.RegisterHandlers(server, ctx)

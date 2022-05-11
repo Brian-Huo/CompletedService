@@ -39,9 +39,10 @@ type (
 	}
 
 	BService struct {
-		ServiceId          int64          `db:"service_id"`
-		ServiceType        string         `db:"service_type"`
-		ServiceDescription sql.NullString `db:"service_description"`
+		ServiceId          	int64       `db:"service_id"`
+		ServiceType        	string      `db:"service_type"`
+		ServiceDescription 	string      `db:"service_description"`
+		ServicePrice 		float64     `db:"service_price"`
 	}
 )
 
@@ -55,8 +56,8 @@ func newBServiceModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBServiceMode
 func (m *defaultBServiceModel) Insert(ctx context.Context, data *BService) (sql.Result, error) {
 	bServiceServiceIdKey := fmt.Sprintf("%s%v", cacheBServiceServiceIdPrefix, data.ServiceId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?)", m.table, bServiceRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.ServiceType, data.ServiceDescription)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?)", m.table, bServiceRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.ServiceType, data.ServiceDescription, data.ServicePrice)
 	}, bServiceServiceIdKey)
 	return ret, err
 }
@@ -98,7 +99,7 @@ func (m *defaultBServiceModel) Update(ctx context.Context, data *BService) error
 	bServiceServiceIdKey := fmt.Sprintf("%s%v", cacheBServiceServiceIdPrefix, data.ServiceId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `service_id` = ?", m.table, bServiceRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.ServiceType, data.ServiceDescription, data.ServiceId)
+		return conn.ExecCtx(ctx, query, data.ServiceType, data.ServiceDescription, data.ServicePrice, data.ServiceId)
 	}, bServiceServiceIdKey)
 	return err
 }

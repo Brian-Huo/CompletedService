@@ -40,7 +40,8 @@ func (l *ListServiceLogic) ListService(req *types.ListServiceRequest) (resp *typ
 		newItem := types.DetailServiceResponse{
 			Service_id:          item.ServiceId,
 			Service_type:        item.ServiceType,
-			Service_description: item.ServiceDescription.String,
+			Service_description: item.ServiceDescription,
+			Service_price:       item.ServicePrice,
 		}
 
 		allItems = append(allItems, newItem)

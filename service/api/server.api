@@ -84,10 +84,10 @@ type (
 	//  Create Company
 	CreateCompanyRequest {
 		Company_name       string `json:"company_name"`
-		Payment_id         int64  `json:"payment_id"`
+		Payment_id         int64  `json:"payment_id,optional"`
 		Director_name      string `json:"director_name"`
 		Contact_details    string `json:"contact_details"`
-		Registered_address int64  `json:"registered_address"`
+		Registered_address int64  `json:"registered_address,optional"`
 		Deposite_rate      int    `json:"deposite_rate"`
 	}
 	CreateCompanyResponse {
@@ -96,13 +96,11 @@ type (
 
 	// Update Company
 	UpdateCompanyRequest {
-		Company_id         int64  `json:"company_id"`
 		Company_name       string `json:"company_name"`
-		Payment_id         int64  `json:"payment_id"`
+		Payment_id         int64  `json:"payment_id,optional"`
 		Director_name      string `json:"director_name"`
 		Contact_details    string `json:"contact_details"`
-		Registered_address int64  `json:"registered_address"`
-		Deposite_rate      int    `json:"deposite_rate"`
+		Registered_address int64  `json:"registered_address,optional"`
 	}
 	UpdateCompanyResponse {
 	}
@@ -116,7 +114,7 @@ type (
 
 	// Detail Company
 	DetailCompanyRequest {
-		Company_id int64 `json:"company_id"`
+		Company_id int64 `json:"company_id,optional"`
 	}
 	DetailCompanyResponse {
 		Company_id         int64  `json:"company_id"`
@@ -196,9 +194,6 @@ type (
 		Employee_name   string `json:"employee_name"`
 		Contact_details string `json:"contact_details"`
 		Company_id      int64  `json:"company_id"`
-		Link_code       string `json:"link_code"`
-		Work_status     int    `json:"work_status"`
-		Order_id        int64  `json:"order_id"`
 	}
 	UpdateEmployeeResponse {
 	}
@@ -235,18 +230,13 @@ type (
 	// -------------------- Order -------------------------
 	//  Create Order
 	CreateOrderRequest {
-		Customer_id        int64  `json:"customer_id"`
-		Company_id         int64  `json:"company_id"`
-		Address_id         int64  `json:"address_id"`
-		Design_id          int64  `json:"desgin_id"`
-		Deposite_payment   int64  `json:"deposite_payment"`
-		Deposite_date      string `json:"deposite_date"`
-		Final_payment      int64  `json:"final_payment,optional"`
-		Final_payment_date string `json:"final_payment_date,optional"`
+		Customer_id        int64  `json:"customer_id,optional"`
+		Address_id         int64  `json:"address_id,optional"`
+		Service_list       string `json:"service_list"`
+		Deposite_payment   int64  `json:"deposite_payment,optional"`
 		Order_description  string `json:"order_description,optional"`
 		Post_date          string `json:"post_date"`
 		Reserve_date       string `json:"reserve_date"`
-		Finish_date        string `json:"finish_date,optional"`
 	}
 	CreateOrderResponse {
 		Order_id int64 `json:"order_id"`
@@ -255,14 +245,29 @@ type (
 	// Update Order
 	UpdateOrderRequest {
 		Order_id           int64  `json:"order_id"`
-		Customer_id        int64  `json:"customer_id"`
+		Customer_id        int64  `json:"customer_id,optional"`
+		Address_id         int64  `json:"address_id"`
 		Final_payment      int64  `json:"final_payment,optional"`
-		Final_payment_date string `json:"final_payment_date,optional"`
 		Order_description  string `json:"order_description"`
 		Reserve_date       string `json:"reserve_date"`
 		Finish_date        string `json:"finish_date,optional"`
 	}
 	UpdateOrderResponse {
+	}
+
+	// Finish Order
+	FinishOrderRequest{
+		Order_id int64 `json:"order_id"`
+	}
+	FinishOrderResponse{
+	}
+
+	// Pay Order
+	PayOrderRequest{
+		Order_id        int64 `json:"order_id"`
+		Payment_id      int64 `json:"payment_id"`
+	}
+	PayOrderResponse{
 	}
 
 	// Remove Order
@@ -274,14 +279,16 @@ type (
 
 	// Detail Order
 	DetailOrderRequest {
-		Order_id int64 `json:"order_id"`
+		Order_id              int64   `json:"order_id"`
+		Customer_name         string  `json:"customer_name"`
 	}
 	DetailOrderResponse {
 		Order_id              int64   `json:"order_id"`
 		Customer_id           int64   `json:"customer_id"`
-		Company_id            int64   `json:"company_id"`
 		Address_id            int64   `json:"address_id"`
-		Design_id             int64   `json:"desgin_id"`
+		Employee_id           int64   `json:"employee_id"`
+		Company_id            int64   `json:"company_id"`
+		Service_list          string  `json:"service_list"`
 		Deposite_payment      int64   `json:"deposite_payment"`
 		Deposite_amount       float64 `json:"deposite_amount"`
 		Current_deposite_rate int     `json:"current_deposite_rate"`
@@ -289,6 +296,7 @@ type (
 		Final_payment         int64   `json:"final_payment"`
 		Final_amount          float64 `json:"final_amount"`
 		Final_payment_date    string  `json:"final_payment_date"`
+		Gst_amount            float64 `json:"gst_amount"`
 		Total_fee             float64 `json:"total_fee"`
 		Order_description     string  `json:"order_description"`
 		Post_date             string  `json:"post_date"`
@@ -313,6 +321,7 @@ type (
 		Service_id          int64  `json:"service_id"`
 		Service_type        string `json:"service_type"`
 		Service_description string `json:"service_description"`
+		Service_price		int64  `json:"service_price"`
 	}
 
 	// List Service
@@ -320,56 +329,6 @@ type (
 	}
 	ListServiceResponse {
 		Items []DetailServiceResponse `json:"items"`
-	}
-
-	// -------------------- Design (Company-Service) -------------------------
-	//  Create Design
-	CreateDesignRequest {
-		Company_id int64   `json:"company_id"`
-		Service_id int64   `json:"service_id"`
-		Price      float64 `json:"price"`
-		Comments   string  `json:"comments"`
-	}
-	CreateDesignResponse {
-		Design_id int64 `json:"design_id"`
-	}
-
-	// Update Design
-	UpdateDesignRequest {
-		Design_id  int64   `json:"design_id"`
-		Company_id int64   `json:"company_id"`
-		Service_id int64   `json:"service_id"`
-		Price      float64 `json:"price"`
-		Comments   string  `json:"comments"`
-	}
-	UpdateDesignResponse {
-	}
-
-	// Remove Design
-	RemoveDesignRequest {
-		Design_id int64 `json:"design_id"`
-	}
-	RemoveDesignResponse {
-	}
-
-	// Detail Design
-	DetailDesignRequest {
-		Design_id int64 `json:"design_id"`
-	}
-	DetailDesignResponse {
-		Design_id  int64   `json:"design_id"`
-		Company_id int64   `json:"company_id"`
-		Service_id int64   `json:"service_id"`
-		Price      float64 `json:"price"`
-		Comments   string  `json:"comments"`
-	}
-
-	// List Design
-	ListDesignRequest {
-		Service_id int64 `json:"service_id,optional"`
-	}
-	ListDesignResponse {
-		Items []DetailDesignResponse `json:"items"`
 	}
 
 	// -------------------- Payment -------------------------
@@ -427,7 +386,6 @@ type (
 		Employee_id int64  `json:"employee_id"`
 		Order_id    int64  `json:"order_id"`
 		Operation   int64  `json:"operation"`
-		Issue_date  string `json:"issue_date"`
 	}
 	CreateOperationResponse {
 		Operation_id int64 `json:"operation_id"`
@@ -562,6 +520,12 @@ service Server {
 	
 	@handler UpdateOrder
 	post /api/order/update(UpdateOrderRequest) returns (UpdateOrderResponse)
+
+	@handler FinishOrder
+	post /api/order/update(FinishOrderRequest) returns (FinishOrderResponse)
+
+	@handler PayOrder
+	post /api/order/update(PayOrderRequest) returns (PayOrderResponse)
 	
 	@handler RemoveOrder
 	post /api/order/remove(RemoveOrderRequest) returns (RemoveOrderResponse)
@@ -578,22 +542,6 @@ service Server {
 	
 	@handler ListService
 	post /api/service/list(ListServiceRequest) returns (ListServiceResponse)
-	
-	// design apis
-	@handler CreateDesign
-	post /api/design/create(CreateDesignRequest) returns (CreateDesignResponse)
-	
-	@handler UpdateDesign
-	post /api/design/update(UpdateDesignRequest) returns (UpdateDesignResponse)
-	
-	@handler RemoveDesign
-	post /api/design/remove(RemoveDesignRequest) returns (RemoveDesignResponse)
-	
-	@handler DetailDesign
-	post /api/design/detail(DetailDesignRequest) returns (DetailDesignResponse)
-	
-	@handler ListDesign
-	post /api/design/list(ListDesignRequest) returns (ListDesignResponse)
 	
 	// payment apis
 	@handler CreatePayment
