@@ -46,15 +46,9 @@ func (l *RemoveEmployeeLogic) RemoveEmployee(req *types.RemoveEmployeeRequest) (
 		return nil, status.Error(404, "Invalid, Employee not found.")
 	}
 
-	err = l.svcCtx.BOperationModel.DeleteAllByEmployee(l.ctx, req.Employee_id)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
-	err = l.svcCtx.REmployeeServiceModel.DeleteAllByEmployee(l.ctx, req.Employee_id)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
-	err = l.svcCtx.BEmployeeModel.Delete(l.ctx, req.Employee_id)
+	emp.WorkStatus = int64(variables.Resigned)
+
+	err = l.svcCtx.BEmployeeModel.Update(l.ctx, emp)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

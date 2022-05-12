@@ -4,10 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"time"
 
+	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/address"
 	"cleaningservice/service/model/company"
+	"cleaningservice/service/model/payment"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -36,16 +40,60 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
-	newItem := company.BCompany{
-		CompanyName:       req.Company_name,
-		PaymentId:         sql.NullInt64{req.Payment_id, req.Payment_id != 0},
-		DirectorName:      sql.NullString{req.Director_name, req.Director_name != ""},
-		ContactDetails:    req.Contact_details,
-		RegisteredAddress: sql.NullInt64{req.Registered_address, req.Registered_address != 0},
-		DepositeRate:      int64(req.Deposite_rate),
+	// Create Payment details for company
+	exp_time, err := time.Parse("2006-01-02 15:04:05", req.Payment_info.Expiry_time)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
 	}
 
-	res, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &newItem)
+	newPayment := payment.BPayment{
+		CardNumber:   req.Payment_info.Card_number,
+		HolderName:   req.Payment_info.Holder_name,
+		ExpiryTime:   exp_time,
+		SecurityCode: req.Payment_info.Security_code,
+	}
+
+	payRes, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &newPayment)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	paymentId, err := payRes.LastInsertId()
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	// Create address for company
+	newAddress := address.BAddress{
+		AddressDetails: req.Address_info.Address_details,
+		Suburb:         req.Address_info.Suburb,
+		Postcode:       req.Address_info.Postcode,
+		StateCode:      req.Address_info.State_code,
+		Country:        sql.NullString{req.Address_info.Country, req.Address_info.Country != ""},
+	}
+
+	addressRes, err := l.svcCtx.BAddressModel.Insert(l.ctx, &newAddress)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	addressId, err := addressRes.LastInsertId()
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	// Create company details
+	newCompany := company.BCompany{
+		CompanyName:       req.Company_name,
+		PaymentId:         sql.NullInt64{paymentId, true},
+		DirectorName:      sql.NullString{req.Director_name, req.Director_name != ""},
+		ContactDetails:    req.Contact_details,
+		RegisteredAddress: sql.NullInt64{addressId, true},
+		DepositeRate:      int64(req.Deposite_rate),
+		CompanyStatus:     int64(variables.Active),
+	}
+
+	res, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &newCompany)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

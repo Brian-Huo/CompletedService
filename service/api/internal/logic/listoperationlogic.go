@@ -27,12 +27,13 @@ func NewListOperationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Lis
 }
 
 func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (resp *types.ListOperationResponse, err error) {
+	uid := l.ctx.Value("uid").(int64)
 	role := l.ctx.Value("role").(int)
-	if role == variables.Company {
-		return nil, status.Error(401, "Invalid, Not company.")
+	if role != variables.Employee {
+		return nil, status.Error(401, "Invalid, Not employee.")
 	}
 
-	res, err := l.svcCtx.BOperationModel.FindAllByEmployee(l.ctx, req.Employee_id)
+	res, err := l.svcCtx.BOperationModel.FindAllByEmployee(l.ctx, uid)
 	if err != nil {
 		if err == operation.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Operation not found.")

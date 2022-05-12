@@ -8,11 +8,21 @@ type (
 		Message string `json:"message"`
 	}
 
-	LoginServiceRequest {
+	LoginEmployeeRequest {
 		Contact_details string `json:"contact_details"`
 		VerifyCode      string `json:"verify_code"`
 	}
-	LoginServiceResponse {
+	LoginEmployeeResponse {
+		Code        string `json:"code"`
+		Message     string `json:"message"`
+		AccessToken string `json:"access_token,optional"`
+	}
+
+	LoginCompanyRequest {
+		Contact_details string `json:"contact_details"`
+		VerifyCode      string `json:"verify_code"`
+	}
+	LoginCompanyResponse {
 		Code        string `json:"code"`
 		Message     string `json:"message"`
 		AccessToken string `json:"access_token,optional"`
@@ -83,12 +93,12 @@ type (
 	// -------------------- Company -------------------------
 	//  Create Company
 	CreateCompanyRequest {
-		Company_name       string `json:"company_name"`
-		Payment_id         int64  `json:"payment_id,optional"`
-		Director_name      string `json:"director_name"`
-		Contact_details    string `json:"contact_details"`
-		Registered_address int64  `json:"registered_address,optional"`
-		Deposite_rate      int    `json:"deposite_rate"`
+		Company_name    string               `json:"company_name"`
+		Payment_info    CreatePaymentRequest `json:"payment_info"`
+		Director_name   string               `json:"director_name"`
+		Contact_details string               `json:"contact_details"`
+		Address_info    CreateAddressRequest `json:"address_info"`
+		Deposite_rate   int                  `json:"deposite_rate"`
 	}
 	CreateCompanyResponse {
 		Company_id int64 `json:"company_id"`
@@ -96,11 +106,9 @@ type (
 
 	// Update Company
 	UpdateCompanyRequest {
-		Company_name       string `json:"company_name"`
-		Payment_id         int64  `json:"payment_id,optional"`
-		Director_name      string `json:"director_name"`
-		Contact_details    string `json:"contact_details"`
-		Registered_address int64  `json:"registered_address,optional"`
+		Company_name    string `json:"company_name"`
+		Director_name   string `json:"director_name"`
+		Contact_details string `json:"contact_details"`
 	}
 	UpdateCompanyResponse {
 	}
@@ -210,14 +218,15 @@ type (
 		Employee_id int64 `json:"employee_id"`
 	}
 	DetailEmployeeResponse {
-		Employee_id     int64  `json:"employee_id"`
-		Employee_photo  string `json:"employee_photo"`
-		Employee_name   string `json:"employee_name"`
-		Contact_details string `json:"contact_details"`
-		Company_id      int64  `json:"company_id"`
-		Link_code       string `json:"link_code"`
-		Work_status     int    `json:"work_status"`
-		Order_id        int64  `json:"order_id"`
+		Employee_id      int64                       `json:"employee_id"`
+		Employee_photo   string                      `json:"employee_photo"`
+		Employee_name    string                      `json:"employee_name"`
+		Contact_details  string                      `json:"contact_details"`
+		Company_id       int64                       `json:"company_id"`
+		Link_code        string                      `json:"link_code"`
+		Work_status      int                         `json:"work_status"`
+		Order_id         int64                       `json:"order_id"`
+		Employee_service ListEmployeeServiceResponse `json:"employee_service"`
 	}
 
 	// List Employee
@@ -230,13 +239,13 @@ type (
 	// -------------------- Order -------------------------
 	//  Create Order
 	CreateOrderRequest {
-		Customer_id        int64  `json:"customer_id,optional"`
-		Address_id         int64  `json:"address_id,optional"`
-		Service_list       string `json:"service_list"`
-		Deposite_payment   int64  `json:"deposite_payment,optional"`
-		Order_description  string `json:"order_description,optional"`
-		Post_date          string `json:"post_date"`
-		Reserve_date       string `json:"reserve_date"`
+		Customer_info     CreateCustomerRequest `json:"customer_info"`
+		Address_info      CreateAddressRequest  `json:"address_info"`
+		Service_list      string                `json:"service_list"`
+		Deposite_info     CreatePaymentRequest  `json:"deposite_info"`
+		Order_description string                `json:"order_description,optional"`
+		Post_date         string                `json:"post_date"`
+		Reserve_date      string                `json:"reserve_date"`
 	}
 	CreateOrderResponse {
 		Order_id int64 `json:"order_id"`
@@ -244,30 +253,35 @@ type (
 
 	// Update Order
 	UpdateOrderRequest {
-		Order_id           int64  `json:"order_id"`
-		Customer_id        int64  `json:"customer_id,optional"`
-		Address_id         int64  `json:"address_id"`
-		Final_payment      int64  `json:"final_payment,optional"`
-		Order_description  string `json:"order_description"`
-		Reserve_date       string `json:"reserve_date"`
-		Finish_date        string `json:"finish_date,optional"`
+		Order_id          int64                 `json:"order_id"`
+		Customer_info     UpdateCustomerRequest `json:"customer_info"`
+		Address_info      UpdateAddressRequest  `json:"address_info"`
+		Order_description string                `json:"order_description"`
+		Reserve_date      string                `json:"reserve_date"`
 	}
 	UpdateOrderResponse {
 	}
 
-	// Finish Order
-	FinishOrderRequest{
+	// Cancel Order
+	CancelOrderRequest {
 		Order_id int64 `json:"order_id"`
 	}
-	FinishOrderResponse{
+	CancelOrderResponse {
+	}
+
+	// Finish Order
+	FinishOrderRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	FinishOrderResponse {
 	}
 
 	// Pay Order
-	PayOrderRequest{
-		Order_id        int64 `json:"order_id"`
-		Payment_id      int64 `json:"payment_id"`
+	PayOrderRequest {
+		Order_id   int64                `json:"order_id"`
+		Final_info CreatePaymentRequest `json:"final_info"`
 	}
-	PayOrderResponse{
+	PayOrderResponse {
 	}
 
 	// Remove Order
@@ -279,8 +293,8 @@ type (
 
 	// Detail Order
 	DetailOrderRequest {
-		Order_id              int64   `json:"order_id"`
-		Customer_name         string  `json:"customer_name"`
+		Order_id      int64  `json:"order_id"`
+		Customer_name string `json:"customer_name"`
 	}
 	DetailOrderResponse {
 		Order_id              int64   `json:"order_id"`
@@ -321,7 +335,7 @@ type (
 		Service_id          int64  `json:"service_id"`
 		Service_type        string `json:"service_type"`
 		Service_description string `json:"service_description"`
-		Service_price		int64  `json:"service_price"`
+		Service_price       float64  `json:"service_price"`
 	}
 
 	// List Service
@@ -383,11 +397,26 @@ type (
 	// -------------------- Operation -------------------------
 	//  Create Operation
 	CreateOperationRequest {
-		Employee_id int64  `json:"employee_id"`
-		Order_id    int64  `json:"order_id"`
-		Operation   int64  `json:"operation"`
+		Order_id    int64 `json:"order_id"`
+		Operation   int64 `json:"operation"`
 	}
 	CreateOperationResponse {
+		Operation_id int64 `json:"operation_id"`
+	}
+
+	// Accept Order Operation
+	AcceptOperationRequest {
+		Order_id    int64 `json:"order_id"`
+	}
+	AcceptOperationResponse {
+		Operation_id int64 `json:"operation_id"`
+	}
+
+	// Accept Order Operation
+	DeclineOperationRequest {
+		Order_id    int64 `json:"order_id"`
+	}
+	DeclineOperationResponse {
 		Operation_id int64 `json:"operation_id"`
 	}
 
@@ -413,15 +442,16 @@ type (
 	// -------------------- Employee Service -------------------------
 	// Create Employee Service
 	CreateEmployeeServiceRequest {
-		Service_id int64 `json:"service_id"`
+		Employee_id int64 `json:"employee_id,optional"`
+		Service_id  int64 `json:"service_id"`
 	}
 	CreateEmployeeServiceResponse {
 	}
 
 	// Remove Employee Service
 	RemoveEmployeeServiceRequest {
-		Employee_id int64 `json:"employee_id"`
-		Service_id int64  `json:"service_id"`
+		Employee_id int64 `json:"employee_id,optional"`
+		Service_id  int64 `json:"service_id"`
 	}
 	RemoveEmployeeServiceResponse {
 	}
@@ -441,11 +471,37 @@ service Server {
 	@handler VerifyCode
 	post /api/user/verify_code(VerifyCodeRequest) returns (VerifyCodeResponse)
 	
-	@handler LoginService
-	post /api/user/login_service(LoginServiceRequest) returns (LoginServiceResponse)
+	@handler LoginEmployee
+	post /api/user/login_employee(LoginEmployeeRequest) returns (LoginEmployeeResponse)
+	
+	@handler LoginCompany
+	post /api/user/login_company(LoginCompanyRequest) returns (LoginCompanyResponse)
 	
 	@handler LoginCustomer
 	post /api/user/login_customer(LoginCustomerRequest) returns (LoginCustomerResponse)
+	
+	// --------------------- Order -----------------------------
+	@handler CreateOrder
+	post /api/order/create(CreateOrderRequest) returns (CreateOrderResponse)
+	
+	@handler UpdateOrder
+	post /api/order/update(UpdateOrderRequest) returns (UpdateOrderResponse)
+	
+	@handler CancelOrder
+	post /api/order/cancel(CancelOrderRequest) returns (CancelOrderResponse)
+	
+	@handler PayOrder
+	post /api/order/pay(PayOrderRequest) returns (PayOrderResponse)
+	
+	@handler DetailOrder
+	post /api/order/detail(DetailOrderRequest) returns (DetailOrderResponse)
+	
+	// -------------------------- service ---------------------------
+	@handler DetailService
+	post /api/service/detail(DetailServiceRequest) returns (DetailServiceResponse)
+	
+	@handler ListService
+	post /api/service/list(ListServiceRequest) returns (ListServiceResponse)
 }
 
 // jwt validate apis
@@ -515,33 +571,14 @@ service Server {
 	post /api/employee/list(ListEmployeeRequest) returns (ListEmployeeResponse)
 	
 	// order apis
-	@handler CreateOrder
-	post /api/order/create(CreateOrderRequest) returns (CreateOrderResponse)
-	
-	@handler UpdateOrder
-	post /api/order/update(UpdateOrderRequest) returns (UpdateOrderResponse)
-
 	@handler FinishOrder
-	post /api/order/update(FinishOrderRequest) returns (FinishOrderResponse)
-
-	@handler PayOrder
-	post /api/order/update(PayOrderRequest) returns (PayOrderResponse)
+	post /api/order/finish(FinishOrderRequest) returns (FinishOrderResponse)
 	
 	@handler RemoveOrder
 	post /api/order/remove(RemoveOrderRequest) returns (RemoveOrderResponse)
 	
-	@handler DetailOrder
-	post /api/order/detail(DetailOrderRequest) returns (DetailOrderResponse)
-	
 	@handler ListOrder
 	post /api/order/list(ListOrderRequest) returns (ListOrderResponse)
-	
-	// service apis
-	@handler DetailService
-	post /api/service/detail(DetailServiceRequest) returns (DetailServiceResponse)
-	
-	@handler ListService
-	post /api/service/list(ListServiceRequest) returns (ListServiceResponse)
 	
 	// payment apis
 	@handler CreatePayment
@@ -562,6 +599,12 @@ service Server {
 	// operation apis
 	@handler CreateOperation
 	post /api/operation/create(CreateOperationRequest) returns (CreateOperationResponse)
+	
+	@handler AcceptOperation
+	post /api/operation/accept(AcceptOperationRequest) returns (AcceptOperationResponse)
+	
+	@handler DeclineOperation
+	post /api/operation/decline(DeclineOperationRequest) returns (DeclineOperationResponse)
 	
 	@handler DetailOperation
 	post /api/operation/detail(DetailOperationRequest) returns (DetailOperationResponse)

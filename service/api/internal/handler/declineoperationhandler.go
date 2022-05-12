@@ -9,16 +9,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func LoginServiceHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func DeclineOperationHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.LoginServiceRequest
+		var req types.DeclineOperationRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewLoginServiceLogic(r.Context(), svcCtx)
-		resp, err := l.LoginService(&req)
+		l := logic.NewDeclineOperationLogic(r.Context(), svcCtx)
+		resp, err := l.DeclineOperation(&req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

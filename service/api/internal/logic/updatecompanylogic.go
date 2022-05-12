@@ -34,28 +34,20 @@ func (l *UpdateCompanyLogic) UpdateCompany(req *types.UpdateCompanyRequest) (res
 		return nil, status.Error(401, "Invalid, Not company.")
 	}
 
-	res, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, req.Company_id)
-	if err != nil {
-		if err == company.ErrNotFound {
-			return nil, status.Error(404, "Company not found.")
-		}
-		return nil, status.Error(500, err.Error())
-	}
-
-	err = l.svcCtx.BCompanyModel.Update(l.ctx, &company.BCompany{
-		CompanyId:         uid,
-		CompanyName:       req.Company_name,
-		PaymentId:         sql.NullInt64{req.Payment_id, req.Payment_id != 0},
-		DirectorName:      sql.NullString{req.Director_name, req.Director_name != ""},
-		ContactDetails:    req.Contact_details,
-		RegisteredAddress: sql.NullInt64{req.Registered_address, req.Registered_address != 0},
-		DepositeRate:      res.DepositeRate,
-	})
-
+	res, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
 	if err != nil {
 		if err == company.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Company not found.")
 		}
+		return nil, status.Error(500, err.Error())
+	}
+
+	res.CompanyName = req.Company_name
+	res.DirectorName = sql.NullString{req.Director_name, req.Director_name != ""}
+	res.ContactDetails = req.Contact_details
+
+	err = l.svcCtx.BCompanyModel.Update(l.ctx, res)
+	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 

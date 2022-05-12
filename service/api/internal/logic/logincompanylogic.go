@@ -14,21 +14,21 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type LoginServiceLogic struct {
+type LoginCompanyLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewLoginServiceLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginServiceLogic {
-	return &LoginServiceLogic{
+func NewLoginCompanyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginCompanyLogic {
+	return &LoginCompanyLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *LoginServiceLogic) LoginService(req *types.LoginServiceRequest) (resp *types.LoginServiceResponse, err error) {
+func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *types.LoginCompanyResponse, err error) {
 	// find company by contact_details
 	item, err := l.svcCtx.BCompanyModel.FindOnebyPhone(l.ctx, req.Contact_details)
 	if err == company.ErrNotFound {
@@ -62,7 +62,7 @@ func (l *LoginServiceLogic) LoginService(req *types.LoginServiceRequest) (resp *
 		return nil, status.Error(500, "Jwt token error.")
 	}
 
-	return &types.LoginServiceResponse{
+	return &types.LoginCompanyResponse{
 		Code:        "200",
 		Message:     "success",
 		AccessToken: token,

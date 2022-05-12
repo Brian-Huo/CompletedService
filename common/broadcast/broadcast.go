@@ -6,3 +6,7 @@ type OrderBrief struct {
 func TimerBroadcast() {
 
 }
+
+func OneBroadcast() {
+
+}

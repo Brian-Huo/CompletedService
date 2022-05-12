@@ -66,7 +66,7 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 		Customer_id:           res.CustomerId,
 		Company_id:            res.CompanyId,
 		Address_id:            res.AddressId,
-		Design_id:             res.DesignId,
+		Service_list:          res.ServiceList,
 		Deposite_payment:      res.DepositePayment,
 		Deposite_amount:       res.DepositeAmount,
 		Current_deposite_rate: int(res.CurrentDepositeRate),

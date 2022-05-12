@@ -9,16 +9,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func UpdateDesignHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func CancelOrderHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.UpdateDesignRequest
+		var req types.CancelOrderRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewUpdateDesignLogic(r.Context(), svcCtx)
-		resp, err := l.UpdateDesign(&req)
+		l := logic.NewCancelOrderLogic(r.Context(), svcCtx)
+		resp, err := l.CancelOrder(&req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

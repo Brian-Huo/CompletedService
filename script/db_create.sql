@@ -7,11 +7,7 @@ Drop table r_employee_service;
 Drop table b_employee;
 
 Drop table b_order;
--- Drop table b_design;
 Drop table b_company;
-
--- Drop table r_customer_payment;
--- Drop table r_customer_address;
 Drop table b_customer;
 
 Drop table b_service;
@@ -59,26 +55,6 @@ CREATE TABLE `b_customer` (
     PRIMARY KEY(customer_id)
 );
 
--- -- Relationship data table: customer-address --
--- CREATE TABLE `r_customer_address` (
---     customer_id int unsigned NOT NULL,
---     address_id int unsigned NOT NUll,
---     update_date datetime,
---     PRIMARY KEY(customer_id, address_id)
--- );
--- ALTER TABLE `r_customer_address` ADD FOREIGN KEY (customer_id) REFERENCES b_customer(customer_id); 
--- ALTER TABLE `r_customer_address` ADD FOREIGN KEY (address_id) REFERENCES b_address(address_id); 
-
--- -- Relationship data table: customer-payment --
--- CREATE TABLE `r_customer_payment` (
---     customer_id int unsigned NOT NULL,
---     payment_id int unsigned NOT NUll,
---     update_date datetime NOT NULL,
---     PRIMARY KEY(customer_id, payment_id)
--- );
--- ALTER TABLE `r_customer_payment` ADD FOREIGN KEY (customer_id) REFERENCES b_customer(customer_id); 
--- ALTER TABLE `r_customer_payment` ADD FOREIGN KEY (payment_id) REFERENCES b_payment(payment_id); 
-
 -- Base data table: company --
 CREATE TABLE `b_company` (
     company_id int unsigned NOT NULL AUTO_INCREMENT,
@@ -93,18 +69,6 @@ CREATE TABLE `b_company` (
 );
 ALTER TABLE `b_company` ADD FOREIGN KEY (payment_id) REFERENCES b_payment(payment_id); 
 ALTER TABLE `b_company` ADD FOREIGN KEY (registered_address) REFERENCES b_address(address_id); 
-
--- -- Base data table: design (company-service) --
--- CREATE TABLE `b_design` (
---     design_id int unsigned NOT NUll AUTO_INCREMENT,
---     company_id int unsigned NOT NULL,
---     service_id int unsigned NOT NUll,
---     price float unsigned NOT NUll,
---     comments mediumtext,
---     PRIMARY KEY(design_id)
--- );
--- ALTER TABLE `b_design` ADD FOREIGN KEY (company_id) REFERENCES b_company(company_id); 
--- ALTER TABLE `b_design` ADD FOREIGN KEY (service_id) REFERENCES b_service(service_id); 
 
 -- Base data table: order --
 CREATE TABLE `b_order` (

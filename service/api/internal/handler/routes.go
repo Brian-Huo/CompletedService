@@ -19,13 +19,53 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/user/login_service",
-				Handler: LoginServiceHandler(serverCtx),
+				Path:    "/api/user/login_employee",
+				Handler: LoginEmployeeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/user/login_company",
+				Handler: LoginCompanyHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/api/user/login_customer",
 				Handler: LoginCustomerHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/order/create",
+				Handler: CreateOrderHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/order/update",
+				Handler: UpdateOrderHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/order/cancel",
+				Handler: CancelOrderHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/order/pay",
+				Handler: PayOrderHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/order/detail",
+				Handler: DetailOrderHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/service/detail",
+				Handler: DetailServiceHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/service/list",
+				Handler: ListServiceHandler(serverCtx),
 			},
 		},
 	)
@@ -129,13 +169,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/order/create",
-				Handler: CreateOrderHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/order/update",
-				Handler: UpdateOrderHandler(serverCtx),
+				Path:    "/api/order/finish",
+				Handler: FinishOrderHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -144,48 +179,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/order/detail",
-				Handler: DetailOrderHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
 				Path:    "/api/order/list",
 				Handler: ListOrderHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/service/detail",
-				Handler: DetailServiceHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/service/list",
-				Handler: ListServiceHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/design/create",
-				Handler: CreateDesignHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/design/update",
-				Handler: UpdateDesignHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/design/remove",
-				Handler: RemoveDesignHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/design/detail",
-				Handler: DetailDesignHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/design/list",
-				Handler: ListDesignHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -219,6 +214,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/api/operation/accept",
+				Handler: AcceptOperationHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/operation/decline",
+				Handler: DeclineOperationHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/api/operation/detail",
 				Handler: DetailOperationHandler(serverCtx),
 			},
@@ -243,6 +248,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: ListEmployeeServiceHandler(serverCtx),
 			},
 		},
-		// rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
 }

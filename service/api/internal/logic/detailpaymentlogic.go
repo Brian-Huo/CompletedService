@@ -2,13 +2,11 @@ package logic
 
 import (
 	"context"
-	"sort"
 
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/company"
-	"cleaningservice/service/model/customerpayment"
 	"cleaningservice/service/model/payment"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -43,19 +41,6 @@ func (l *DetailPaymentLogic) DetailPayment(req *types.DetailPaymentRequest) (res
 		}
 
 		if comp.PaymentId.Int64 != req.Payment_id {
-			return nil, status.Error(404, "Invalid, Payment not found.")
-		}
-	} else if role == variables.Customer {
-		customerPayment, err := l.svcCtx.RCustomerPaymentModel.FindAllByCustomer(l.ctx, uid)
-		if err != nil {
-			if err == customerpayment.ErrNotFound {
-				return nil, status.Error(404, "Invalid, Payment not found.")
-			}
-			return nil, status.Error(500, err.Error())
-		}
-
-		i := sort.Search(len(customerPayment), func(i int) bool { return req.Payment_id <= customerPayment[i].PaymentId })
-		if i >= len(customerPayment) || customerPayment[i].PaymentId != req.Payment_id {
 			return nil, status.Error(404, "Invalid, Payment not found.")
 		}
 	}

@@ -3,6 +3,7 @@
 package employee
 
 import (
+	"cleaningservice/common/variables"
 	"context"
 	"database/sql"
 	"fmt"
@@ -22,6 +23,7 @@ var (
 	bEmployeeRowsWithPlaceHolder = strings.Join(stringx.Remove(bEmployeeFieldNames, "`employee_id`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
 	cacheBEmployeeEmployeeIdPrefix = "cache:bEmployee:employeeId:"
+	cacheBEmployeeCompanyIdPrefix = "cache:bEmployee:companyId:"
 )
 
 type (
@@ -30,6 +32,7 @@ type (
 		FindOne(ctx context.Context, employeeId int64) (*BEmployee, error)
 		FindAllByCompany(ctx context.Context, companyId int64) ([]*BEmployee, error)
 		Update(ctx context.Context, data *BEmployee) error
+		ResignByCompany(ctx context.Context, companyId int64) error
 		Delete(ctx context.Context, employeeId int64) error
 		DeleteAllByCompany(ctx context.Context, companyId int64) error
 	}
@@ -125,6 +128,16 @@ func (m *defaultBEmployeeModel) Update(ctx context.Context, data *BEmployee) err
 	}, bEmployeeEmployeeIdKey)
 	return err
 }
+
+func (m *defaultBEmployeeModel) ResignByCompany(ctx context.Context, companyId int64) error {
+	bEmployeeCompanyIdKey := fmt.Sprintf("%s%v", cacheBEmployeeCompanyIdPrefix, companyId)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) { 
+		query := fmt.Sprintf("update %s set %s where `company_id` = ?", m.table, "work_status=?")
+		return conn.ExecCtx(ctx, query, variables.Resigned, companyId)
+	}, bEmployeeCompanyIdKey)
+	return err
+}
+
 
 func (m *defaultBEmployeeModel) Delete(ctx context.Context, employeeId int64) error {
 	bEmployeeEmployeeIdKey := fmt.Sprintf("%s%v", cacheBEmployeeEmployeeIdPrefix, employeeId)

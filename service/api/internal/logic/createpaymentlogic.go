@@ -8,7 +8,6 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
-	"cleaningservice/service/model/customerpayment"
 	"cleaningservice/service/model/payment"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -54,23 +53,7 @@ func (l *CreatePaymentLogic) CreatePayment(req *types.CreatePaymentRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
-	if role == variables.Customer {
-		_, err := l.svcCtx.BCustomerModel.FindOne(l.ctx, uid)
-		if err != nil {
-			return nil, status.Error(404, "Invalid, Customer not found.")
-		}
-
-		newCustomerPayment := customerpayment.RCustomerPayment{
-			CustomerId: uid,
-			PaymentId:  newId,
-			UpdateDate: time.Now(),
-		}
-
-		_, err = l.svcCtx.RCustomerPaymentModel.Insert(l.ctx, &newCustomerPayment)
-		if err != nil {
-			return nil, status.Error(500, err.Error())
-		}
-	} else if role == variables.Company {
+	if role == variables.Company {
 		company, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
 		if err != nil {
 			return nil, status.Error(500, err.Error())

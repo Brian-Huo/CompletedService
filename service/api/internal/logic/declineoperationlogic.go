@@ -13,21 +13,21 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type CreateOperationLogic struct {
+type DeclineOperationLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewCreateOperationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CreateOperationLogic {
-	return &CreateOperationLogic{
+func NewDeclineOperationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DeclineOperationLogic {
+	return &DeclineOperationLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *CreateOperationLogic) CreateOperation(req *types.CreateOperationRequest) (resp *types.CreateOperationResponse, err error) {
+func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequest) (resp *types.DeclineOperationResponse, err error) {
 	uid := l.ctx.Value("uid").(int64)
 	role := l.ctx.Value("role").(int)
 	if role != variables.Employee {
@@ -47,7 +47,7 @@ func (l *CreateOperationLogic) CreateOperation(req *types.CreateOperationRequest
 	newItem := operation.BOperation{
 		EmployeeId: uid,
 		OrderId:    req.Order_id,
-		Operation:  req.Operation,
+		Operation:  int64(variables.Decline),
 		IssueDate:  time.Now(),
 	}
 
@@ -61,8 +61,8 @@ func (l *CreateOperationLogic) CreateOperation(req *types.CreateOperationRequest
 		return nil, status.Error(500, err.Error())
 	}
 
-	return &types.CreateOperationResponse{
+	return &types.DeclineOperationResponse{
 		Operation_id: newId,
 	}, nil
-
+	return
 }

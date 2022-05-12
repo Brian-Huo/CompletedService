@@ -9,16 +9,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func CreateDesignHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func AcceptOperationHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.CreateDesignRequest
+		var req types.AcceptOperationRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewCreateDesignLogic(r.Context(), svcCtx)
-		resp, err := l.CreateDesign(&req)
+		l := logic.NewAcceptOperationLogic(r.Context(), svcCtx)
+		resp, err := l.AcceptOperation(&req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

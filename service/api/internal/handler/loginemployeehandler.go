@@ -9,16 +9,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func ListDesignHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func LoginEmployeeHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.ListDesignRequest
+		var req types.LoginEmployeeRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewListDesignLogic(r.Context(), svcCtx)
-		resp, err := l.ListDesign(&req)
+		l := logic.NewLoginEmployeeLogic(r.Context(), svcCtx)
+		resp, err := l.LoginEmployee(&req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

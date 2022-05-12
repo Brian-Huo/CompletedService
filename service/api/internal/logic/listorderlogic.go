@@ -54,7 +54,7 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Customer_id:           item.CustomerId,
 			Company_id:            item.CompanyId,
 			Address_id:            item.AddressId,
-			Design_id:             item.DesignId,
+			Service_list:          item.ServiceList,
 			Deposite_payment:      item.DepositePayment,
 			Deposite_amount:       item.DepositeAmount,
 			Current_deposite_rate: int(item.CurrentDepositeRate),
