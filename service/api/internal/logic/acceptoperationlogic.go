@@ -82,7 +82,7 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	}
 
 	// Update order details
-	ord.EmployeeId = uid
+	ord.EmployeeId = sql.NullInt64{uid, true}
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
 	if err != nil {
 		return nil, status.Error(500, err.Error())

@@ -45,7 +45,7 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, ord.EmployeeId)
+	empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, ord.EmployeeId.Int64)
 	if err != nil {
 		if err == employee.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Employee not found.")

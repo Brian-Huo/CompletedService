@@ -3,21 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
-	"html/template"
+	"log"
 	"net/http"
-	"strings"
+	"os"
 
 	"cleaningservice/service/api/internal/config"
 	"cleaningservice/service/api/internal/handler"
 	"cleaningservice/service/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
 )
 
 var configFile = flag.String("f", "etc/server.yaml", "the config file")
-var funcMap = template.FuncMap{}
 
 func notAllowedFn(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")                                // 允许访问所有域
@@ -34,28 +32,19 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 	server := rest.MustNewServer(c.RestConf, rest.WithCustomCors(nil, notAllowedFn))
 	defer server.Stop()
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dir)
+
+	http.Handle("/css/", http.FileServer(http.Dir("./view/css")))
+	http.Handle("/scss/", http.FileServer(http.Dir("./view/scss")))
+	http.Handle("/images/", http.FileServer(http.Dir("./view/images")))
+	http.Handle("/vendor/", http.FileServer(http.Dir("./view/vendor")))
+	http.Handle("/js/", http.FileServer(http.Dir("./view/js")))
 
 	handler.RegisterHandlers(server, ctx)
-
-	var pageRouters []rest.Route
-	globalTemplate, _ := template.New("").Funcs(funcMap).ParseGlob("./internal/view/www/*")
-	for _, tpl := range globalTemplate.Templates() {
-		pattern := tpl.Name()
-		if !strings.HasPrefix(pattern, "/") {
-			pattern = "/" + pattern
-		}
-		templateName := tpl.Name()
-		if 0 != len(templateName) {
-			pageRouters = append(pageRouters, rest.Route{
-				Method:  http.MethodGet,
-				Path:    pattern,
-				Handler: handler.HtmlTemplateHandler(globalTemplate, templateName, ctx),
-			})
-			logx.Infof("register page %s %s", pattern, templateName)
-			server.AddRoutes(pageRouters)
-		}
-		templateName = "/"
-	}
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()

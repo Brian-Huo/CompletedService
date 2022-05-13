@@ -50,8 +50,8 @@ type (
 		OrderId             int64          `db:"order_id"`
 		CustomerId          int64          `db:"customer_id"`
 		AddressId           int64          `db:"address_id"`
-		CompanyId           int64          `db:"company_id"`
-		EmployeeId          int64          `db:"employee_id"`
+		CompanyId           sql.NullInt64  `db:"company_id"`
+		EmployeeId          sql.NullInt64  `db:"employee_id"`
 		ServiceList         string         `db:"service_list"`
 		DepositePayment     int64          `db:"deposite_payment"`
 		DepositeAmount      float64        `db:"deposite_amount"`

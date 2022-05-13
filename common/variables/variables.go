@@ -1,5 +1,8 @@
 package variables
 
+// system deposite rate
+const Deposite_rate int64 = 10
+
 // role = {0: "company", 1: "employee", 2: "customer"}
 const (
 	Company int = iota

@@ -42,7 +42,7 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	if uid != ord.EmployeeId {
+	if uid != ord.EmployeeId.Int64 {
 		return nil, status.Error(404, "Invalid, Order not found.")
 	}
 
@@ -55,7 +55,7 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	}
 
 	// Update employee status
-	empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, ord.EmployeeId)
+	empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, ord.EmployeeId.Int64)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

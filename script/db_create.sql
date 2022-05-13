@@ -95,8 +95,8 @@ CREATE TABLE `b_order` (
     PRIMARY KEY(order_id)
 );
 ALTER TABLE `b_order` ADD FOREIGN KEY (customer_id) REFERENCES b_customer(customer_id); 
-ALTER TABLE `b_order` ADD FOREIGN KEY (company_id) REFERENCES b_company(company_id); 
-ALTER TABLE `b_order` ADD FOREIGN KEY (employee_id) REFERENCES b_employee(employee_id); 
+-- ALTER TABLE `b_order` ADD FOREIGN KEY (company_id) REFERENCES b_company(company_id); 
+-- ALTER TABLE `b_order` ADD FOREIGN KEY (employee_id) REFERENCES b_employee(employee_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (address_id) REFERENCES b_address(address_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (deposite_payment) REFERENCES b_payment(payment_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (final_payment) REFERENCES b_payment(payment_id); 

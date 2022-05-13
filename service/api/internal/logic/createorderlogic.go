@@ -9,7 +9,10 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/address"
+	"cleaningservice/service/model/customer"
 	"cleaningservice/service/model/order"
+	"cleaningservice/service/model/payment"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -30,32 +33,80 @@ func NewCreateOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Creat
 }
 
 func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *types.CreateOrderResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
-	if role == variables.Customer {
-		return nil, status.Error(401, "Invalid, Not customer.")
+	// Exist detail check and create if new details
+	// Payment
+	var paymentId int64
+	payment_item, err := l.svcCtx.BPaymentModel.FindOneByCard(l.ctx, req.Deposite_info.Card_number)
+	if err == payment.ErrNotFound {
+		// expiry time convert
+		exp_time, err := time.Parse("2006-01-02 15:04:05", req.Deposite_info.Expiry_time)
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+		newPayment := payment.BPayment{
+			CardNumber:   req.Deposite_info.Card_number,
+			HolderName:   req.Deposite_info.Holder_name,
+			ExpiryTime:   exp_time,
+			SecurityCode: req.Deposite_info.Security_code,
+		}
+
+		res, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &newPayment)
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+
+		paymentId, err = res.LastInsertId()
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+	} else if err == nil {
+		paymentId = payment_item.PaymentId
+	} else {
+		return nil, status.Error(500, err.Error())
 	}
 
-	// Exist detail check
-	_, err = l.svcCtx.BCustomerModel.FindOne(l.ctx, uid)
-	if err != nil {
-		return nil, status.Error(404, "Invalid, Customer not found.")
+	// Customer
+	var customerId int64
+	customer_item, err := l.svcCtx.BCustomerModel.FindOnebyPhone(l.ctx, req.Customer_info.Contact_details)
+	if err == customer.ErrNotFound {
+		newCustomer := customer.BCustomer{
+			CustomerName:   req.Customer_info.Customer_name,
+			CountryCode:    req.Customer_info.Country_code,
+			ContactDetails: req.Customer_info.Contact_details,
+		}
+
+		res, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &newCustomer)
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+
+		customerId, err = res.LastInsertId()
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+	} else if err == nil {
+		customerId = customer_item.CustomerId
+	} else {
+		return nil, status.Error(500, err.Error())
 	}
-	_, err = l.svcCtx.BCompanyModel.FindOne(l.ctx, req.Company_id)
-	if err != nil {
-		return nil, status.Error(404, "Invalid, Company not found.")
+
+	// Address
+	address_Item := address.BAddress{
+		AddressDetails: req.Address_info.Address_details,
+		Suburb:         req.Address_info.Suburb,
+		Postcode:       req.Address_info.Postcode,
+		StateCode:      req.Address_info.State_code,
+		Country:        sql.NullString{req.Address_info.Country, req.Address_info.Country != ""},
 	}
-	_, err = l.svcCtx.BAddressModel.FindOne(l.ctx, req.Address_id)
+
+	res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_Item)
 	if err != nil {
-		return nil, status.Error(404, "Invalid, Address not found.")
+		return nil, status.Error(500, err.Error())
 	}
-	_, err = l.svcCtx.BDesignModel.FindOne(l.ctx, req.Design_id)
+
+	addressId, err := res.LastInsertId()
 	if err != nil {
-		return nil, status.Error(404, "Invalid, Design not found.")
-	}
-	_, err = l.svcCtx.BPaymentModel.FindOne(l.ctx, req.Deposite_payment)
-	if err != nil {
-		return nil, status.Error(404, "Invalid, Payment detail not found.")
+		return nil, status.Error(500, err.Error())
 	}
 
 	// Get time variables
@@ -64,32 +115,30 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Get price from design and company
-	company_item, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, req.Company_id)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
-	design_item, err := l.svcCtx.BDesignModel.FindOne(l.ctx, req.Design_id)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
-	deposite_amount := float64(company_item.DepositeRate) / 100 * design_item.Price
-	final_amount := design_item.Price
-	total_fee := deposite_amount + final_amount
+	// Calculate fees
+	// deposite_amount := float64(company_item.DepositeRate) / 100 * design_item.Price
+	// final_amount := design_item.Price
+	// gst_amount := 0
+	// total_fee := deposite_amount + final_amount
+	deposite_amount := float64(0)
+	final_amount := float64(0)
+	gst_amount := float64(0)
+	total_fee := deposite_amount + final_amount + gst_amount
 
 	// Create order
 	newItem := order.BOrder{
-		CustomerId:          uid,
-		CompanyId:           req.Company_id,
-		AddressId:           req.Address_id,
-		DesignId:            req.Design_id,
-		DepositePayment:     req.Deposite_payment,
+		CustomerId:          customerId,
+		AddressId:           addressId,
+		CompanyId:           sql.NullInt64{0, false},
+		EmployeeId:          sql.NullInt64{0, false},
+		DepositePayment:     paymentId,
 		DepositeAmount:      deposite_amount,
-		CurrentDepositeRate: company_item.DepositeRate,
+		CurrentDepositeRate: variables.Deposite_rate,
 		DepositeDate:        time.Now(),
 		FinalPayment:        sql.NullInt64{0, false},
 		FinalAmount:         final_amount,
 		FinalPaymentDate:    sql.NullTime{time.Now(), false},
+		GstAmount:           gst_amount,
 		TotalFee:            total_fee,
 		OrderDescription:    sql.NullString{req.Order_description, true},
 		PostDate:            time.Now(),
@@ -98,7 +147,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		Status:              int64(variables.Queuing),
 	}
 
-	res, err := l.svcCtx.BOrderModel.Insert(l.ctx, &newItem)
+	res, err = l.svcCtx.BOrderModel.Insert(l.ctx, &newItem)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
