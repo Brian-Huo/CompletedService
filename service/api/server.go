@@ -3,9 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 
 	"cleaningservice/service/api/internal/config"
 	"cleaningservice/service/api/internal/handler"
@@ -32,17 +30,6 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 	server := rest.MustNewServer(c.RestConf, rest.WithCustomCors(nil, notAllowedFn))
 	defer server.Stop()
-	dir, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(dir)
-
-	http.Handle("/css/", http.FileServer(http.Dir("./view/css")))
-	http.Handle("/scss/", http.FileServer(http.Dir("./view/scss")))
-	http.Handle("/images/", http.FileServer(http.Dir("./view/images")))
-	http.Handle("/vendor/", http.FileServer(http.Dir("./view/vendor")))
-	http.Handle("/js/", http.FileServer(http.Dir("./view/js")))
 
 	handler.RegisterHandlers(server, ctx)
 
