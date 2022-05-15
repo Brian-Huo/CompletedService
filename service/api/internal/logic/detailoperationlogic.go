@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -27,13 +28,22 @@ func NewDetailOperationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *D
 }
 
 func (l *DetailOperationLogic) DetailOperation(req *types.DetailOperationRequest) (resp *types.DetailOperationResponse, err error) {
-	role := l.ctx.Value("role").(int)
-
-	if role == variables.Company {
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	} else if role == variables.Company {
 		res, err := l.svcCtx.BOperationModel.FindOne(l.ctx, req.Operation_id)
 		if err != nil {
 			if err == operation.ErrNotFound {
 				return nil, status.Error(404, "Invalid, Operation record not found.")
+			}
+			return nil, status.Error(500, err.Error())
+		}
+
+		empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, res.EmployeeId)
+		if err != nil || uid != empl.CompanyId {
+			if err == operation.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Employee not found.")
 			}
 			return nil, status.Error(500, err.Error())
 		}

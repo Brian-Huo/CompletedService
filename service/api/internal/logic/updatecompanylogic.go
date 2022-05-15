@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -28,9 +29,10 @@ func NewUpdateCompanyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Upd
 }
 
 func (l *UpdateCompanyLogic) UpdateCompany(req *types.UpdateCompanyRequest) (resp *types.UpdateCompanyResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
-	if role != variables.Company {
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	} else if role != variables.Company {
 		return nil, status.Error(401, "Invalid, Not company.")
 	}
 

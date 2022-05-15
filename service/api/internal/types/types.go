@@ -13,6 +13,7 @@ type VerifyCodeResponse struct {
 type LoginEmployeeRequest struct {
 	Contact_details string `json:"contact_details"`
 	VerifyCode      string `json:"verify_code"`
+	LinkCode        string `json:"link_code"`
 }
 
 type LoginEmployeeResponse struct {
@@ -240,7 +241,7 @@ type ListEmployeeResponse struct {
 type CreateOrderRequest struct {
 	Customer_info     CreateCustomerRequest `json:"customer_info"`
 	Address_info      CreateAddressRequest  `json:"address_info"`
-	Service_list      string                `json:"service_list"`
+	Service_list      []int64               `json:"service_list"`
 	Deposite_info     CreatePaymentRequest  `json:"deposite_info"`
 	Order_description string                `json:"order_description,optional"`
 	Post_date         string                `json:"post_date"`

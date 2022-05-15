@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -29,8 +30,10 @@ func NewUpdateAddressLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Upd
 }
 
 func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (resp *types.UpdateAddressResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	}
 
 	// check address id vaild for compay
 	if role != variables.Company {

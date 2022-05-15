@@ -30,6 +30,7 @@ type (
 	bEmployeeModel interface {
 		Insert(ctx context.Context, data *BEmployee) (sql.Result, error)
 		FindOne(ctx context.Context, employeeId int64) (*BEmployee, error)
+		FindOnebyPhone(ctx context.Context, contactDetails string) (*BEmployee, error)
 		FindAllByCompany(ctx context.Context, companyId int64) ([]*BEmployee, error)
 		Update(ctx context.Context, data *BEmployee) error
 		ResignByCompany(ctx context.Context, companyId int64) error
@@ -87,7 +88,7 @@ func (m *defaultBEmployeeModel) FindOne(ctx context.Context, employeeId int64) (
 	}
 }
 
-func (m *defaultBEmployeeModel) FindOnebyPhone(ctx context.Context, contactDetails int64) (*BEmployee, error) {
+func (m *defaultBEmployeeModel) FindOnebyPhone(ctx context.Context, contactDetails string) (*BEmployee, error) {
 	bEmployeeContactDetails := fmt.Sprintf("%s%v", "cache:bEmployee:contactDetails:", contactDetails)
 	var resp BEmployee
 	err := m.QueryRowCtx(ctx, &resp, bEmployeeContactDetails, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {

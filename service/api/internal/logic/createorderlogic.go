@@ -13,6 +13,7 @@ import (
 	"cleaningservice/service/model/customer"
 	"cleaningservice/service/model/order"
 	"cleaningservice/service/model/payment"
+	"cleaningservice/service/model/service"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -115,15 +116,26 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Calculate fees
-	// deposite_amount := float64(company_item.DepositeRate) / 100 * design_item.Price
-	// final_amount := design_item.Price
-	// gst_amount := 0
-	// total_fee := deposite_amount + final_amount
-	deposite_amount := float64(0)
-	final_amount := float64(0)
-	gst_amount := float64(0)
-	total_fee := deposite_amount + final_amount + gst_amount
+	// Calculate fees and get full service strings
+	var service_fee float64 = 0
+	var service_list string = ""
+	for _, service_id := range req.Service_list {
+		service_list += variables.Separator
+		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, service_id)
+		if err != nil {
+			if err == service.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Service(s) not found.")
+			}
+			return nil, status.Error(500, err.Error())
+		}
+		service_fee += service_item.ServicePrice
+		service_list += service_item.ServiceType
+	}
+
+	deposite_amount := service_fee / variables.Deposite_rate
+	final_amount := service_fee - deposite_amount
+	gst_amount := service_fee / variables.GST
+	total_fee := service_fee + gst_amount
 
 	// Create order
 	newItem := order.BOrder{
@@ -131,9 +143,10 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		AddressId:           addressId,
 		CompanyId:           sql.NullInt64{0, false},
 		EmployeeId:          sql.NullInt64{0, false},
+		ServiceList:         service_list,
 		DepositePayment:     paymentId,
 		DepositeAmount:      deposite_amount,
-		CurrentDepositeRate: variables.Deposite_rate,
+		CurrentDepositeRate: int64(variables.Deposite_rate),
 		DepositeDate:        time.Now(),
 		FinalPayment:        sql.NullInt64{0, false},
 		FinalAmount:         final_amount,

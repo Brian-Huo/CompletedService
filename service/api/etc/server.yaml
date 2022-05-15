@@ -6,8 +6,8 @@ Mysql:
   DataSource: root:123456@tcp(127.0.0.1:3306)/cleaningservice?charset=utf8mb4&parseTime=true
 
 CacheRedis:
-- Host: redis:6379
-  Pass: 
+- Host: 127.0.0.1:6379
+  Pass: CUG!@#
   Type: node
 
 Auth:

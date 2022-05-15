@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -28,7 +29,7 @@ func NewCreateAddressLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 }
 
 func (l *CreateAddressLogic) CreateAddress(req *types.CreateAddressRequest) (resp *types.CreateAddressResponse, err error) {
-	role := l.ctx.Value("role").(int)
+	_, role, _ := jwtx.GetTokenDetails(l.ctx)
 	if role == variables.Employee {
 		return nil, status.Error(401, "Invalid, Not customer/company.")
 	}

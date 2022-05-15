@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -27,9 +28,10 @@ func NewCreateEmployeeServiceLogic(ctx context.Context, svcCtx *svc.ServiceConte
 }
 
 func (l *CreateEmployeeServiceLogic) CreateEmployeeService(req *types.CreateEmployeeServiceRequest) (resp *types.CreateEmployeeServiceResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
-	if role != variables.Employee {
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	} else if role != variables.Employee {
 		return nil, status.Error(401, "Invalid, Not employee.")
 	}
 

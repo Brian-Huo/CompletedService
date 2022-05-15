@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -27,8 +28,10 @@ func NewRemoveEmployeeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Re
 }
 
 func (l *RemoveEmployeeLogic) RemoveEmployee(req *types.RemoveEmployeeRequest) (resp *types.RemoveEmployeeResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	}
 
 	if role != variables.Company {
 		return nil, status.Error(401, "Invalid, Unauthorised action.")

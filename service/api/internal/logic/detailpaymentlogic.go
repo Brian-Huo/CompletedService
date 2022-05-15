@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -28,8 +29,10 @@ func NewDetailPaymentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Det
 }
 
 func (l *DetailPaymentLogic) DetailPayment(req *types.DetailPaymentRequest) (resp *types.DetailPaymentResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	}
 
 	if role == variables.Company {
 		comp, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)

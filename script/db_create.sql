@@ -41,6 +41,8 @@ CREATE TABLE `b_payment` (
 CREATE TABLE `b_service` (
     service_id int unsigned NOT NULL AUTO_INCREMENT,
     service_type varchar(255) NOT NULL,
+    service_scope varchar(255) Not NULL,
+    service_name varchar(255) NOT NUll,
     service_description longtext NOT NUll,
     service_price float unsigned NOT NULL,
     PRIMARY KEY(service_id)
@@ -95,8 +97,6 @@ CREATE TABLE `b_order` (
     PRIMARY KEY(order_id)
 );
 ALTER TABLE `b_order` ADD FOREIGN KEY (customer_id) REFERENCES b_customer(customer_id); 
--- ALTER TABLE `b_order` ADD FOREIGN KEY (company_id) REFERENCES b_company(company_id); 
--- ALTER TABLE `b_order` ADD FOREIGN KEY (employee_id) REFERENCES b_employee(employee_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (address_id) REFERENCES b_address(address_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (deposite_payment) REFERENCES b_payment(payment_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (final_payment) REFERENCES b_payment(payment_id); 

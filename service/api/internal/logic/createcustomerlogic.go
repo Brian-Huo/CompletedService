@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -27,8 +28,10 @@ func NewCreateCustomerLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cr
 }
 
 func (l *CreateCustomerLogic) CreateCustomer(req *types.CreateCustomerRequest) (resp *types.CreateCustomerResponse, err error) {
-	role := l.ctx.Value("role").(int)
-	if role != variables.Customer {
+	_, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	} else if role != variables.Customer {
 		return nil, status.Error(401, "Invalid, Not customer.")
 	}
 

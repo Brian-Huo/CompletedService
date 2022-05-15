@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -30,9 +31,10 @@ func NewUpdateOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Updat
 }
 
 func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *types.UpdateOrderResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
-	if role == variables.Company || role == variables.Employee {
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	} else if role == variables.Company || role == variables.Employee {
 		return nil, status.Errorf(401, "Invalid, Not customer.")
 	}
 

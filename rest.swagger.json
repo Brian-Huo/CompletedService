@@ -407,146 +407,6 @@
         ]
       }
     },
-    "/api/design/create": {
-      "post": {
-        "operationId": "CreateDesign",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/CreateDesignResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": " -------------------- Design (Company-Service) -------------------------,  Create Design",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/CreateDesignRequest"
-            }
-          }
-        ],
-        "requestBody": {},
-        "tags": [
-          "Server"
-        ]
-      }
-    },
-    "/api/design/detail": {
-      "post": {
-        "operationId": "DetailDesign",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/DetailDesignResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": " Detail Design",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/DetailDesignRequest"
-            }
-          }
-        ],
-        "requestBody": {},
-        "tags": [
-          "Server"
-        ]
-      }
-    },
-    "/api/design/list": {
-      "post": {
-        "operationId": "ListDesign",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/ListDesignResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": " List Design",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ListDesignRequest"
-            }
-          }
-        ],
-        "requestBody": {},
-        "tags": [
-          "Server"
-        ]
-      }
-    },
-    "/api/design/remove": {
-      "post": {
-        "operationId": "RemoveDesign",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/RemoveDesignResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": " Remove Design",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/RemoveDesignRequest"
-            }
-          }
-        ],
-        "requestBody": {},
-        "tags": [
-          "Server"
-        ]
-      }
-    },
-    "/api/design/update": {
-      "post": {
-        "operationId": "UpdateDesign",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/UpdateDesignResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": " Update Design",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/UpdateDesignRequest"
-            }
-          }
-        ],
-        "requestBody": {},
-        "tags": [
-          "Server"
-        ]
-      }
-    },
     "/api/employee/create": {
       "post": {
         "operationId": "CreateEmployee",
@@ -771,6 +631,34 @@
         ]
       }
     },
+    "/api/operation/accept": {
+      "post": {
+        "operationId": "AcceptOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AcceptOperationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Accept Order Operation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AcceptOperationRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
     "/api/operation/create": {
       "post": {
         "operationId": "CreateOperation",
@@ -790,6 +678,34 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/CreateOperationRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/operation/decline": {
+      "post": {
+        "operationId": "DeclineOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeclineOperationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Accept Order Operation",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeclineOperationRequest"
             }
           }
         ],
@@ -855,6 +771,34 @@
         ]
       }
     },
+    "/api/order/cancel": {
+      "post": {
+        "operationId": "CancelOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CancelOrderResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Cancel Order",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CancelOrderRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
     "/api/order/create": {
       "post": {
         "operationId": "CreateOrder",
@@ -911,6 +855,34 @@
         ]
       }
     },
+    "/api/order/finish": {
+      "post": {
+        "operationId": "FinishOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FinishOrderResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Finish Order",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FinishOrderRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
     "/api/order/list": {
       "post": {
         "operationId": "ListOrder",
@@ -930,6 +902,34 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/ListOrderRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
+    "/api/order/pay": {
+      "post": {
+        "operationId": "PayOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PayOrderResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " Pay Order",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PayOrderRequest"
             }
           }
         ],
@@ -1191,6 +1191,33 @@
         ]
       }
     },
+    "/api/user/login_company": {
+      "post": {
+        "operationId": "LoginCompany",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/LoginCompanyResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginCompanyRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "Server"
+        ]
+      }
+    },
     "/api/user/login_customer": {
       "post": {
         "operationId": "LoginCustomer",
@@ -1218,14 +1245,14 @@
         ]
       }
     },
-    "/api/user/login_service": {
+    "/api/user/login_employee": {
       "post": {
-        "operationId": "LoginService",
+        "operationId": "LoginEmployee",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/LoginServiceResponse"
+              "$ref": "#/definitions/LoginEmployeeResponse"
             }
           }
         },
@@ -1235,7 +1262,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/LoginServiceRequest"
+              "$ref": "#/definitions/LoginEmployeeRequest"
             }
           }
         ],
@@ -1275,6 +1302,49 @@
     }
   },
   "definitions": {
+    "AcceptOperationRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "AcceptOperationRequest",
+      "required": [
+        "order_id"
+      ]
+    },
+    "AcceptOperationResponse": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "AcceptOperationResponse",
+      "required": [
+        "operation_id"
+      ]
+    },
+    "CancelOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CancelOrderRequest",
+      "required": [
+        "order_id"
+      ]
+    },
+    "CancelOrderResponse": {
+      "type": "object",
+      "title": "CancelOrderResponse"
+    },
     "CreateAddressRequest": {
       "type": "object",
       "properties": {
@@ -1322,9 +1392,8 @@
         "company_name": {
           "type": "string"
         },
-        "payment_id": {
-          "type": "integer",
-          "format": "int64"
+        "payment_info": {
+          "$ref": "#/definitions/CreatePaymentRequest"
         },
         "director_name": {
           "type": "string"
@@ -1332,9 +1401,8 @@
         "contact_details": {
           "type": "string"
         },
-        "registered_address": {
-          "type": "integer",
-          "format": "int64"
+        "address_info": {
+          "$ref": "#/definitions/CreateAddressRequest"
         },
         "deposite_rate": {
           "type": "integer",
@@ -1344,10 +1412,10 @@
       "title": "CreateCompanyRequest",
       "required": [
         "company_name",
-        "payment_id",
+        "payment_info",
         "director_name",
         "contact_details",
-        "registered_address",
+        "address_info",
         "deposite_rate"
       ]
     },
@@ -1395,46 +1463,6 @@
       "title": "CreateCustomerResponse",
       "required": [
         "customer_id"
-      ]
-    },
-    "CreateDesignRequest": {
-      "type": "object",
-      "properties": {
-        "company_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "service_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "price": {
-          "type": "number",
-          "format": "double"
-        },
-        "comments": {
-          "type": "string"
-        }
-      },
-      "title": "CreateDesignRequest",
-      "required": [
-        "company_id",
-        "service_id",
-        "price",
-        "comments"
-      ]
-    },
-    "CreateDesignResponse": {
-      "type": "object",
-      "properties": {
-        "design_id": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "title": "CreateDesignResponse",
-      "required": [
-        "design_id"
       ]
     },
     "CreateEmployeeRequest": {
@@ -1492,6 +1520,10 @@
     "CreateEmployeeServiceRequest": {
       "type": "object",
       "properties": {
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        },
         "service_id": {
           "type": "integer",
           "format": "int64"
@@ -1509,10 +1541,6 @@
     "CreateOperationRequest": {
       "type": "object",
       "properties": {
-        "employee_id": {
-          "type": "integer",
-          "format": "int64"
-        },
         "order_id": {
           "type": "integer",
           "format": "int64"
@@ -1520,17 +1548,12 @@
         "operation": {
           "type": "integer",
           "format": "int64"
-        },
-        "issue_date": {
-          "type": "string"
         }
       },
       "title": "CreateOperationRequest",
       "required": [
-        "employee_id",
         "order_id",
-        "operation",
-        "issue_date"
+        "operation"
       ]
     },
     "CreateOperationResponse": {
@@ -1549,35 +1572,21 @@
     "CreateOrderRequest": {
       "type": "object",
       "properties": {
-        "customer_id": {
-          "type": "integer",
-          "format": "int64"
+        "customer_info": {
+          "$ref": "#/definitions/CreateCustomerRequest"
         },
-        "company_id": {
-          "type": "integer",
-          "format": "int64"
+        "address_info": {
+          "$ref": "#/definitions/CreateAddressRequest"
         },
-        "address_id": {
-          "type": "integer",
-          "format": "int64"
+        "service_list": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
         },
-        "desgin_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "deposite_payment": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "deposite_date": {
-          "type": "string"
-        },
-        "final_payment": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "final_payment_date": {
-          "type": "string"
+        "deposite_info": {
+          "$ref": "#/definitions/CreatePaymentRequest"
         },
         "order_description": {
           "type": "string"
@@ -1587,19 +1596,14 @@
         },
         "reserve_date": {
           "type": "string"
-        },
-        "finish_date": {
-          "type": "string"
         }
       },
       "title": "CreateOrderRequest",
       "required": [
-        "customer_id",
-        "company_id",
-        "address_id",
-        "desgin_id",
-        "deposite_payment",
-        "deposite_date",
+        "customer_info",
+        "address_info",
+        "service_list",
+        "deposite_info",
         "post_date",
         "reserve_date"
       ]
@@ -1652,6 +1656,32 @@
       "title": "CreatePaymentResponse",
       "required": [
         "payment_id"
+      ]
+    },
+    "DeclineOperationRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DeclineOperationRequest",
+      "required": [
+        "order_id"
+      ]
+    },
+    "DeclineOperationResponse": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DeclineOperationResponse",
+      "required": [
+        "operation_id"
       ]
     },
     "DetailAddressRequest": {
@@ -1708,10 +1738,7 @@
           "format": "int64"
         }
       },
-      "title": "DetailCompanyRequest",
-      "required": [
-        "company_id"
-      ]
+      "title": "DetailCompanyRequest"
     },
     "DetailCompanyResponse": {
       "type": "object",
@@ -1791,51 +1818,6 @@
         "contact_details"
       ]
     },
-    "DetailDesignRequest": {
-      "type": "object",
-      "properties": {
-        "design_id": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "title": "DetailDesignRequest",
-      "required": [
-        "design_id"
-      ]
-    },
-    "DetailDesignResponse": {
-      "type": "object",
-      "properties": {
-        "design_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "company_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "service_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "price": {
-          "type": "number",
-          "format": "double"
-        },
-        "comments": {
-          "type": "string"
-        }
-      },
-      "title": "DetailDesignResponse",
-      "required": [
-        "design_id",
-        "company_id",
-        "service_id",
-        "price",
-        "comments"
-      ]
-    },
     "DetailEmployeeRequest": {
       "type": "object",
       "properties": {
@@ -1879,6 +1861,9 @@
         "order_id": {
           "type": "integer",
           "format": "int64"
+        },
+        "employee_service": {
+          "$ref": "#/definitions/ListEmployeeServiceResponse"
         }
       },
       "title": "DetailEmployeeResponse",
@@ -1890,7 +1875,8 @@
         "company_id",
         "link_code",
         "work_status",
-        "order_id"
+        "order_id",
+        "employee_service"
       ]
     },
     "DetailOperationRequest": {
@@ -1944,11 +1930,15 @@
         "order_id": {
           "type": "integer",
           "format": "int64"
+        },
+        "customer_name": {
+          "type": "string"
         }
       },
       "title": "DetailOrderRequest",
       "required": [
-        "order_id"
+        "order_id",
+        "customer_name"
       ]
     },
     "DetailOrderResponse": {
@@ -1958,21 +1948,21 @@
           "type": "integer",
           "format": "int64"
         },
-        "customer_id": {
-          "type": "integer",
-          "format": "int64"
+        "customer_info": {
+          "$ref": "#/definitions/DetailCustomerResponse"
+        },
+        "address_info": {
+          "$ref": "#/definitions/DetailAddressResponse"
+        },
+        "employee_info": {
+          "$ref": "#/definitions/DetailEmployeeResponse"
         },
         "company_id": {
           "type": "integer",
           "format": "int64"
         },
-        "address_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "desgin_id": {
-          "type": "integer",
-          "format": "int64"
+        "service_list": {
+          "type": "string"
         },
         "deposite_payment": {
           "type": "integer",
@@ -2000,6 +1990,10 @@
         "final_payment_date": {
           "type": "string"
         },
+        "gst_amount": {
+          "type": "number",
+          "format": "double"
+        },
         "total_fee": {
           "type": "number",
           "format": "double"
@@ -2024,10 +2018,11 @@
       "title": "DetailOrderResponse",
       "required": [
         "order_id",
-        "customer_id",
+        "customer_info",
+        "address_info",
+        "employee_info",
         "company_id",
-        "address_id",
-        "desgin_id",
+        "service_list",
         "deposite_payment",
         "deposite_amount",
         "current_deposite_rate",
@@ -2035,6 +2030,7 @@
         "final_payment",
         "final_amount",
         "final_payment_date",
+        "gst_amount",
         "total_fee",
         "order_description",
         "post_date",
@@ -2110,14 +2106,36 @@
         },
         "service_description": {
           "type": "string"
+        },
+        "service_price": {
+          "type": "number",
+          "format": "double"
         }
       },
       "title": "DetailServiceResponse",
       "required": [
         "service_id",
         "service_type",
-        "service_description"
+        "service_description",
+        "service_price"
       ]
+    },
+    "FinishOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "FinishOrderRequest",
+      "required": [
+        "order_id"
+      ]
+    },
+    "FinishOrderResponse": {
+      "type": "object",
+      "title": "FinishOrderResponse"
     },
     "ListAddressRequest": {
       "type": "object",
@@ -2153,31 +2171,6 @@
         }
       },
       "title": "ListCompanyResponse",
-      "required": [
-        "items"
-      ]
-    },
-    "ListDesignRequest": {
-      "type": "object",
-      "properties": {
-        "service_id": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "title": "ListDesignRequest"
-    },
-    "ListDesignResponse": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/DetailDesignResponse"
-          }
-        }
-      },
-      "title": "ListDesignResponse",
       "required": [
         "items"
       ]
@@ -2305,6 +2298,41 @@
         "items"
       ]
     },
+    "LoginCompanyRequest": {
+      "type": "object",
+      "properties": {
+        "contact_details": {
+          "type": "string"
+        },
+        "verify_code": {
+          "type": "string"
+        }
+      },
+      "title": "LoginCompanyRequest",
+      "required": [
+        "contact_details",
+        "verify_code"
+      ]
+    },
+    "LoginCompanyResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "access_token": {
+          "type": "string"
+        }
+      },
+      "title": "LoginCompanyResponse",
+      "required": [
+        "code",
+        "message"
+      ]
+    },
     "LoginCustomerRequest": {
       "type": "object",
       "properties": {
@@ -2340,7 +2368,7 @@
         "message"
       ]
     },
-    "LoginServiceRequest": {
+    "LoginEmployeeRequest": {
       "type": "object",
       "properties": {
         "contact_details": {
@@ -2350,13 +2378,13 @@
           "type": "string"
         }
       },
-      "title": "LoginServiceRequest",
+      "title": "LoginEmployeeRequest",
       "required": [
         "contact_details",
         "verify_code"
       ]
     },
-    "LoginServiceResponse": {
+    "LoginEmployeeResponse": {
       "type": "object",
       "properties": {
         "code": {
@@ -2369,11 +2397,32 @@
           "type": "string"
         }
       },
-      "title": "LoginServiceResponse",
+      "title": "LoginEmployeeResponse",
       "required": [
         "code",
         "message"
       ]
+    },
+    "PayOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "final_info": {
+          "$ref": "#/definitions/CreatePaymentRequest"
+        }
+      },
+      "title": "PayOrderRequest",
+      "required": [
+        "order_id",
+        "final_info"
+      ]
+    },
+    "PayOrderResponse": {
+      "type": "object",
+      "title": "PayOrderResponse"
     },
     "RemoveAddressRequest": {
       "type": "object",
@@ -2426,23 +2475,6 @@
       "type": "object",
       "title": "RemoveCustomerResponse"
     },
-    "RemoveDesignRequest": {
-      "type": "object",
-      "properties": {
-        "design_id": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "title": "RemoveDesignRequest",
-      "required": [
-        "design_id"
-      ]
-    },
-    "RemoveDesignResponse": {
-      "type": "object",
-      "title": "RemoveDesignResponse"
-    },
     "RemoveEmployeeRequest": {
       "type": "object",
       "properties": {
@@ -2474,7 +2506,6 @@
       },
       "title": "RemoveEmployeeServiceRequest",
       "required": [
-        "employee_id",
         "service_id"
       ]
     },
@@ -2556,41 +2587,21 @@
     "UpdateCompanyRequest": {
       "type": "object",
       "properties": {
-        "company_id": {
-          "type": "integer",
-          "format": "int64"
-        },
         "company_name": {
           "type": "string"
-        },
-        "payment_id": {
-          "type": "integer",
-          "format": "int64"
         },
         "director_name": {
           "type": "string"
         },
         "contact_details": {
           "type": "string"
-        },
-        "registered_address": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "deposite_rate": {
-          "type": "integer",
-          "format": "int32"
         }
       },
       "title": "UpdateCompanyRequest",
       "required": [
-        "company_id",
         "company_name",
-        "payment_id",
         "director_name",
-        "contact_details",
-        "registered_address",
-        "deposite_rate"
+        "contact_details"
       ]
     },
     "UpdateCompanyResponse": {
@@ -2626,42 +2637,6 @@
       "type": "object",
       "title": "UpdateCustomerResponse"
     },
-    "UpdateDesignRequest": {
-      "type": "object",
-      "properties": {
-        "design_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "company_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "service_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "price": {
-          "type": "number",
-          "format": "double"
-        },
-        "comments": {
-          "type": "string"
-        }
-      },
-      "title": "UpdateDesignRequest",
-      "required": [
-        "design_id",
-        "company_id",
-        "service_id",
-        "price",
-        "comments"
-      ]
-    },
-    "UpdateDesignResponse": {
-      "type": "object",
-      "title": "UpdateDesignResponse"
-    },
     "UpdateEmployeeRequest": {
       "type": "object",
       "properties": {
@@ -2681,17 +2656,6 @@
         "company_id": {
           "type": "integer",
           "format": "int64"
-        },
-        "link_code": {
-          "type": "string"
-        },
-        "work_status": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "order_id": {
-          "type": "integer",
-          "format": "int64"
         }
       },
       "title": "UpdateEmployeeRequest",
@@ -2700,10 +2664,7 @@
         "employee_photo",
         "employee_name",
         "contact_details",
-        "company_id",
-        "link_code",
-        "work_status",
-        "order_id"
+        "company_id"
       ]
     },
     "UpdateEmployeeResponse": {
@@ -2717,31 +2678,24 @@
           "type": "integer",
           "format": "int64"
         },
-        "customer_id": {
-          "type": "integer",
-          "format": "int64"
+        "customer_info": {
+          "$ref": "#/definitions/UpdateCustomerRequest"
         },
-        "final_payment": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "final_payment_date": {
-          "type": "string"
+        "address_info": {
+          "$ref": "#/definitions/UpdateAddressRequest"
         },
         "order_description": {
           "type": "string"
         },
         "reserve_date": {
           "type": "string"
-        },
-        "finish_date": {
-          "type": "string"
         }
       },
       "title": "UpdateOrderRequest",
       "required": [
         "order_id",
-        "customer_id",
+        "customer_info",
+        "address_info",
         "order_description",
         "reserve_date"
       ]

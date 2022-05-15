@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -27,9 +28,10 @@ func NewListEmployeeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *List
 }
 
 func (l *ListEmployeeLogic) ListEmployee(req *types.ListEmployeeRequest) (resp *types.ListEmployeeResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
-	if role != variables.Company {
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, Json format error")
+	} else if role != variables.Company {
 		return nil, status.Error(401, "Invalid, Not company.")
 	}
 
@@ -44,15 +46,40 @@ func (l *ListEmployeeLogic) ListEmployee(req *types.ListEmployeeRequest) (resp *
 	allItems := []types.DetailEmployeeResponse{}
 
 	for _, item := range res {
+		// Get all emplooyee service
+		service_list := types.ListEmployeeServiceResponse{}
+		service_res, err := l.svcCtx.REmployeeServiceModel.FindAllByEmployee(l.ctx, item.EmployeeId)
+		if err == nil {
+			allServices := []types.DetailServiceResponse{}
+			for _, res_item := range service_res {
+				service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, res_item.ServiceId)
+				if err != nil {
+					break
+				}
+
+				service := types.DetailServiceResponse{
+					Service_id:          service_item.ServiceId,
+					Service_type:        service_item.ServiceType,
+					Service_description: service_item.ServiceDescription,
+					Service_price:       service_item.ServicePrice,
+				}
+
+				allServices = append(allServices, service)
+			}
+			service_list.Items = allServices
+		}
+
+		// Get employee details
 		newItem := types.DetailEmployeeResponse{
-			Employee_id:     item.EmployeeId,
-			Employee_photo:  item.EmployeePhoto.String,
-			Employee_name:   item.EmployeeName,
-			Contact_details: item.ContactDetails,
-			Company_id:      item.CompanyId,
-			Link_code:       item.LinkCode,
-			Work_status:     int(item.WorkStatus),
-			Order_id:        item.OrderId.Int64,
+			Employee_id:      item.EmployeeId,
+			Employee_photo:   item.EmployeePhoto.String,
+			Employee_name:    item.EmployeeName,
+			Contact_details:  item.ContactDetails,
+			Company_id:       item.CompanyId,
+			Link_code:        item.LinkCode,
+			Work_status:      int(item.WorkStatus),
+			Order_id:         item.OrderId.Int64,
+			Employee_service: service_list,
 		}
 
 		allItems = append(allItems, newItem)

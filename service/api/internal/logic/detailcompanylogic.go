@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -28,8 +29,10 @@ func NewDetailCompanyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Det
 }
 
 func (l *DetailCompanyLogic) DetailCompany(req *types.DetailCompanyRequest) (resp *types.DetailCompanyResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	}
 
 	res, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, req.Company_id)
 	if err != nil {

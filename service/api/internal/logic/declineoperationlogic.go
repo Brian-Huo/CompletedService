@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -28,9 +29,10 @@ func NewDeclineOperationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequest) (resp *types.DeclineOperationResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
-	if role != variables.Employee {
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	} else if role != variables.Employee {
 		return nil, status.Error(401, "Invalid, Not employee.")
 	}
 

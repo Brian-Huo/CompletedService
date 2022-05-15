@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -29,8 +30,7 @@ func NewCreatePaymentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 }
 
 func (l *CreatePaymentLogic) CreatePayment(req *types.CreatePaymentRequest) (resp *types.CreatePaymentResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
+	uid, role, _ := jwtx.GetTokenDetails(l.ctx)
 
 	exp_time, err := time.Parse("2006-01-02 15:04:05", req.Expiry_time)
 	if err != nil {

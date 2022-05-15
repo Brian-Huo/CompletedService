@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"time"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -52,15 +53,16 @@ func (l *LoginCustomerLogic) LoginCustomer(req *types.LoginCustomerRequest) (res
 	}
 
 	// 签发 jwt token
-	token, err := jwtx.GetToken(l.svcCtx.Config.Auth.AccessSecret, 1, l.svcCtx.Config.Auth.AccessExpire,
+	now := time.Now().Unix()
+	token, err := jwtx.GetToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire,
 		item.CustomerId, variables.Customer)
 	if err != nil {
 		return nil, status.Error(500, "Jwt token error.")
 	}
 
 	return &types.LoginCustomerResponse{
-		Code: "200",
-		Message:  "success",
-		AccessToken : token,
+		Code:        "200",
+		Message:     "success",
+		AccessToken: token,
 	}, nil
 }

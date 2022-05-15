@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -30,6 +31,7 @@ func NewLoginCompanyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Logi
 
 func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *types.LoginCompanyResponse, err error) {
 	// find company by contact_details
+	var companyId int64
 	item, err := l.svcCtx.BCompanyModel.FindOnebyPhone(l.ctx, req.Contact_details)
 	if err == company.ErrNotFound {
 		// if company not found, insert company
@@ -50,14 +52,17 @@ func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
-		item.CompanyId = newId
-	} else if err != nil {
+		companyId = newId
+	} else if err == nil {
+		companyId = item.CompanyId
+	} else {
 		return nil, status.Error(500, err.Error())
 	}
 
 	// 签发 jwt token
-	token, err := jwtx.GetToken(l.svcCtx.Config.Auth.AccessSecret, 1, l.svcCtx.Config.Auth.AccessExpire,
-		item.CompanyId, variables.Company)
+	now := time.Now().Unix()
+	token, err := jwtx.GetToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire,
+		companyId, variables.Company)
 	if err != nil {
 		return nil, status.Error(500, "Jwt token error.")
 	}

@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -32,10 +33,10 @@ func NewCreateCompanyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 }
 
 func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (resp *types.CreateCompanyResponse, err error) {
-	uid := l.ctx.Value("uid").(int64)
-	role := l.ctx.Value("role").(int)
-
-	if role != 100 && uid != 0 {
+	uid, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	} else if role != 100 && uid != 0 {
 		log.Println("Backend broken, security leak...")
 		return nil, status.Error(500, err.Error())
 	}
