@@ -186,10 +186,6 @@ type (
 		Employee_photo  string `json:"employee_photo"`
 		Employee_name   string `json:"employee_name"`
 		Contact_details string `json:"contact_details"`
-		Company_id      int64  `json:"company_id"`
-		Link_code       string `json:"link_code"`
-		Work_status     int    `json:"work_status"`
-		Order_id        int64  `json:"order_id"`
 	}
 	CreateEmployeeResponse {
 		Employee_id int64 `json:"employee_id"`
@@ -197,11 +193,12 @@ type (
 
 	// Update Employee
 	UpdateEmployeeRequest {
-		Employee_id     int64  `json:"employee_id"`
-		Employee_photo  string `json:"employee_photo"`
-		Employee_name   string `json:"employee_name"`
-		Contact_details string `json:"contact_details"`
-		Company_id      int64  `json:"company_id"`
+		Employee_id     int64   `json:"employee_id"`
+		Employee_photo  string  `json:"employee_photo"`
+		Employee_name   string  `json:"employee_name"`
+		Contact_details string  `json:"contact_details"`
+		New_services    []int64 `json:"new_services"`
+		Remove_services []int64 `json:"remove_services"`
 	}
 	UpdateEmployeeResponse {
 	}
@@ -463,6 +460,16 @@ type (
 	ListEmployeeServiceResponse {
 		Items []DetailServiceResponse `json:"items"`
 	}
+
+	// -------------------- Employee Photo -------------------------
+	// Upload Employee Photo
+	UploadEmployeePhotoRequest {
+		Employee_id     int64  `json:"employee_id,optional"`
+		Employee_photo  string `json:"employee_photo"`
+	}
+	UploadEmployeePhotoResponse {
+		employee_photo  string `json:"employee_photo"`
+	}
 )
 
 // no jwt validate apis
@@ -569,6 +576,10 @@ service Server {
 	
 	@handler ListEmployee
 	post /api/employee/list(ListEmployeeRequest) returns (ListEmployeeResponse)
+
+	// employee photo apis
+	@handler ListEmployee
+	post /api/employee/photo(UploadEmployeePhotoRequest) returns (UploadEmployeePhotoResponse)
 	
 	// order apis
 	@handler FinishOrder
