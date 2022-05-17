@@ -76,7 +76,7 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 	// Get employee details
 	// Default employee details (not found/ haven't been assigned)
 	newEmpl := types.DetailEmployeeResponse{
-		Employee_id:     0,
+		Employee_id:     -1,
 		Employee_photo:  "Employee Not Found",
 		Employee_name:   "Employee Not Found",
 		Contact_details: "Employee Not Found",
@@ -88,11 +88,14 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 		newEmpl.Employee_photo = empl.EmployeePhoto.String
 		newEmpl.Employee_name = empl.EmployeeName
 		newEmpl.Contact_details = empl.ContactDetails
+		newEmpl.Company_id = -1
+		newEmpl.Work_status = -1
+		newEmpl.Order_id = -1
 	} else if err != employee.ErrNotFound {
 		return nil, status.Error(500, err.Error())
 	}
 
-	return &types.DetailOrderResponse{
+	order_item := types.DetailOrderResponse{
 		Order_id:              res.OrderId,
 		Customer_info:         newCus,
 		Employee_info:         newEmpl,
@@ -113,5 +116,16 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 		Reserve_date:          res.ReserveDate.Format("2006-01-02 15:04:05"),
 		Finish_date:           res.FinishDate.Time.Format("2006-01-02 15:04:05"),
 		Status:                int(res.Status),
-	}, nil
+	}
+
+	// Replace blank info
+	if !res.FinalPayment.Valid {
+		order_item.Final_payment = -1
+		order_item.Final_payment_date = ""
+	}
+	if !res.FinishDate.Valid {
+		order_item.Finish_date = ""
+	}
+
+	return &order_item, nil
 }

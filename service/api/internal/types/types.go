@@ -207,14 +207,14 @@ type UpdateEmployeeResponse struct {
 }
 
 type RemoveEmployeeRequest struct {
-	Employee_id int64 `json:"employee_id"`
+	Employee_id int64 `json:"employee_id,optional"`
 }
 
 type RemoveEmployeeResponse struct {
 }
 
 type DetailEmployeeRequest struct {
-	Employee_id int64 `json:"employee_id"`
+	Employee_id int64 `json:"employee_id,optional"`
 }
 
 type DetailEmployeeResponse struct {

@@ -206,14 +206,14 @@ type (
 
 	// Remove Employee
 	RemoveEmployeeRequest {
-		Employee_id int64 `json:"employee_id"`
+		Employee_id int64 `json:"employee_id,optional"`
 	}
 	RemoveEmployeeResponse {
 	}
 
 	// Detail Employee
 	DetailEmployeeRequest {
-		Employee_id int64 `json:"employee_id"`
+		Employee_id int64 `json:"employee_id,optional"`
 	}
 	DetailEmployeeResponse {
 		Employee_id      int64                       `json:"employee_id"`
@@ -294,6 +294,33 @@ type (
 		Customer_name string `json:"customer_name"`
 	}
 	DetailOrderResponse {
+		Order_id              int64                  `json:"order_id"`
+		Customer_info         DetailCustomerResponse `json:"customer_info"`
+		Address_info          DetailAddressResponse  `json:"address_info"`
+		Employee_info         DetailEmployeeResponse `json:"employee_info"`
+		Company_id            int64                  `json:"company_id"`
+		Service_list          string                 `json:"service_list"`
+		Deposite_payment      int64                  `json:"deposite_payment"`
+		Deposite_amount       float64                `json:"deposite_amount"`
+		Current_deposite_rate int                    `json:"current_deposite_rate"`
+		Deposite_date         string                 `json:"deposite_date"`
+		Final_payment         int64                  `json:"final_payment"`
+		Final_amount          float64                `json:"final_amount"`
+		Final_payment_date    string                 `json:"final_payment_date"`
+		Gst_amount            float64                `json:"gst_amount"`
+		Total_fee             float64                `json:"total_fee"`
+		Order_description     string                 `json:"order_description"`
+		Post_date             string                 `json:"post_date"`
+		Reserve_date          string                 `json:"reserve_date"`
+		Finish_date           string                 `json:"finish_date"`
+		Status                int                    `json:"status"`
+	}
+
+	// Get Order details by Employee
+	GetOrderDetailsRequest {
+		Order_id      int64  `json:"order_id"`
+	}
+	GetOrderDetailsResponse {
 		Order_id              int64                  `json:"order_id"`
 		Customer_info         DetailCustomerResponse `json:"customer_info"`
 		Address_info          DetailAddressResponse  `json:"address_info"`
@@ -587,6 +614,9 @@ service Server {
 	
 	@handler RemoveOrder
 	post /api/order/remove(RemoveOrderRequest) returns (RemoveOrderResponse)
+
+	@handler GetOrderDetails
+	post /api/order/getDetail(GetOrderDetailsRequest) returns (GetOrderDetailsResponse)
 	
 	@handler ListOrder
 	post /api/order/list(ListOrderRequest) returns (ListOrderResponse)
