@@ -38,6 +38,15 @@ func (l *LoginEmployeeLogic) LoginEmployee(req *types.LoginEmployeeRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
+	// Verify if first login
+	if item.WorkStatus == int64(variables.Await) {
+		if req.VerifyCode == "" {
+			return nil, status.Error(499, "Invalid, Verify code required.")
+		} else if false {
+			return nil, status.Error(401, "Invalid, Verfiy code incorrect.")
+		}
+	}
+
 	// 签发 jwt token
 	now := time.Now().Unix()
 	token, err := jwtx.GetToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire,

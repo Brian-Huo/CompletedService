@@ -12,7 +12,7 @@ type VerifyCodeResponse struct {
 
 type LoginEmployeeRequest struct {
 	Contact_details string `json:"contact_details"`
-	VerifyCode      string `json:"verify_code"`
+	VerifyCode      string `json:"verify_code,optional"`
 	LinkCode        string `json:"link_code"`
 }
 
@@ -194,10 +194,11 @@ type CreateEmployeeResponse struct {
 }
 
 type UpdateEmployeeRequest struct {
-	Employee_id     int64  `json:"employee_id"`
-	Employee_photo  string `json:"employee_photo"`
-	Employee_name   string `json:"employee_name"`
-	Contact_details string `json:"contact_details"`
+	Employee_id     int64   `json:"employee_id"`
+	Employee_photo  string  `json:"employee_photo"`
+	Employee_name   string  `json:"employee_name"`
+	Contact_details string  `json:"contact_details"`
+	Link_code       string  `json:"link_code"`
 	New_services    []int64 `json:"new_services"`
 	Remove_services []int64 `json:"remove_services"`
 }
@@ -295,26 +296,26 @@ type DetailOrderRequest struct {
 }
 
 type DetailOrderResponse struct {
-	Order_id              int64                    `json:"order_id"`
-	Customer_info         DetailCustomerResponse   `json:"customer_info"`
-	Address_info          DetailAddressResponse    `json:"address_info"`
-	Employee_info         DetailEmployeeResponse   `json:"employee_info"`
-	Company_id            int64                    `json:"company_id"`
-	Service_list          string                   `json:"service_list"`
-	Deposite_payment      int64                    `json:"deposite_payment"`
-	Deposite_amount       float64                  `json:"deposite_amount"`
-	Current_deposite_rate int                      `json:"current_deposite_rate"`
-	Deposite_date         string                   `json:"deposite_date"`
-	Final_payment         int64                    `json:"final_payment"`
-	Final_amount          float64                  `json:"final_amount"`
-	Final_payment_date    string                   `json:"final_payment_date"`
-	Gst_amount            float64                  `json:"gst_amount"`
-	Total_fee             float64                  `json:"total_fee"`
-	Order_description     string                   `json:"order_description"`
-	Post_date             string                   `json:"post_date"`
-	Reserve_date          string                   `json:"reserve_date"`
-	Finish_date           string                   `json:"finish_date"`
-	Status                int                      `json:"status"`
+	Order_id              int64                  `json:"order_id"`
+	Customer_info         DetailCustomerResponse `json:"customer_info"`
+	Address_info          DetailAddressResponse  `json:"address_info"`
+	Employee_info         DetailEmployeeResponse `json:"employee_info"`
+	Company_id            int64                  `json:"company_id"`
+	Service_list          string                 `json:"service_list"`
+	Deposite_payment      int64                  `json:"deposite_payment"`
+	Deposite_amount       float64                `json:"deposite_amount"`
+	Current_deposite_rate int                    `json:"current_deposite_rate"`
+	Deposite_date         string                 `json:"deposite_date"`
+	Final_payment         int64                  `json:"final_payment"`
+	Final_amount          float64                `json:"final_amount"`
+	Final_payment_date    string                 `json:"final_payment_date"`
+	Gst_amount            float64                `json:"gst_amount"`
+	Total_fee             float64                `json:"total_fee"`
+	Order_description     string                 `json:"order_description"`
+	Post_date             string                 `json:"post_date"`
+	Reserve_date          string                 `json:"reserve_date"`
+	Finish_date           string                 `json:"finish_date"`
+	Status                int                    `json:"status"`
 }
 
 type ListOrderRequest struct {
@@ -329,9 +330,9 @@ type DetailServiceRequest struct {
 }
 
 type DetailServiceResponse struct {
-	Service_id          int64  	`json:"service_id"`
-	Service_type        string 	`json:"service_type"`
-	Service_description string 	`json:"service_description"`
+	Service_id          int64   `json:"service_id"`
+	Service_type        string  `json:"service_type"`
+	Service_description string  `json:"service_description"`
 	Service_price       float64 `json:"service_price"`
 }
 
@@ -391,8 +392,8 @@ type ListPaymentResponse struct {
 }
 
 type CreateOperationRequest struct {
-	Order_id    int64 `json:"order_id"`
-	Operation   int64 `json:"operation"`
+	Order_id  int64 `json:"order_id"`
+	Operation int64 `json:"operation"`
 }
 
 type CreateOperationResponse struct {
@@ -400,7 +401,7 @@ type CreateOperationResponse struct {
 }
 
 type AcceptOperationRequest struct {
-	Order_id    int64 `json:"order_id"`
+	Order_id int64 `json:"order_id"`
 }
 
 type AcceptOperationResponse struct {
@@ -408,7 +409,7 @@ type AcceptOperationResponse struct {
 }
 
 type DeclineOperationRequest struct {
-	Order_id    int64 `json:"order_id"`
+	Order_id int64 `json:"order_id"`
 }
 
 type DeclineOperationResponse struct {
@@ -456,4 +457,13 @@ type ListEmployeeServiceRequest struct {
 
 type ListEmployeeServiceResponse struct {
 	Items []DetailServiceResponse `json:"items"`
+}
+
+type UploadEmployeePhotoRequest struct {
+	Employee_id    int64  `json:"employee_id,optional"`
+	Employee_photo string `json:"employee_photo"`
+}
+
+type UploadEmployeePhotoResponse struct {
+	Employee_photo string `json:"employee_photo"`
 }

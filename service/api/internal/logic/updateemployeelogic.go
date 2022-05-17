@@ -67,7 +67,7 @@ func (l *UpdateEmployeeLogic) UpdateEmployee(req *types.UpdateEmployeeRequest) (
 		EmployeeName:   req.Employee_name,
 		ContactDetails: req.Contact_details,
 		CompanyId:      empl.CompanyId,
-		LinkCode:       empl.LinkCode,
+		LinkCode:       req.Link_code,
 		WorkStatus:     empl.WorkStatus,
 		OrderId:        empl.OrderId,
 	})

@@ -46,6 +46,11 @@ func (l *ListEmployeeLogic) ListEmployee(req *types.ListEmployeeRequest) (resp *
 	allItems := []types.DetailEmployeeResponse{}
 
 	for _, item := range res {
+		// Check if employee resigned
+		if item.WorkStatus == int64(variables.Resigned) {
+			continue
+		}
+
 		// Get all emplooyee service
 		service_list := types.ListEmployeeServiceResponse{}
 		service_res, err := l.svcCtx.REmployeeServiceModel.FindAllByEmployee(l.ctx, item.EmployeeId)

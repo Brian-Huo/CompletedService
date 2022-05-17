@@ -48,7 +48,7 @@ func (l *CreateEmployeeLogic) CreateEmployee(req *types.CreateEmployeeRequest) (
 		ContactDetails: req.Contact_details,
 		CompanyId:      uid,
 		LinkCode:       util.RandStringBytesMaskImprSrcUnsafe(8),
-		WorkStatus:     int64(variables.Vacant),
+		WorkStatus:     int64(variables.Await),
 		OrderId:        sql.NullInt64{0, false},
 	}
 
