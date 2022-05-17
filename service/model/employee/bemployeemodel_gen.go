@@ -89,12 +89,9 @@ func (m *defaultBEmployeeModel) FindOne(ctx context.Context, employeeId int64) (
 }
 
 func (m *defaultBEmployeeModel) FindOnebyPhone(ctx context.Context, contactDetails string) (*BEmployee, error) {
-	bEmployeeContactDetails := fmt.Sprintf("%s%v", "cache:bEmployee:contactDetails:", contactDetails)
+	query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bEmployeeRows, m.table)
 	var resp BEmployee
-	err := m.QueryRowCtx(ctx, &resp, bEmployeeContactDetails, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
-		query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bEmployeeRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, contactDetails)
-	})
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, contactDetails)
 	switch err {
 	case nil:
 		return &resp, nil

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"cleaningservice/common/cryptx"
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
@@ -53,8 +54,10 @@ func (l *UpdateEmployeeLogic) UpdateEmployee(req *types.UpdateEmployeeRequest) (
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Verify company
-	if role == variables.Company {
+	// Verify company and employee
+	if role == variables.Employee {
+		empl.LinkCode = cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, req.Link_code)
+	} else if role == variables.Company {
 		if empl.CompanyId != uid {
 			return nil, status.Error(404, "Invalid, Employee not found.")
 		}
@@ -67,7 +70,7 @@ func (l *UpdateEmployeeLogic) UpdateEmployee(req *types.UpdateEmployeeRequest) (
 		EmployeeName:   req.Employee_name,
 		ContactDetails: req.Contact_details,
 		CompanyId:      empl.CompanyId,
-		LinkCode:       req.Link_code,
+		LinkCode:       empl.LinkCode,
 		WorkStatus:     empl.WorkStatus,
 		OrderId:        empl.OrderId,
 	})
@@ -88,10 +91,7 @@ func (l *UpdateEmployeeLogic) UpdateEmployee(req *types.UpdateEmployeeRequest) (
 
 	// Remove old employee services
 	for _, old_service := range req.Remove_services {
-		_, err = l.svcCtx.REmployeeServiceModel.Insert(l.ctx, &employeeservice.REmployeeService{
-			EmployeeId: employeeId,
-			ServiceId:  old_service,
-		})
+		err = l.svcCtx.REmployeeServiceModel.Delete(l.ctx, employeeId, old_service)
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}

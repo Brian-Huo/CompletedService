@@ -83,12 +83,9 @@ func (m *defaultBPaymentModel) FindOne(ctx context.Context, paymentId int64) (*B
 }
 
 func (m *defaultBPaymentModel) FindOneByCard(ctx context.Context, cardNumber string) (*BPayment, error) {
-	bPaymentCardNumberKey := fmt.Sprintf("%s%v", cacheBPaymentCardNumberPrefix, cardNumber)
+	query := fmt.Sprintf("select %s from %s where `card_number` = ? limit 1", bPaymentRows, m.table)
 	var resp BPayment
-	err := m.QueryRowCtx(ctx, &resp, bPaymentCardNumberKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
-		query := fmt.Sprintf("select %s from %s where `card_number` = ? limit 1", bPaymentRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, cardNumber)
-	})
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, cardNumber)
 	switch err {
 	case nil:
 		return &resp, nil

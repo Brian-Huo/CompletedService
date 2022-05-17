@@ -30,7 +30,7 @@ CREATE TABLE `b_address` (
 -- Base data table: payment --
 CREATE TABLE `b_payment` (
     payment_id int unsigned NOT NULL AUTO_INCREMENT,
-    card_number char(16) NOT NULL,
+    card_number char(16) NOT NULL UNIQUE,
     holder_name varchar(255) NOT NULL,
     expiry_time datetime NOT NUll,
     security_code char(3) NOT NUll,
@@ -53,7 +53,7 @@ CREATE TABLE `b_customer` (
     customer_id int unsigned NOT NULL AUTO_INCREMENT,
     customer_name varchar(50) NOT NULL,
     country_code char(2) NOT NULL,
-    contact_details varchar(15) NOT NULL,
+    contact_details varchar(15) NOT NULL UNIQUE,
     PRIMARY KEY(customer_id)
 );
 
@@ -63,7 +63,7 @@ CREATE TABLE `b_company` (
     company_name varchar(255) NOT NULL,
     payment_id int unsigned,
     director_name varchar(255),
-    contact_details char(10) NOT NULL,
+    contact_details char(10) NOT NULL UNIQUE,
     registered_address int unsigned,
     deposite_rate int(2) unsigned NOT NULL,
     company_status tinyint(1) NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE `b_employee` (
     employee_id int unsigned NOT NULL AUTO_INCREMENT,
     employee_photo varchar(255),
     employee_name varchar(255) NOT NULL,
-    contact_details char(10) NOT NULL,
+    contact_details char(10) NOT NULL UNIQUE,
     company_id int unsigned NOT NULL,
     link_code char(20) NOT NUll,
     work_status tinyint(3) default 0,

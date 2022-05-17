@@ -17,7 +17,7 @@ type LoginEmployeeRequest struct {
 }
 
 type LoginEmployeeResponse struct {
-	Code        string `json:"code"`
+	Code        int `json:"code"`
 	Message     string `json:"message"`
 	AccessToken string `json:"access_token,optional"`
 }
@@ -242,7 +242,6 @@ type CreateOrderRequest struct {
 	Service_list      []int64               `json:"service_list"`
 	Deposite_info     CreatePaymentRequest  `json:"deposite_info"`
 	Order_description string                `json:"order_description,optional"`
-	Post_date         string                `json:"post_date"`
 	Reserve_date      string                `json:"reserve_date"`
 }
 

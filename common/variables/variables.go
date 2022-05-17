@@ -1,7 +1,7 @@
 package variables
 
 // system strings separator
-const Separator string = "%/%"
+const Separator string = "∑"
 
 // system deposite rate
 const Deposite_rate float64 = 10.0

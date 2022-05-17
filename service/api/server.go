@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"cleaningservice/common/errorx"
 	"cleaningservice/service/api/internal/config"
 	"cleaningservice/service/api/internal/handler"
 	"cleaningservice/service/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 var configFile = flag.String("f", "etc/server.yaml", "the config file")
@@ -32,6 +34,16 @@ func main() {
 	defer server.Stop()
 
 	handler.RegisterHandlers(server, ctx)
+
+	// Sel-defined error
+	httpx.SetErrorHandler(func(err error) (int, interface{}) {
+		switch e := err.(type) {
+		case *errorx.CodeError:
+			return http.StatusOK, e.Data()
+		default:
+			return http.StatusInternalServerError, nil
+		}
+	})
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
