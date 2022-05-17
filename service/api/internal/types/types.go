@@ -17,7 +17,7 @@ type LoginEmployeeRequest struct {
 }
 
 type LoginEmployeeResponse struct {
-	Code        int `json:"code"`
+	Code        int    `json:"code"`
 	Message     string `json:"message"`
 	AccessToken string `json:"access_token,optional"`
 }
@@ -295,6 +295,33 @@ type DetailOrderRequest struct {
 }
 
 type DetailOrderResponse struct {
+	Order_id              int64                  `json:"order_id"`
+	Customer_info         DetailCustomerResponse `json:"customer_info"`
+	Address_info          DetailAddressResponse  `json:"address_info"`
+	Employee_info         DetailEmployeeResponse `json:"employee_info"`
+	Company_id            int64                  `json:"company_id"`
+	Service_list          string                 `json:"service_list"`
+	Deposite_payment      int64                  `json:"deposite_payment"`
+	Deposite_amount       float64                `json:"deposite_amount"`
+	Current_deposite_rate int                    `json:"current_deposite_rate"`
+	Deposite_date         string                 `json:"deposite_date"`
+	Final_payment         int64                  `json:"final_payment"`
+	Final_amount          float64                `json:"final_amount"`
+	Final_payment_date    string                 `json:"final_payment_date"`
+	Gst_amount            float64                `json:"gst_amount"`
+	Total_fee             float64                `json:"total_fee"`
+	Order_description     string                 `json:"order_description"`
+	Post_date             string                 `json:"post_date"`
+	Reserve_date          string                 `json:"reserve_date"`
+	Finish_date           string                 `json:"finish_date"`
+	Status                int                    `json:"status"`
+}
+
+type GetOrderDetailsRequest struct {
+	Order_id int64 `json:"order_id"`
+}
+
+type GetOrderDetailsResponse struct {
 	Order_id              int64                  `json:"order_id"`
 	Customer_info         DetailCustomerResponse `json:"customer_info"`
 	Address_info          DetailAddressResponse  `json:"address_info"`

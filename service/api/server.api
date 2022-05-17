@@ -10,7 +10,8 @@ type (
 
 	LoginEmployeeRequest {
 		Contact_details string `json:"contact_details"`
-		VerifyCode      string `json:"verify_code"`
+		VerifyCode      string `json:"verify_code,optional"`
+		LinkCode        string `json:"link_code"`
 	}
 	LoginEmployeeResponse {
 		Code        int    `json:"code"`
@@ -318,7 +319,7 @@ type (
 
 	// Get Order details by Employee
 	GetOrderDetailsRequest {
-		Order_id      int64  `json:"order_id"`
+		Order_id int64 `json:"order_id"`
 	}
 	GetOrderDetailsResponse {
 		Order_id              int64                  `json:"order_id"`
@@ -614,7 +615,7 @@ service Server {
 	
 	@handler RemoveOrder
 	post /api/order/remove(RemoveOrderRequest) returns (RemoveOrderResponse)
-
+	
 	@handler GetOrderDetails
 	post /api/order/getDetail(GetOrderDetailsRequest) returns (GetOrderDetailsResponse)
 	

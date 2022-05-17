@@ -3,6 +3,8 @@ package logic
 import (
 	"context"
 
+	"cleaningservice/common/jwtx"
+	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/employee"
@@ -12,21 +14,28 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type DetailOrderLogic struct {
+type GetOrderDetailsLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewDetailOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DetailOrderLogic {
-	return &DetailOrderLogic{
+func NewGetOrderDetailsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetOrderDetailsLogic {
+	return &GetOrderDetailsLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *types.DetailOrderResponse, err error) {
+func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest) (resp *types.GetOrderDetailsResponse, err error) {
+	_, role, err := jwtx.GetTokenDetails(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, "Invalid, JWT format error")
+	} else if role != variables.Employee {
+		return nil, status.Error(401, "Invalid, Not employee.")
+	}
+
 	// Get order details
 	res, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
@@ -43,11 +52,6 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 			return nil, status.Error(404, "Invalid, Customer not found.")
 		}
 		return nil, status.Error(500, err.Error())
-	}
-
-	// Verify customer
-	if cus.CustomerName != req.Customer_name {
-		return nil, status.Error(404, "Invalid, Order not found.")
 	}
 
 	newCus := types.DetailCustomerResponse{
@@ -128,5 +132,5 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 		order_item.Finish_date = ""
 	}
 
-	return &order_item, nil
+	return
 }
