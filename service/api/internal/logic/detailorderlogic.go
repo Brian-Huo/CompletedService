@@ -44,6 +44,11 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 		}
 		return nil, status.Error(500, err.Error())
 	}
+
+	if cus.CustomerName != req.Customer_name {
+		return nil, status.Error(404, "Invalid, Order not found.")
+	}
+
 	newCus := types.DetailCustomerResponse{
 		Customer_id:     cus.CustomerId,
 		Customer_name:   cus.CustomerName,
