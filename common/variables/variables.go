@@ -26,6 +26,7 @@ const (
 const (
 	Vacant int = iota
 	InWork
+	Await
 	Resigned
 )
 
