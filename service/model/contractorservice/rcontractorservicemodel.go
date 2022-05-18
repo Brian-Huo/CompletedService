@@ -1,7 +1,6 @@
 package contractorservice
 
 import (
-	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
@@ -20,7 +19,7 @@ type (
 )
 
 // NewRContractorServiceModel returns a model for the database table.
-func NewRContractorServiceModel(conn sqlx.SqlConn, c cache.CacheConf) RContractorServiceModel {
+func NewRContractorServiceModel(conn sqlx.SqlConn) RContractorServiceModel {
 	return &customRContractorServiceModel{
 		defaultRContractorServiceModel: newRContractorServiceModel(conn),
 	}

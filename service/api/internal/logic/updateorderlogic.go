@@ -34,7 +34,7 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
 		return nil, status.Error(500, "Invalid, JWT format error")
-	} else if role == variables.Company || role == variables.Employee {
+	} else if role == variables.Company || role == variables.Contractor {
 		return nil, status.Errorf(401, "Invalid, Not customer.")
 	}
 

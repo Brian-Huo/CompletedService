@@ -32,8 +32,8 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
 		return nil, status.Error(500, "Invalid, JWT format error")
-	} else if role != variables.Employee {
-		return nil, status.Error(401, "Invalid, Not employee.")
+	} else if role != variables.Contractor {
+		return nil, status.Error(401, "Invalid, Not Contractor.")
 	}
 
 	ord, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)

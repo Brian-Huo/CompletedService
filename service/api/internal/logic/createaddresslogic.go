@@ -3,8 +3,6 @@ package logic
 import (
 	"context"
 
-	"cleaningservice/common/jwtx"
-	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/address"
@@ -28,11 +26,6 @@ func NewCreateAddressLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 }
 
 func (l *CreateAddressLogic) CreateAddress(req *types.CreateAddressRequest) (resp *types.CreateAddressResponse, err error) {
-	_, role, _ := jwtx.GetTokenDetails(l.ctx)
-	if role == variables.Employee {
-		return nil, status.Error(401, "Invalid, Not customer/company.")
-	}
-
 	newItem := address.BAddress{
 		Street:    req.Street,
 		Suburb:    req.Suburb,

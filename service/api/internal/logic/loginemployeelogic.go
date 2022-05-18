@@ -67,7 +67,7 @@ func (l *LoginEmployeeLogic) LoginEmployee(req *types.LoginEmployeeRequest) (res
 	// 签发 jwt token
 	now := time.Now().Unix()
 	token, err := jwtx.GetToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire,
-		item.EmployeeId, variables.Employee)
+		item.EmployeeId, variables.Contractor)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, "Jwt token error.")
 	}

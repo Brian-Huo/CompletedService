@@ -9,16 +9,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func RemoveEmployeeServiceHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func DetailContractorHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.RemoveEmployeeServiceRequest
+		var req types.DetailContractorRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewRemoveEmployeeServiceLogic(r.Context(), svcCtx)
-		resp, err := l.RemoveEmployeeService(&req)
+		l := logic.NewDetailContractorLogic(r.Context(), svcCtx)
+		resp, err := l.DetailContractor(&req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

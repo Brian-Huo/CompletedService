@@ -7,6 +7,7 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/employee"
 	"cleaningservice/service/model/operation"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -31,11 +32,25 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
 		return nil, status.Error(500, "Invalid, JWT format error")
-	} else if role != variables.Employee {
-		return nil, status.Error(401, "Invalid, Not employee.")
+	} else if role != variables.Company {
+		return nil, status.Error(401, "Invalid, Not company.")
 	}
 
-	res, err := l.svcCtx.BOperationModel.FindAllByContractor(l.ctx, uid)
+	// Verify contractor
+	cont, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, req.Contractor_id)
+	if err != nil {
+		if err == employee.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Contractor not found.")
+		}
+		return nil, status.Error(500, err.Error())
+	}
+
+	if cont.CompanyId != uid {
+		return nil, status.Error(404, "Invalid, Contractor not found.")
+	}
+
+	// Get all operations
+	res, err := l.svcCtx.BOperationModel.FindAllByContractor(l.ctx, req.Contractor_id)
 	if err != nil {
 		if err == operation.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Operation not found.")

@@ -35,7 +35,7 @@ func (l *DetailEmployeeLogic) DetailEmployee(req *types.DetailEmployeeRequest) (
 	}
 
 	var res *employee.BEmployee
-	if role != variables.Employee {
+	if role != variables.Contractor {
 		res, err = l.svcCtx.BEmployeeModel.FindOne(l.ctx, req.Employee_id)
 		if err != nil {
 			if err == employee.ErrNotFound {

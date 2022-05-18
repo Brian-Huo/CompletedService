@@ -37,7 +37,7 @@ func (l *UpdateEmployeeLogic) UpdateEmployee(req *types.UpdateEmployeeRequest) (
 	}
 
 	var employeeId int64
-	if role == variables.Employee {
+	if role == variables.Contractor {
 		employeeId = uid
 	} else if role == variables.Company {
 		employeeId = req.Employee_id
@@ -54,8 +54,8 @@ func (l *UpdateEmployeeLogic) UpdateEmployee(req *types.UpdateEmployeeRequest) (
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Verify company and employee
-	if role == variables.Employee {
+	// Verify company and contractor
+	if role == variables.Contractor {
 		if req.Work_status == variables.Vacant || req.Work_status == variables.InRest {
 			empl.WorkStatus = int64(req.Work_status)
 		}

@@ -9,16 +9,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func UploadEmployeePhotoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func UpdateContractorHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.UploadEmployeePhotoRequest
+		var req types.UpdateContractorRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewUploadEmployeePhotoLogic(r.Context(), svcCtx)
-		resp, err := l.UploadEmployeePhoto(&req)
+		l := logic.NewUpdateContractorLogic(r.Context(), svcCtx)
+		resp, err := l.UpdateContractor(&req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

@@ -31,8 +31,6 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
 		return nil, status.Error(500, "Invalid, JWT format error")
-	} else if role == variables.Employee {
-		return nil, status.Error(401, "Invalid, Not customer/company.")
 	}
 
 	// Get all order list
@@ -41,7 +39,10 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 		res, err = l.svcCtx.BOrderModel.FindAllByCustomer(l.ctx, uid)
 	} else if role == variables.Company {
 		res, err = l.svcCtx.BOrderModel.FindAllByCompany(l.ctx, uid)
+	} else {
+		return nil, status.Error(401, "Invalid, Unauthorised action.")
 	}
+
 	if err != nil {
 		if err == order.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Order not found.")

@@ -237,6 +237,90 @@ type ListEmployeeResponse struct {
 	Items []DetailEmployeeResponse `json:"items"`
 }
 
+type CreateContractorRequest struct {
+	Contractor_photo string               `json:"contractor_photo"`
+	Contractor_name  string               `json:"contractor_name"`
+	Contractor_type  string               `json:"contractor_type"`
+	Contact_details  string               `json:"contact_details"`
+	Address_info     CreateAddressRequest `json:"address_info,optional"`
+}
+
+type CreateContractorResponse struct {
+	Contractor_id int64 `json:"contractor_id"`
+}
+
+type UpdateContractorRequest struct {
+	Contractor_id    int64                `json:"contractor_id"`
+	Contractor_photo string               `json:"contractor_photo"`
+	Contractor_name  string               `json:"contractor_name"`
+	Contractor_type  string               `json:"contractor_type"`
+	Contact_details  string               `json:"contact_details"`
+	Address_info     UpdateAddressRequest `json:"address_info,optional"`
+	Link_code        string               `json:"link_code"`
+	Work_status      int                  `json:"work_status"`
+	New_services     []int64              `json:"new_services"`
+	Remove_services  []int64              `json:"remove_services"`
+}
+
+type UpdateContractorResponse struct {
+}
+
+type RemoveContractorRequest struct {
+	Contractor_id int64 `json:"Contractor_id,optional"`
+}
+
+type RemoveContractorResponse struct {
+}
+
+type DetailContractorRequest struct {
+	Contractor_id int64 `json:"Contractor_id,optional"`
+}
+
+type DetailContractorResponse struct {
+	Contractor_id      int64                         `json:"contractor_id"`
+	Contractor_photo   string                        `json:"contractor_photo"`
+	Contractor_name    string                        `json:"contractor_name"`
+	Contractor_type    string                        `json:"contractor_type"`
+	Contact_details    string                        `json:"contact_details"`
+	Address_info       DetailAddressResponse         `json:"address_info"`
+	Finance_id         int64                         `json:"finance_id"`
+	Link_code          string                        `json:"link_code"`
+	Work_status        int                           `json:"work_status"`
+	Order_id           int64                         `json:"order_id"`
+	Contractor_service ListContractorServiceResponse `json:"contractor_service"`
+}
+
+type ListContractorRequest struct {
+}
+
+type ListContractorResponse struct {
+	Items []DetailContractorResponse `json:"items"`
+}
+
+type CreateContractorServiceRequest struct {
+	Contractor_id int64 `json:"contractor_id,optional"`
+	Service_id    int64 `json:"service_id"`
+}
+
+type CreateContractorServiceResponse struct {
+}
+
+type RemoveContractorServiceRequest struct {
+	Contractor_id int64 `json:"contractor_id,optional"`
+	Service_id    int64 `json:"service_id"`
+}
+
+type RemoveContractorServiceResponse struct {
+}
+
+type ListContractorServiceRequest struct {
+	Contractor_id int64 `json:"contractor_id"`
+}
+
+type ListContractorServiceResponse struct {
+	Items []DetailServiceResponse `json:"items"`
+}
+
 type CreateOrderRequest struct {
 	Customer_info     CreateCustomerRequest `json:"customer_info"`
 	Address_info      CreateAddressRequest  `json:"address_info"`
@@ -458,6 +542,7 @@ type DetailOperationResponse struct {
 }
 
 type ListOperationRequest struct {
+	Contractor_id int64 `json:"contractor_id"`
 }
 
 type ListOperationResponse struct {
@@ -488,11 +573,11 @@ type ListEmployeeServiceResponse struct {
 	Items []DetailServiceResponse `json:"items"`
 }
 
-type UploadEmployeePhotoRequest struct {
-	Employee_id    int64  `json:"employee_id,optional"`
-	Employee_photo string `json:"employee_photo"`
+type UploadContractorPhotoRequest struct {
+	Contractor_id    int64  `json:"contractor_id,optional"`
+	Contractor_photo string `json:"contractor_photo"`
 }
 
-type UploadEmployeePhotoResponse struct {
-	Employee_photo string `json:"employee_photo"`
+type UploadContractorPhotoResponse struct {
+	Contractor_photo string `json:"contractor_photo"`
 }
