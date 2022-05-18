@@ -38,12 +38,12 @@ type (
 	}
 
 	BAddress struct {
-		AddressId      int64          `db:"address_id"`
-		AddressDetails string         `db:"address_details"`
-		Suburb         string         `db:"suburb"`
-		Postcode       string         `db:"postcode"`
-		StateCode      string         `db:"state_code"`
-		Country        sql.NullString `db:"country"`
+		AddressId int64  `db:"address_id"`
+		Street    string `db:"street"`
+		Suburb    string `db:"suburb"`
+		Postcode  string `db:"postcode"`
+		StateCode string `db:"state_code"`
+		Country   string `db:"country"`
 	}
 )
 
@@ -58,7 +58,7 @@ func (m *defaultBAddressModel) Insert(ctx context.Context, data *BAddress) (sql.
 	bAddressAddressIdKey := fmt.Sprintf("%s%v", cacheBAddressAddressIdPrefix, data.AddressId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, bAddressRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.AddressDetails, data.Suburb, data.Postcode, data.StateCode, data.Country)
+		return conn.ExecCtx(ctx, query, data.Street, data.Suburb, data.Postcode, data.StateCode, data.Country)
 	}, bAddressAddressIdKey)
 	return ret, err
 }
@@ -84,7 +84,7 @@ func (m *defaultBAddressModel) Update(ctx context.Context, data *BAddress) error
 	bAddressAddressIdKey := fmt.Sprintf("%s%v", cacheBAddressAddressIdPrefix, data.AddressId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `address_id` = ?", m.table, bAddressRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.AddressDetails, data.Suburb, data.Postcode, data.StateCode, data.Country, data.AddressId)
+		return conn.ExecCtx(ctx, query, data.Street, data.Suburb, data.Postcode, data.StateCode, data.Country, data.AddressId)
 	}, bAddressAddressIdKey)
 	return err
 }

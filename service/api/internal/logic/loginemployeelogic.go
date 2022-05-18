@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cleaningservice/common/cryptx"
@@ -39,6 +40,7 @@ func (l *LoginEmployeeLogic) LoginEmployee(req *types.LoginEmployeeRequest) (res
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
+	fmt.Println(len(item.LinkCode), "      ", len(req.LinkCode))
 	// Verify if first login
 	if item.WorkStatus == int64(variables.Await) {
 		if req.VerifyCode == "" {

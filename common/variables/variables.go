@@ -22,12 +22,19 @@ const (
 	Accept
 )
 
-// workstatus enum
+// employee workstatus enum
 const (
 	Vacant int = iota
 	InWork
 	Await
+	InRest
 	Resigned
+)
+
+// employee type enum
+const (
+	Employed int = iota
+	Individual
 )
 
 // company status enum

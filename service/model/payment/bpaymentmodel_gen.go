@@ -22,7 +22,7 @@ var (
 	bPaymentRowsExpectAutoSet   = strings.Join(stringx.Remove(bPaymentFieldNames, "`payment_id`", "`create_time`", "`update_time`"), ",")
 	bPaymentRowsWithPlaceHolder = strings.Join(stringx.Remove(bPaymentFieldNames, "`payment_id`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
-	cacheBPaymentPaymentIdPrefix = "cache:bPayment:paymentId:"
+	cacheBPaymentPaymentIdPrefix  = "cache:bPayment:paymentId:"
 	cacheBPaymentCardNumberPrefix = "cache:bPayment:cardNumber:"
 )
 
@@ -30,7 +30,7 @@ type (
 	bPaymentModel interface {
 		Insert(ctx context.Context, data *BPayment) (sql.Result, error)
 		FindOne(ctx context.Context, paymentId int64) (*BPayment, error)
-		FindOneByCard(ctx context.Context, cardNumber string) (*BPayment, error)
+		FindOneByCardNumber(ctx context.Context, cardNumber string) (*BPayment, error)
 		Update(ctx context.Context, data *BPayment) error
 		Delete(ctx context.Context, paymentId int64) error
 	}
@@ -58,10 +58,11 @@ func newBPaymentModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBPaymentMode
 
 func (m *defaultBPaymentModel) Insert(ctx context.Context, data *BPayment) (sql.Result, error) {
 	bPaymentPaymentIdKey := fmt.Sprintf("%s%v", cacheBPaymentPaymentIdPrefix, data.PaymentId)
+	bPaymentCardNumberKey := fmt.Sprintf("%s%v", cacheBPaymentCardNumberPrefix, data.CardNumber)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, bPaymentRowsExpectAutoSet)
 		return conn.ExecCtx(ctx, query, data.CardNumber, data.HolderName, data.ExpiryTime, data.SecurityCode)
-	}, bPaymentPaymentIdKey)
+	}, bPaymentPaymentIdKey, bPaymentCardNumberKey)
 	return ret, err
 }
 
@@ -82,10 +83,16 @@ func (m *defaultBPaymentModel) FindOne(ctx context.Context, paymentId int64) (*B
 	}
 }
 
-func (m *defaultBPaymentModel) FindOneByCard(ctx context.Context, cardNumber string) (*BPayment, error) {
-	query := fmt.Sprintf("select %s from %s where `card_number` = ? limit 1", bPaymentRows, m.table)
+func (m *defaultBPaymentModel) FindOneByCardNumber(ctx context.Context, cardNumber string) (*BPayment, error) {
+	bPaymentCardNumberKey := fmt.Sprintf("%s%v", cacheBPaymentCardNumberPrefix, cardNumber)
 	var resp BPayment
-	err := m.QueryRowNoCacheCtx(ctx, &resp, query, cardNumber)
+	err := m.QueryRowIndexCtx(ctx, &resp, bPaymentCardNumberKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
+		query := fmt.Sprintf("select %s from %s where `card_number` = ? limit 1", bPaymentRows, m.table)
+		if err := conn.QueryRowCtx(ctx, &resp, query, cardNumber); err != nil {
+			return nil, err
+		}
+		return resp.PaymentId, nil
+	}, m.queryPrimary)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -98,19 +105,26 @@ func (m *defaultBPaymentModel) FindOneByCard(ctx context.Context, cardNumber str
 
 func (m *defaultBPaymentModel) Update(ctx context.Context, data *BPayment) error {
 	bPaymentPaymentIdKey := fmt.Sprintf("%s%v", cacheBPaymentPaymentIdPrefix, data.PaymentId)
+	bPaymentCardNumberKey := fmt.Sprintf("%s%v", cacheBPaymentCardNumberPrefix, data.CardNumber)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `payment_id` = ?", m.table, bPaymentRowsWithPlaceHolder)
 		return conn.ExecCtx(ctx, query, data.CardNumber, data.HolderName, data.ExpiryTime, data.SecurityCode, data.PaymentId)
-	}, bPaymentPaymentIdKey)
+	}, bPaymentPaymentIdKey, bPaymentCardNumberKey)
 	return err
 }
 
 func (m *defaultBPaymentModel) Delete(ctx context.Context, paymentId int64) error {
+	data, err := m.FindOne(ctx, paymentId)
+	if err != nil {
+		return err
+	}
+
 	bPaymentPaymentIdKey := fmt.Sprintf("%s%v", cacheBPaymentPaymentIdPrefix, paymentId)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+	bPaymentCardNumberKey := fmt.Sprintf("%s%v", cacheBPaymentCardNumberPrefix, data.CardNumber)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("delete from %s where `payment_id` = ?", m.table)
 		return conn.ExecCtx(ctx, query, paymentId)
-	}, bPaymentPaymentIdKey)
+	}, bPaymentPaymentIdKey, bPaymentCardNumberKey)
 	return err
 }
 

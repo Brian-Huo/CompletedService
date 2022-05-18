@@ -186,7 +186,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/order/getDetail",
+				Path:    "/api/order/getDetails",
 				Handler: GetOrderDetailsHandler(serverCtx),
 			},
 			{

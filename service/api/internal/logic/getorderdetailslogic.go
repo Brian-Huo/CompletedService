@@ -70,12 +70,12 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 		return nil, status.Error(500, err.Error())
 	}
 	newAddr := types.DetailAddressResponse{
-		Address_id:      addr.AddressId,
-		Address_details: addr.AddressDetails,
-		Suburb:          addr.Suburb,
-		Postcode:        addr.Postcode,
-		State_code:      addr.StateCode,
-		Country:         addr.Country.String,
+		Address_id: addr.AddressId,
+		Street:     addr.Street,
+		Suburb:     addr.Suburb,
+		Postcode:   addr.Postcode,
+		State_code: addr.StateCode,
+		Country:    addr.Country,
 	}
 
 	// Get employee details
@@ -100,7 +100,7 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 		return nil, status.Error(500, err.Error())
 	}
 
-	order_item := types.DetailOrderResponse{
+	order_item := types.GetOrderDetailsResponse{
 		Order_id:              res.OrderId,
 		Customer_info:         newCus,
 		Employee_info:         newEmpl,
@@ -132,5 +132,5 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 		order_item.Finish_date = ""
 	}
 
-	return
+	return &order_item, nil
 }

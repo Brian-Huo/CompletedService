@@ -40,6 +40,8 @@ func (l *ListServiceLogic) ListService(req *types.ListServiceRequest) (resp *typ
 		newItem := types.DetailServiceResponse{
 			Service_id:          item.ServiceId,
 			Service_type:        item.ServiceType,
+			Service_scope:       item.ServiceScope,
+			Service_name:        item.ServiceName,
 			Service_description: item.ServiceDescription,
 			Service_price:       item.ServicePrice,
 		}

@@ -53,7 +53,7 @@ func (l *PayOrderLogic) PayOrder(req *types.PayOrderRequest) (resp *types.PayOrd
 	}
 
 	var paymentId int64
-	pay, err := l.svcCtx.BPaymentModel.FindOneByCard(l.ctx, req.Final_info.Card_number)
+	pay, err := l.svcCtx.BPaymentModel.FindOneByCardNumber(l.ctx, req.Final_info.Card_number)
 	if err == payment.ErrNotFound {
 		res, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment.BPayment{
 			CardNumber:   req.Final_info.Card_number,

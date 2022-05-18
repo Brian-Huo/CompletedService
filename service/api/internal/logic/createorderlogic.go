@@ -37,7 +37,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	// Exist detail check and create if new details
 	// Payment
 	var paymentId int64
-	payment_item, err := l.svcCtx.BPaymentModel.FindOneByCard(l.ctx, req.Deposite_info.Card_number)
+	payment_item, err := l.svcCtx.BPaymentModel.FindOneByCardNumber(l.ctx, req.Deposite_info.Card_number)
 	if err == payment.ErrNotFound {
 		// expiry time convert
 		exp_time, err := time.Parse("2006-01-02 15:04:05", req.Deposite_info.Expiry_time)
@@ -68,7 +68,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 
 	// Customer
 	var customerId int64
-	customer_item, err := l.svcCtx.BCustomerModel.FindOnebyPhone(l.ctx, req.Customer_info.Contact_details)
+	customer_item, err := l.svcCtx.BCustomerModel.FindOneByContactDetails(l.ctx, req.Customer_info.Contact_details)
 	if err == customer.ErrNotFound {
 		newCustomer := customer.BCustomer{
 			CustomerName:   req.Customer_info.Customer_name,
@@ -93,11 +93,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 
 	// Address
 	address_Item := address.BAddress{
-		AddressDetails: req.Address_info.Address_details,
-		Suburb:         req.Address_info.Suburb,
-		Postcode:       req.Address_info.Postcode,
-		StateCode:      req.Address_info.State_code,
-		Country:        sql.NullString{req.Address_info.Country, req.Address_info.Country != ""},
+		Street:    req.Address_info.Street,
+		Suburb:    req.Address_info.Suburb,
+		Postcode:  req.Address_info.Postcode,
+		StateCode: req.Address_info.State_code,
+		Country:   "AU",
 	}
 
 	res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_Item)

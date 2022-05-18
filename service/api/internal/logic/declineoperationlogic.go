@@ -47,10 +47,10 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 	}
 
 	newItem := operation.BOperation{
-		EmployeeId: uid,
-		OrderId:    req.Order_id,
-		Operation:  int64(variables.Decline),
-		IssueDate:  time.Now(),
+		ContractorId: uid,
+		OrderId:      req.Order_id,
+		Operation:    int64(variables.Decline),
+		IssueDate:    time.Now(),
 	}
 
 	res, err := l.svcCtx.BOperationModel.Insert(l.ctx, &newItem)

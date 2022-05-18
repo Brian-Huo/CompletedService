@@ -32,7 +32,7 @@ func NewLoginCompanyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Logi
 func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *types.LoginCompanyResponse, err error) {
 	// find company by contact_details
 	var companyId int64
-	item, err := l.svcCtx.BCompanyModel.FindOnebyPhone(l.ctx, req.Contact_details)
+	item, err := l.svcCtx.BCompanyModel.FindOneByContactDetails(l.ctx, req.Contact_details)
 	if err == company.ErrNotFound {
 		// if company not found, insert company
 		res, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &company.BCompany{

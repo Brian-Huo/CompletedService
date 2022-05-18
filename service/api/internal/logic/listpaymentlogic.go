@@ -25,5 +25,7 @@ func NewListPaymentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListP
 }
 
 func (l *ListPaymentLogic) ListPayment(req *types.ListPaymentRequest) (resp *types.ListPaymentResponse, err error) {
-	return nil, status.Error(500, err.Error())
+	// todo: add your logic here and delete this line
+
+	return nil, status.Error(500, "Invalid, Currently not available")
 }

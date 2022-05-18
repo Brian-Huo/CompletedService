@@ -45,11 +45,11 @@ type LoginCustomerResponse struct {
 }
 
 type CreateAddressRequest struct {
-	Address_details string `json:"address_details"`
-	Suburb          string `json:"suburb"`
-	Postcode        string `json:"postcode"`
-	State_code      string `json:"state_code"`
-	Country         string `json:"country"`
+	Street     string `json:"street"`
+	Suburb     string `json:"suburb"`
+	Postcode   string `json:"postcode"`
+	State_code string `json:"state_code"`
+	Country    string `json:"country"`
 }
 
 type CreateAddressResponse struct {
@@ -57,12 +57,12 @@ type CreateAddressResponse struct {
 }
 
 type UpdateAddressRequest struct {
-	Address_id      int64  `json:"address_id"`
-	Address_details string `json:"address_details"`
-	Suburb          string `json:"suburb"`
-	Postcode        string `json:"postcode"`
-	State_code      string `json:"state_code"`
-	Country         string `json:"country"`
+	Address_id int64  `json:"address_id"`
+	Street     string `json:"street"`
+	Suburb     string `json:"suburb"`
+	Postcode   string `json:"postcode"`
+	State_code string `json:"state_code"`
+	Country    string `json:"country"`
 }
 
 type UpdateAddressResponse struct {
@@ -80,12 +80,12 @@ type DetailAddressRequest struct {
 }
 
 type DetailAddressResponse struct {
-	Address_id      int64  `json:"address_id"`
-	Address_details string `json:"address_details"`
-	Suburb          string `json:"suburb"`
-	Postcode        string `json:"postcode"`
-	State_code      string `json:"state_code"`
-	Country         string `json:"country"`
+	Address_id int64  `json:"address_id"`
+	Street     string `json:"street"`
+	Suburb     string `json:"suburb"`
+	Postcode   string `json:"postcode"`
+	State_code string `json:"state_code"`
+	Country    string `json:"country"`
 }
 
 type ListAddressRequest struct {
@@ -199,6 +199,7 @@ type UpdateEmployeeRequest struct {
 	Employee_name   string  `json:"employee_name"`
 	Contact_details string  `json:"contact_details"`
 	Link_code       string  `json:"link_code"`
+	Work_status     int     `json:"work_status"`
 	New_services    []int64 `json:"new_services"`
 	Remove_services []int64 `json:"remove_services"`
 }
@@ -358,6 +359,8 @@ type DetailServiceRequest struct {
 type DetailServiceResponse struct {
 	Service_id          int64   `json:"service_id"`
 	Service_type        string  `json:"service_type"`
+	Service_scope       string  `json:"service_scope"`
+	Service_name        string  `json:"service_name"`
 	Service_description string  `json:"service_description"`
 	Service_price       float64 `json:"service_price"`
 }
@@ -447,11 +450,11 @@ type DetailOperationRequest struct {
 }
 
 type DetailOperationResponse struct {
-	Operation_id int64  `json:"operation_id"`
-	Employee_id  int64  `json:"employee_id"`
-	Order_id     int64  `json:"order_id"`
-	Operation    int64  `json:"operation"`
-	Issue_date   string `json:"issue_date"`
+	Operation_id  int64  `json:"operation_id"`
+	Contractor_id int64  `json:"contractor_id"`
+	Order_id      int64  `json:"order_id"`
+	Operation     int64  `json:"operation"`
+	Issue_date    string `json:"issue_date"`
 }
 
 type ListOperationRequest struct {

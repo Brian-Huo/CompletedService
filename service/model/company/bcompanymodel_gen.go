@@ -21,15 +21,15 @@ var (
 	bCompanyRowsExpectAutoSet   = strings.Join(stringx.Remove(bCompanyFieldNames, "`company_id`", "`create_time`", "`update_time`"), ",")
 	bCompanyRowsWithPlaceHolder = strings.Join(stringx.Remove(bCompanyFieldNames, "`company_id`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
-	cacheBCompanyCompanyIdPrefix = "cache:bCompany:companyId:"
+	cacheBCompanyCompanyIdPrefix      = "cache:bCompany:companyId:"
+	cacheBCompanyContactDetailsPrefix = "cache:bCompany:contactDetails:"
 )
 
 type (
 	bCompanyModel interface {
 		Insert(ctx context.Context, data *BCompany) (sql.Result, error)
 		FindOne(ctx context.Context, companyId int64) (*BCompany, error)
-		FindOnebyPhone(ctx context.Context, contactDetails string) (*BCompany, error)
-		List(ctx context.Context) ([]*BCompany, error)
+		FindOneByContactDetails(ctx context.Context, contactDetails string) (*BCompany, error)
 		Update(ctx context.Context, data *BCompany) error
 		Delete(ctx context.Context, companyId int64) error
 	}
@@ -47,7 +47,7 @@ type (
 		ContactDetails    string         `db:"contact_details"`
 		RegisteredAddress sql.NullInt64  `db:"registered_address"`
 		DepositeRate      int64          `db:"deposite_rate"`
-		CompanyStatus     int64          `db:"company_status"`
+		FinanceStatus     int64          `db:"finance_status"`
 	}
 )
 
@@ -60,10 +60,11 @@ func newBCompanyModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBCompanyMode
 
 func (m *defaultBCompanyModel) Insert(ctx context.Context, data *BCompany) (sql.Result, error) {
 	bCompanyCompanyIdKey := fmt.Sprintf("%s%v", cacheBCompanyCompanyIdPrefix, data.CompanyId)
+	bCompanyContactDetailsKey := fmt.Sprintf("%s%v", cacheBCompanyContactDetailsPrefix, data.ContactDetails)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, bCompanyRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.CompanyName, data.PaymentId, data.DirectorName, data.ContactDetails, data.RegisteredAddress, data.DepositeRate, data.CompanyStatus)
-	}, bCompanyCompanyIdKey)
+		return conn.ExecCtx(ctx, query, data.CompanyName, data.PaymentId, data.DirectorName, data.ContactDetails, data.RegisteredAddress, data.DepositeRate, data.FinanceStatus)
+	}, bCompanyCompanyIdKey, bCompanyContactDetailsKey)
 	return ret, err
 }
 
@@ -84,10 +85,16 @@ func (m *defaultBCompanyModel) FindOne(ctx context.Context, companyId int64) (*B
 	}
 }
 
-func (m *defaultBCompanyModel) FindOnebyPhone(ctx context.Context, contactDetails string) (*BCompany, error) {
-	query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bCompanyRows, m.table)
+func (m *defaultBCompanyModel) FindOneByContactDetails(ctx context.Context, contactDetails string) (*BCompany, error) {
+	bCompanyContactDetailsKey := fmt.Sprintf("%s%v", cacheBCompanyContactDetailsPrefix, contactDetails)
 	var resp BCompany
-	err := m.QueryRowNoCacheCtx(ctx, &resp, query, contactDetails)
+	err := m.QueryRowIndexCtx(ctx, &resp, bCompanyContactDetailsKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
+		query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bCompanyRows, m.table)
+		if err := conn.QueryRowCtx(ctx, &resp, query, contactDetails); err != nil {
+			return nil, err
+		}
+		return resp.CompanyId, nil
+	}, m.queryPrimary)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -98,37 +105,28 @@ func (m *defaultBCompanyModel) FindOnebyPhone(ctx context.Context, contactDetail
 	}
 }
 
-func (m *defaultBCompanyModel) List(ctx context.Context) ([]*BCompany, error) {
-	var resp []*BCompany
-	
-	query := fmt.Sprintf("select %s from %s", bCompanyRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query)
-
-	switch err {
-	case nil:
-		return resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
 func (m *defaultBCompanyModel) Update(ctx context.Context, data *BCompany) error {
 	bCompanyCompanyIdKey := fmt.Sprintf("%s%v", cacheBCompanyCompanyIdPrefix, data.CompanyId)
+	bCompanyContactDetailsKey := fmt.Sprintf("%s%v", cacheBCompanyContactDetailsPrefix, data.ContactDetails)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `company_id` = ?", m.table, bCompanyRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.CompanyName, data.PaymentId, data.DirectorName, data.ContactDetails, data.RegisteredAddress, data.DepositeRate, data.CompanyStatus, data.CompanyId)
-	}, bCompanyCompanyIdKey)
+		return conn.ExecCtx(ctx, query, data.CompanyName, data.PaymentId, data.DirectorName, data.ContactDetails, data.RegisteredAddress, data.DepositeRate, data.FinanceStatus, data.CompanyId)
+	}, bCompanyCompanyIdKey, bCompanyContactDetailsKey)
 	return err
 }
 
 func (m *defaultBCompanyModel) Delete(ctx context.Context, companyId int64) error {
+	data, err := m.FindOne(ctx, companyId)
+	if err != nil {
+		return err
+	}
+
 	bCompanyCompanyIdKey := fmt.Sprintf("%s%v", cacheBCompanyCompanyIdPrefix, companyId)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+	bCompanyContactDetailsKey := fmt.Sprintf("%s%v", cacheBCompanyContactDetailsPrefix, data.ContactDetails)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("delete from %s where `company_id` = ?", m.table)
 		return conn.ExecCtx(ctx, query, companyId)
-	}, bCompanyCompanyIdKey)
+	}, bCompanyContactDetailsKey, bCompanyCompanyIdKey)
 	return err
 }
 

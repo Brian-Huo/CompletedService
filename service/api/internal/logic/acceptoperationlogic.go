@@ -67,10 +67,10 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 
 	// Create operaction records
 	newItem := operation.BOperation{
-		EmployeeId: uid,
-		OrderId:    req.Order_id,
-		Operation:  int64(variables.Accept),
-		IssueDate:  time.Now(),
+		ContractorId: uid,
+		OrderId:      req.Order_id,
+		Operation:    int64(variables.Accept),
+		IssueDate:    time.Now(),
 	}
 
 	res, err := l.svcCtx.BOperationModel.Insert(l.ctx, &newItem)

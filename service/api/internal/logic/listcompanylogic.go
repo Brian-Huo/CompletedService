@@ -5,7 +5,6 @@ import (
 
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
-	"cleaningservice/service/model/company"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -26,28 +25,7 @@ func NewListCompanyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListC
 }
 
 func (l *ListCompanyLogic) ListCompany(req *types.ListCompanyRequest) (resp *types.ListCompanyResponse, err error) {
-	res, err := l.svcCtx.BCompanyModel.List(l.ctx)
-	if err != nil {
-		if err == company.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Company not found.")
-		}
-		return nil, status.Error(500, err.Error())
-	}
+	// todo: add your logic here and delete this line
 
-	allItems := []types.DetailCompanyResponse{}
-
-	for _, item := range res {
-		newItem := types.DetailCompanyResponse{
-			Company_id:      item.CompanyId,
-			Company_name:    item.CompanyName,
-			Director_name:   item.DirectorName.String,
-			Contact_details: item.ContactDetails,
-		}
-
-		allItems = append(allItems, newItem)
-	}
-
-	return &types.ListCompanyResponse{
-		Items: allItems,
-	}, nil
+	return nil, status.Error(500, "Invalid, Currently not available")
 }

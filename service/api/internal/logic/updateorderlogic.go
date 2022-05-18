@@ -64,11 +64,11 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 
 	// Modify address details
 	err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
-		AddressDetails: req.Address_info.Address_details,
-		Suburb:         req.Address_info.Suburb,
-		Postcode:       req.Address_info.Postcode,
-		StateCode:      req.Address_info.State_code,
-		Country:        sql.NullString{req.Address_info.Country, req.Address_info.Country != ""},
+		Street:    req.Address_info.Street,
+		Suburb:    req.Address_info.Suburb,
+		Postcode:  req.Address_info.Postcode,
+		StateCode: req.Address_info.State_code,
+		Country:   "AU",
 	})
 	if err != nil {
 		if err == address.ErrNotFound {

@@ -75,12 +75,12 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			return nil, status.Error(500, err.Error())
 		}
 		newAddr := types.DetailAddressResponse{
-			Address_id:      addr.AddressId,
-			Address_details: addr.AddressDetails,
-			Suburb:          addr.Suburb,
-			Postcode:        addr.Postcode,
-			State_code:      addr.StateCode,
-			Country:         addr.Country.String,
+			Address_id: addr.AddressId,
+			Street:     addr.Street,
+			Suburb:     addr.Suburb,
+			Postcode:   addr.Postcode,
+			State_code: addr.StateCode,
+			Country:    addr.Country,
 		}
 
 		// Get employee details

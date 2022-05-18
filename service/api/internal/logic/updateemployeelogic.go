@@ -56,6 +56,9 @@ func (l *UpdateEmployeeLogic) UpdateEmployee(req *types.UpdateEmployeeRequest) (
 
 	// Verify company and employee
 	if role == variables.Employee {
+		if req.Work_status == variables.Vacant || req.Work_status == variables.InRest {
+			empl.WorkStatus = int64(req.Work_status)
+		}
 		empl.LinkCode = cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, req.Link_code)
 	} else if role == variables.Company {
 		if empl.CompanyId != uid {

@@ -42,7 +42,7 @@ func (l *RemoveCompanyLogic) RemoveCompany(req *types.RemoveCompanyRequest) (res
 		}
 	}
 
-	comp.CompanyStatus = int64(variables.Abolished)
+	comp.FinanceStatus = int64(variables.Abolished)
 
 	err = l.svcCtx.BCompanyModel.Update(l.ctx, comp)
 	if err != nil {

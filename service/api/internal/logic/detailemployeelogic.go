@@ -59,14 +59,38 @@ func (l *DetailEmployeeLogic) DetailEmployee(req *types.DetailEmployeeRequest) (
 		}
 	}
 
+	// Get all emplooyee service
+	service_list := types.ListEmployeeServiceResponse{}
+	service_res, err := l.svcCtx.REmployeeServiceModel.FindAllByEmployee(l.ctx, res.EmployeeId)
+	if err == nil {
+		allServices := []types.DetailServiceResponse{}
+		for _, res_item := range service_res {
+			service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, res_item.ServiceId)
+			if err != nil {
+				break
+			}
+
+			service := types.DetailServiceResponse{
+				Service_id:          service_item.ServiceId,
+				Service_type:        service_item.ServiceType,
+				Service_description: service_item.ServiceDescription,
+				Service_price:       service_item.ServicePrice,
+			}
+
+			allServices = append(allServices, service)
+		}
+		service_list.Items = allServices
+	}
+
 	return &types.DetailEmployeeResponse{
-		Employee_id:     res.EmployeeId,
-		Employee_photo:  res.EmployeePhoto.String,
-		Employee_name:   res.EmployeeName,
-		Contact_details: res.ContactDetails,
-		Company_id:      res.CompanyId,
-		Link_code:       res.LinkCode,
-		Work_status:     int(res.WorkStatus),
-		Order_id:        res.OrderId.Int64,
+		Employee_id:      res.EmployeeId,
+		Employee_photo:   res.EmployeePhoto.String,
+		Employee_name:    res.EmployeeName,
+		Contact_details:  res.ContactDetails,
+		Company_id:       res.CompanyId,
+		Link_code:        res.LinkCode,
+		Work_status:      int(res.WorkStatus),
+		Order_id:         res.OrderId.Int64,
+		Employee_service: service_list,
 	}, nil
 }

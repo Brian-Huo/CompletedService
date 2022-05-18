@@ -40,7 +40,7 @@ func (l *DetailOperationLogic) DetailOperation(req *types.DetailOperationRequest
 			return nil, status.Error(500, err.Error())
 		}
 
-		empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, res.EmployeeId)
+		empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, res.ContractorId)
 		if err != nil || uid != empl.CompanyId {
 			if err == operation.ErrNotFound {
 				return nil, status.Error(404, "Invalid, Employee not found.")
@@ -49,11 +49,11 @@ func (l *DetailOperationLogic) DetailOperation(req *types.DetailOperationRequest
 		}
 
 		return &types.DetailOperationResponse{
-			Operation_id: res.OperationId,
-			Employee_id:  res.EmployeeId,
-			Order_id:     res.OrderId,
-			Operation:    res.Operation,
-			Issue_date:   resp.Issue_date,
+			Operation_id:  res.OperationId,
+			Contractor_id: res.ContractorId,
+			Order_id:      res.OrderId,
+			Operation:     res.Operation,
+			Issue_date:    resp.Issue_date,
 		}, nil
 	}
 

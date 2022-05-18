@@ -35,11 +35,11 @@ func (l *DetailAddressLogic) DetailAddress(req *types.DetailAddressRequest) (res
 	}
 
 	return &types.DetailAddressResponse{
-		Address_id:      res.AddressId,
-		Address_details: res.StateCode,
-		Suburb:          res.Suburb,
-		Postcode:        res.Postcode,
-		State_code:      res.StateCode,
-		Country:         res.Country.String,
+		Address_id: res.AddressId,
+		Street:     res.Street,
+		Suburb:     res.Suburb,
+		Postcode:   res.Postcode,
+		State_code: res.StateCode,
+		Country:    res.Country,
 	}, nil
 }

@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"database/sql"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -53,11 +52,11 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 	}
 
 	err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
-		AddressDetails: req.Address_details,
-		Suburb:         req.Suburb,
-		Postcode:       req.Postcode,
-		StateCode:      req.State_code,
-		Country:        sql.NullString{req.Country, req.Country != ""},
+		Street:    req.Street,
+		Suburb:    req.Suburb,
+		Postcode:  req.Postcode,
+		StateCode: req.State_code,
+		Country:   "AU",
 	})
 	if err != nil {
 		if err == address.ErrNotFound {

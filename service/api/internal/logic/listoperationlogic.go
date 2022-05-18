@@ -35,7 +35,7 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 		return nil, status.Error(401, "Invalid, Not employee.")
 	}
 
-	res, err := l.svcCtx.BOperationModel.FindAllByEmployee(l.ctx, uid)
+	res, err := l.svcCtx.BOperationModel.FindAllByContractor(l.ctx, uid)
 	if err != nil {
 		if err == operation.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Operation not found.")
@@ -47,11 +47,11 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 
 	for _, item := range res {
 		newItem := types.DetailOperationResponse{
-			Operation_id: item.OperationId,
-			Employee_id:  item.EmployeeId,
-			Order_id:     item.OrderId,
-			Operation:    item.Operation,
-			Issue_date:   item.IssueDate.String(),
+			Operation_id:  item.OperationId,
+			Contractor_id: item.ContractorId,
+			Order_id:      item.OrderId,
+			Operation:     item.Operation,
+			Issue_date:    item.IssueDate.String(),
 		}
 
 		allItems = append(allItems, newItem)

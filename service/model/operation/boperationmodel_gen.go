@@ -29,11 +29,11 @@ type (
 	bOperationModel interface {
 		Insert(ctx context.Context, data *BOperation) (sql.Result, error)
 		FindOne(ctx context.Context, operationId int64) (*BOperation, error)
-		FindAllByEmployee(ctx context.Context, employeeId int64) ([]*BOperation, error)
+		FindAllByContractor(ctx context.Context, contractorId int64) ([]*BOperation, error)
 		FindAllByOrder(ctx context.Context, orderId int64) ([]*BOperation, error)
 		Update(ctx context.Context, data *BOperation) error
 		Delete(ctx context.Context, operationId int64) error
-		DeleteAllByEmployee(ctx context.Context, employeeId int64) error
+		DeleteAllByContractor(ctx context.Context, contractorId int64) error
 		DeleteAllByOrder(ctx context.Context, orderId int64) error
 	}
 
@@ -44,7 +44,7 @@ type (
 
 	BOperation struct {
 		OperationId int64     `db:"operation_id"`
-		EmployeeId  int64     `db:"employee_id"`
+		ContractorId  int64     `db:"contractor_id"`
 		OrderId     int64     `db:"order_id"`
 		Operation   int64     `db:"operation"`
 		IssueDate   time.Time `db:"issue_date"`
@@ -62,7 +62,7 @@ func (m *defaultBOperationModel) Insert(ctx context.Context, data *BOperation) (
 	bOperationOperationIdKey := fmt.Sprintf("%s%v", cacheBOperationOperationIdPrefix, data.OperationId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, bOperationRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.EmployeeId, data.OrderId, data.Operation, data.IssueDate)
+		return conn.ExecCtx(ctx, query, data.ContractorId, data.OrderId, data.Operation, data.IssueDate)
 	}, bOperationOperationIdKey)
 	return ret, err
 }
@@ -84,11 +84,11 @@ func (m *defaultBOperationModel) FindOne(ctx context.Context, operationId int64)
 	}
 }
 
-func (m *defaultBOperationModel) FindAllByEmployee(ctx context.Context, employeeId int64) ([]*BOperation, error) {
+func (m *defaultBOperationModel) FindAllByContractor(ctx context.Context, contractorId int64) ([]*BOperation, error) {
 	var resp []*BOperation
 
-	query := fmt.Sprintf("select %s from %s where `employee_id` = ?", bOperationRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, employeeId)
+	query := fmt.Sprintf("select %s from %s where `contractor_id` = ?", bOperationRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, contractorId)
 
 	switch err {
 	case nil:
@@ -120,7 +120,7 @@ func (m *defaultBOperationModel) Update(ctx context.Context, data *BOperation) e
 	bOperationOperationIdKey := fmt.Sprintf("%s%v", cacheBOperationOperationIdPrefix, data.OperationId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `operation_id` = ?", m.table, bOperationRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.EmployeeId, data.OrderId, data.Operation, data.IssueDate, data.OperationId)
+		return conn.ExecCtx(ctx, query, data.ContractorId, data.OrderId, data.Operation, data.IssueDate, data.OperationId)
 	}, bOperationOperationIdKey)
 	return err
 }
@@ -134,9 +134,9 @@ func (m *defaultBOperationModel) Delete(ctx context.Context, operationId int64) 
 	return err
 }
 
-func (m *defaultBOperationModel) DeleteAllByEmployee(ctx context.Context, employeeId int64) error {
-	query := fmt.Sprintf("delete from %s where `employee_id` = ?", m.table)
-	_,  err := m.ExecNoCacheCtx(ctx, query, employeeId)
+func (m *defaultBOperationModel) DeleteAllByContractor(ctx context.Context, contractorId int64) error {
+	query := fmt.Sprintf("delete from %s where `contractor_id` = ?", m.table)
+	_,  err := m.ExecNoCacheCtx(ctx, query, contractorId)
 	return err
 }
 

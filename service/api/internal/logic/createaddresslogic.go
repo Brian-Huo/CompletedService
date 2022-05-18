@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"database/sql"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -35,11 +34,11 @@ func (l *CreateAddressLogic) CreateAddress(req *types.CreateAddressRequest) (res
 	}
 
 	newItem := address.BAddress{
-		AddressDetails: req.Address_details,
-		Suburb:         req.Suburb,
-		Postcode:       req.Postcode,
-		StateCode:      req.State_code,
-		Country:        sql.NullString{req.Country, req.Country != ""},
+		Street:    req.Street,
+		Suburb:    req.Suburb,
+		Postcode:  req.Postcode,
+		StateCode: req.State_code,
+		Country:   "AU",
 	}
 
 	res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &newItem)

@@ -47,10 +47,10 @@ func (l *CreateOperationLogic) CreateOperation(req *types.CreateOperationRequest
 	}
 
 	newItem := operation.BOperation{
-		EmployeeId: uid,
-		OrderId:    req.Order_id,
-		Operation:  req.Operation,
-		IssueDate:  time.Now(),
+		ContractorId: uid,
+		OrderId:      req.Order_id,
+		Operation:    req.Operation,
+		IssueDate:    time.Now(),
 	}
 
 	res, err := l.svcCtx.BOperationModel.Insert(l.ctx, &newItem)

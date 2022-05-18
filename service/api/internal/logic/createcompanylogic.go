@@ -66,11 +66,11 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 
 	// Create address for company
 	newAddress := address.BAddress{
-		AddressDetails: req.Address_info.Address_details,
-		Suburb:         req.Address_info.Suburb,
-		Postcode:       req.Address_info.Postcode,
-		StateCode:      req.Address_info.State_code,
-		Country:        sql.NullString{req.Address_info.Country, req.Address_info.Country != ""},
+		Street:    req.Address_info.Street,
+		Suburb:    req.Address_info.Suburb,
+		Postcode:  req.Address_info.Postcode,
+		StateCode: req.Address_info.State_code,
+		Country:   "AU",
 	}
 
 	addressRes, err := l.svcCtx.BAddressModel.Insert(l.ctx, &newAddress)
@@ -91,7 +91,7 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 		ContactDetails:    req.Contact_details,
 		RegisteredAddress: sql.NullInt64{addressId, true},
 		DepositeRate:      int64(req.Deposite_rate),
-		CompanyStatus:     int64(variables.Active),
+		FinanceStatus:     int64(variables.Active),
 	}
 
 	res, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &newCompany)
