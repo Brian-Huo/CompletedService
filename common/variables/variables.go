@@ -9,10 +9,10 @@ const Deposite_rate float64 = 10.0
 // GST for cleaning services
 const GST float64 = 10.0
 
-// role = {0: "company", 1: "employee", 2: "customer"}
+// role = {0: "company", 1: "contractor", 2: "customer"}
 const (
 	Company int = iota
-	Employee
+	Contractor
 	Customer
 )
 
@@ -33,7 +33,7 @@ const (
 
 // employee type enum
 const (
-	Employed int = iota
+	Employee int = iota
 	Individual
 )
 
