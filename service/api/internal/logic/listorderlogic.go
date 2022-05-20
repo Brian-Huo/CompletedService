@@ -38,7 +38,7 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 	if role == variables.Customer {
 		res, err = l.svcCtx.BOrderModel.FindAllByCustomer(l.ctx, uid)
 	} else if role == variables.Company {
-		res, err = l.svcCtx.BOrderModel.FindAllByCompany(l.ctx, uid)
+		res, err = l.svcCtx.BOrderModel.FindAllByFinance(l.ctx, uid)
 	} else {
 		return nil, status.Error(401, "Invalid, Unauthorised action.")
 	}
@@ -80,32 +80,46 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Street:     addr.Street,
 			Suburb:     addr.Suburb,
 			Postcode:   addr.Postcode,
+			City:       addr.City,
 			State_code: addr.StateCode,
 			Country:    addr.Country,
+			Lat:        addr.Lat,
+			Lng:        addr.Lng,
+			Formatted:  addr.Formatted,
 		}
 
-		// Get employee details
-		empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, item.EmployeeId.Int64)
+		// Get contractor details
+		cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, item.ContractorId.Int64)
 		if err != nil {
 			if err == order.ErrNotFound {
-				return nil, status.Error(404, "Invalid, Employee not found.")
+				return nil, status.Error(404, "Invalid, Contractor not found.")
 			}
 			return nil, status.Error(500, err.Error())
 		}
-		newEmpl := types.DetailEmployeeResponse{
-			Employee_id:     empl.EmployeeId,
-			Employee_photo:  empl.EmployeePhoto.String,
-			Employee_name:   empl.EmployeeName,
-			Contact_details: empl.ContactDetails,
+
+		// Contractor type
+		var contractorType string
+		if cont.ContractorType == int64(variables.Employee) {
+			contractorType = "Employee"
+		} else if cont.ContractorType == int64(variables.Individual) {
+			contractorType = "Individual"
+		}
+
+		newCont := types.DetailContractorResponse{
+			Contractor_id:    cont.ContractorId,
+			Contractor_photo: cont.ContractorPhoto.String,
+			Contractor_name:  cont.ContractorName,
+			Contractor_type:  contractorType,
+			Contact_details:  cont.ContactDetails,
 		}
 
 		// Create order detail response
 		newItem := types.DetailOrderResponse{
 			Order_id:              item.OrderId,
 			Customer_info:         newCus,
-			Employee_info:         newEmpl,
+			Contractor_info:       newCont,
 			Address_info:          newAddr,
-			Company_id:            item.CompanyId.Int64,
+			Finance_id:            item.FinanceId.Int64,
 			Service_list:          item.ServiceList,
 			Deposite_payment:      item.DepositePayment,
 			Deposite_amount:       item.DepositeAmount,

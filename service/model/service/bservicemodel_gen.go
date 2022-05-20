@@ -45,6 +45,7 @@ type (
 		ServiceType        string  `db:"service_type"`
 		ServiceScope       string  `db:"service_scope"`
 		ServiceName        string  `db:"service_name"`
+		ServicePhoto       string  `db:"service_photo"`
 		ServiceDescription string  `db:"service_description"`
 		ServicePrice       float64 `db:"service_price"`
 	}
@@ -58,11 +59,11 @@ func newBServiceModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBServiceMode
 }
 
 func (m *defaultBServiceModel) Insert(ctx context.Context, data *BService) (sql.Result, error) {
-	bServiceServiceNameKey := fmt.Sprintf("%s%v", cacheBServiceServiceNamePrefix, data.ServiceName)
 	bServiceServiceIdKey := fmt.Sprintf("%s%v", cacheBServiceServiceIdPrefix, data.ServiceId)
+	bServiceServiceNameKey := fmt.Sprintf("%s%v", cacheBServiceServiceNamePrefix, data.ServiceName)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, bServiceRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.ServiceType, data.ServiceScope, data.ServiceName, data.ServiceDescription, data.ServicePrice)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, bServiceRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.ServiceType, data.ServiceScope, data.ServiceName, data.ServicePhoto, data.ServiceDescription, data.ServicePrice)
 	}, bServiceServiceIdKey, bServiceServiceNameKey)
 	return ret, err
 }
@@ -87,13 +88,10 @@ func (m *defaultBServiceModel) FindOne(ctx context.Context, serviceId int64) (*B
 func (m *defaultBServiceModel) FindOneByServiceName(ctx context.Context, serviceName string) (*BService, error) {
 	bServiceServiceNameKey := fmt.Sprintf("%s%v", cacheBServiceServiceNamePrefix, serviceName)
 	var resp BService
-	err := m.QueryRowIndexCtx(ctx, &resp, bServiceServiceNameKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
+	err := m.QueryRowCtx(ctx, &resp, bServiceServiceNameKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
 		query := fmt.Sprintf("select %s from %s where `service_name` = ? limit 1", bServiceRows, m.table)
-		if err := conn.QueryRowCtx(ctx, &resp, query, serviceName); err != nil {
-			return nil, err
-		}
-		return resp.ServiceId, nil
-	}, m.queryPrimary)
+		return conn.QueryRowCtx(ctx, v, query, serviceName)
+	})
 	switch err {
 	case nil:
 		return &resp, nil
@@ -125,8 +123,8 @@ func (m *defaultBServiceModel) Update(ctx context.Context, data *BService) error
 	bServiceServiceNameKey := fmt.Sprintf("%s%v", cacheBServiceServiceNamePrefix, data.ServiceName)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `service_id` = ?", m.table, bServiceRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.ServiceType, data.ServiceScope, data.ServiceName, data.ServiceDescription, data.ServicePrice, data.ServiceId)
-	}, bServiceServiceNameKey, bServiceServiceIdKey)
+		return conn.ExecCtx(ctx, query, data.ServiceType, data.ServiceScope, data.ServiceName, data.ServicePhoto, data.ServiceDescription, data.ServicePrice, data.ServiceId)
+	}, bServiceServiceIdKey, bServiceServiceNameKey)
 	return err
 }
 

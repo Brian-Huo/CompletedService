@@ -21,8 +21,12 @@ CREATE TABLE `b_address` (
     street varchar(255) NOT NULL,
     suburb varchar(50) NOT NULL,
     postcode char(4) NOT NULL,
+    city varchar(5) NOT NULL,
     state_code char(3) NOT NULL,
     country char(2) NOT NULL DEFAULT 'AU',
+    lat DECIMAL(10, 8) NOT NULL,
+    lng DECIMAL(11, 8) NOT NULL,
+    formatted varchar(255) NOT NULL,
     PRIMARY KEY(address_id)
 );
 
@@ -42,6 +46,7 @@ CREATE TABLE `b_service` (
     service_type varchar(255) NOT NULL,
     service_scope varchar(255) NOT NULL,
     service_name varchar(100) NOT NUll UNIQUE,
+    service_photo varchar(255) NOT NULL,
     service_description longtext NOT NUll,
     service_price float unsigned NOT NULL,
     PRIMARY KEY(service_id)
@@ -77,7 +82,7 @@ CREATE TABLE `b_contractor` (
     contractor_photo varchar(255),
     contractor_name varchar(255) NOT NULL,
     contractor_type tinyint(3) NOT NUll,
-    contact_details char(10) NOT NULL UNIQUE,
+    contact_details varchar(15) NOT NULL UNIQUE,
     finance_id int unsigned NOT NULL,
     address_id int unsigned,
     link_code char(64) NOT NUll,
@@ -103,6 +108,7 @@ CREATE TABLE `b_order` (
     customer_id int unsigned NOT NULL,
     address_id int unsigned NOT NULL,
     contractor_id int unsigned,
+    finance_id int unsigned,
     service_list mediumtext NOT NUll,
     deposite_payment int unsigned NOT NUll,
     deposite_amount float unsigned NOT NUll,
@@ -121,7 +127,8 @@ CREATE TABLE `b_order` (
     PRIMARY KEY(order_id)
 );
 ALTER TABLE `b_order` ADD FOREIGN KEY (customer_id) REFERENCES b_customer(customer_id); 
-ALTER TABLE `b_order` ADD FOREIGN KEY (address_id) REFERENCES b_address(address_id); 
+ALTER TABLE `b_order` ADD FOREIGN KEY (address_id) REFERENCES b_address(address_id);
+ALTER TABLE `b_order` ADD FOREIGN KEY (finance_id) REFERENCES b_company(company_id);
 ALTER TABLE `b_order` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (deposite_payment) REFERENCES b_payment(payment_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (final_payment) REFERENCES b_payment(payment_id); 

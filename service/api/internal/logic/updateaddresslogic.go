@@ -34,7 +34,7 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 		return nil, status.Error(500, "Invalid, JWT format error")
 	}
 
-	// check address id vaild for compay
+	// check address id vaild for company
 	if role != variables.Company {
 		return nil, status.Error(401, "Invalid, Not company.")
 	}
@@ -52,11 +52,16 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 	}
 
 	err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
+		AddressId: req.Address_id,
 		Street:    req.Street,
 		Suburb:    req.Suburb,
 		Postcode:  req.Postcode,
+		City:      req.City,
 		StateCode: req.State_code,
-		Country:   "AU",
+		Country:   req.Country,
+		Lat:       req.Lat,
+		Lng:       req.Lng,
+		Formatted: req.Formatted,
 	})
 	if err != nil {
 		if err == address.ErrNotFound {

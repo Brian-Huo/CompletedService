@@ -88,13 +88,10 @@ func (m *defaultBCompanyModel) FindOne(ctx context.Context, companyId int64) (*B
 func (m *defaultBCompanyModel) FindOneByContactDetails(ctx context.Context, contactDetails string) (*BCompany, error) {
 	bCompanyContactDetailsKey := fmt.Sprintf("%s%v", cacheBCompanyContactDetailsPrefix, contactDetails)
 	var resp BCompany
-	err := m.QueryRowIndexCtx(ctx, &resp, bCompanyContactDetailsKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
+	err := m.QueryRowCtx(ctx, &resp, bCompanyContactDetailsKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
 		query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bCompanyRows, m.table)
-		if err := conn.QueryRowCtx(ctx, &resp, query, contactDetails); err != nil {
-			return nil, err
-		}
-		return resp.CompanyId, nil
-	}, m.queryPrimary)
+		return conn.QueryRowCtx(ctx, v, query, contactDetails)
+	})
 	switch err {
 	case nil:
 		return &resp, nil
@@ -126,7 +123,7 @@ func (m *defaultBCompanyModel) Delete(ctx context.Context, companyId int64) erro
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("delete from %s where `company_id` = ?", m.table)
 		return conn.ExecCtx(ctx, query, companyId)
-	}, bCompanyContactDetailsKey, bCompanyCompanyIdKey)
+	}, bCompanyCompanyIdKey, bCompanyContactDetailsKey)
 	return err
 }
 

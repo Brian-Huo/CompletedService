@@ -7,7 +7,7 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
-	"cleaningservice/service/model/employee"
+	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/order"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -74,38 +74,52 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 		Street:     addr.Street,
 		Suburb:     addr.Suburb,
 		Postcode:   addr.Postcode,
+		City:       addr.City,
 		State_code: addr.StateCode,
 		Country:    addr.Country,
+		Lat:        addr.Lat,
+		Lng:        addr.Lng,
+		Formatted:  addr.Formatted,
 	}
 
-	// Get employee details
-	// Default employee details (not found/ haven't been assigned)
-	newEmpl := types.DetailEmployeeResponse{
-		Employee_id:     -1,
-		Employee_photo:  "No Employee Assigned",
-		Employee_name:   "No Employee Assigned",
-		Contact_details: "No Employee Assigned",
+	// Get contractor details
+	// Default contractor details (not found/ haven't been assigned)
+	newCont := types.DetailContractorResponse{
+		Contractor_id:    -1,
+		Contractor_photo: "No Contractor Assigned",
+		Contractor_name:  "No Contractor Assigned",
+		Contractor_type:  "No Contractor Assigned",
+		Contact_details:  "No Contractor Assigned",
 	}
 
-	empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, res.EmployeeId.Int64)
+	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, res.ContractorId.Int64)
 	if err == nil {
-		newEmpl.Employee_id = empl.EmployeeId
-		newEmpl.Employee_photo = empl.EmployeePhoto.String
-		newEmpl.Employee_name = empl.EmployeeName
-		newEmpl.Contact_details = empl.ContactDetails
-		newEmpl.Company_id = -1
-		newEmpl.Work_status = -1
-		newEmpl.Order_id = -1
-	} else if err != employee.ErrNotFound {
+		// Contractor type
+		var contractorType string
+		if cont.ContractorType == int64(variables.Employee) {
+			contractorType = "Employee"
+		} else if cont.ContractorType == int64(variables.Individual) {
+			contractorType = "Individual"
+		}
+
+		newCont.Contractor_id = cont.ContractorId
+		newCont.Contractor_photo = cont.ContractorPhoto.String
+		newCont.Contractor_name = cont.ContractorName
+		newCont.Contractor_type = contractorType
+		newCont.Contact_details = cont.ContactDetails
+		newCont.Finance_id = -1
+		newCont.Work_status = -1
+		newCont.Order_id = -1
+	} else if err != contractor.ErrNotFound {
 		return nil, status.Error(500, err.Error())
 	}
 
 	order_item := types.GetOrderDetailsResponse{
 		Order_id:              res.OrderId,
 		Customer_info:         newCus,
-		Employee_info:         newEmpl,
+		Contractor_info:       newCont,
 		Address_info:          newAddr,
-		Company_id:            res.CompanyId.Int64,
+		Finance_id:            res.FinanceId.Int64,
 		Service_list:          res.ServiceList,
 		Deposite_payment:      res.DepositePayment,
 		Deposite_amount:       res.DepositeAmount,

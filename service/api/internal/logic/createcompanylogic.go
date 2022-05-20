@@ -69,8 +69,12 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 		Street:    req.Address_info.Street,
 		Suburb:    req.Address_info.Suburb,
 		Postcode:  req.Address_info.Postcode,
+		City:      req.Address_info.City,
 		StateCode: req.Address_info.State_code,
-		Country:   "AU",
+		Country:   req.Address_info.Country,
+		Lat:       req.Address_info.Lat,
+		Lng:       req.Address_info.Lng,
+		Formatted: req.Address_info.Formatted,
 	}
 
 	addressRes, err := l.svcCtx.BAddressModel.Insert(l.ctx, &newAddress)

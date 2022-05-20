@@ -49,7 +49,7 @@ func (l *RemoveCompanyLogic) RemoveCompany(req *types.RemoveCompanyRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
-	err = l.svcCtx.BEmployeeModel.ResignByCompany(l.ctx, uid)
+	err = l.svcCtx.BContractorModel.ResignByFinance(l.ctx, uid)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

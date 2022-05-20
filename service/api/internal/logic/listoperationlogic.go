@@ -37,7 +37,7 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 	}
 
 	// Verify contractor
-	cont, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, req.Contractor_id)
+	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, req.Contractor_id)
 	if err != nil {
 		if err == employee.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Contractor not found.")
@@ -45,7 +45,7 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
-	if cont.CompanyId != uid {
+	if cont.FinanceId != uid {
 		return nil, status.Error(404, "Invalid, Contractor not found.")
 	}
 

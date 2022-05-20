@@ -27,7 +27,7 @@ func (l *VerifyCodeLogic) VerifyCode(req *types.VerifyCodeRequest) (resp *types.
 	// todo: add your logic here and delete this line
 
 	return &types.VerifyCodeResponse{
-		Code:    "1234",
-		Message: "Success",
+		Code: 1234,
+		Msg:  "Success",
 	}, nil
 }

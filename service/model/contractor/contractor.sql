@@ -4,7 +4,7 @@ CREATE TABLE `b_contractor` (
     contractor_photo varchar(255),
     contractor_name varchar(255) NOT NULL,
     contractor_type tinyint(3) NOT NUll,
-    contact_details char(10) NOT NULL UNIQUE,
+    contact_details varchar(15) NOT NULL UNIQUE,
     finance_id int unsigned NOT NULL,
     address_id int unsigned,
     link_code char(64) NOT NUll,

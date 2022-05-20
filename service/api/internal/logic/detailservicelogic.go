@@ -39,6 +39,7 @@ func (l *DetailServiceLogic) DetailService(req *types.DetailServiceRequest) (res
 		Service_type:        res.ServiceType,
 		Service_scope:       res.ServiceScope,
 		Service_name:        res.ServiceName,
+		Service_photo:       res.ServicePhoto,
 		Service_description: res.ServiceDescription,
 		Service_price:       res.ServicePrice,
 	}, nil

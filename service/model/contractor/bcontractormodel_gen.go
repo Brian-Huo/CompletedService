@@ -31,12 +31,12 @@ type (
 		Insert(ctx context.Context, data *BContractor) (sql.Result, error)
 		FindOne(ctx context.Context, contractorId int64) (*BContractor, error)
 		FindOneByContactDetails(ctx context.Context, contactDetails string) (*BContractor, error)
-		FindAllByCompany(ctx context.Context, companyId int64) ([]*BContractor, error)
+		FindAllByFinance(ctx context.Context, financeId int64) ([]*BContractor, error)
 		Update(ctx context.Context, data *BContractor) error
 		Resign(ctx context.Context, contractorId int64) error
-		ResignByCompany(ctx context.Context, companyId int64) error
+		ResignByFinance(ctx context.Context, financeId int64) error
 		Delete(ctx context.Context, contractorId int64) error
-		DeleteAllByCompany(ctx context.Context, companyId int64) error
+		DeleteAllByFinance(ctx context.Context, financeId int64) error
 	}
 
 	defaultBContractorModel struct {
@@ -95,13 +95,10 @@ func (m *defaultBContractorModel) FindOne(ctx context.Context, contractorId int6
 func (m *defaultBContractorModel) FindOneByContactDetails(ctx context.Context, contactDetails string) (*BContractor, error) {
 	bContractorContactDetailsKey := fmt.Sprintf("%s%v", cacheBContractorContactDetailsPrefix, contactDetails)
 	var resp BContractor
-	err := m.QueryRowIndexCtx(ctx, &resp, bContractorContactDetailsKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
+	err := m.QueryRowCtx(ctx, &resp, bContractorContactDetailsKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
 		query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bContractorRows, m.table)
-		if err := conn.QueryRowCtx(ctx, &resp, query, contactDetails); err != nil {
-			return nil, err
-		}
-		return resp.ContractorId, nil
-	}, m.queryPrimary)
+		return conn.QueryRowCtx(ctx, v, query, contactDetails)
+	})
 	switch err {
 	case nil:
 		return &resp, nil
@@ -112,11 +109,11 @@ func (m *defaultBContractorModel) FindOneByContactDetails(ctx context.Context, c
 	}
 }
 
-func (m *defaultBContractorModel) FindAllByCompany(ctx context.Context, companyId int64) ([]*BContractor, error) {
+func (m *defaultBContractorModel) FindAllByFinance(ctx context.Context, financeId int64) ([]*BContractor, error) {
 	var resp []*BContractor
 
-	query := fmt.Sprintf("select %s from %s where `company_id` = ?", bContractorRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, companyId)
+	query := fmt.Sprintf("select %s from %s where `finance_id` = ?", bContractorRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, financeId)
 
 	switch err {
 	case nil:
@@ -154,9 +151,9 @@ func (m *defaultBContractorModel) Resign(ctx context.Context, contractorId int64
 	return err
 }
 
-func (m *defaultBContractorModel) ResignByCompany(ctx context.Context, companyId int64) error {
-	query := fmt.Sprintf("update %s set %s where `company_id` = ?", m.table, "work_status=?")
-	_,  err := m.ExecNoCacheCtx(ctx, query, variables.Resigned, companyId)
+func (m *defaultBContractorModel) ResignByFinance(ctx context.Context, financeId int64) error {
+	query := fmt.Sprintf("update %s set %s where `finance_id` = ?", m.table, "work_status=?")
+	_,  err := m.ExecNoCacheCtx(ctx, query, variables.Resigned, financeId)
 	return err
 }
 
@@ -175,9 +172,9 @@ func (m *defaultBContractorModel) Delete(ctx context.Context, contractorId int64
 	return err
 }
 
-func (m *defaultBContractorModel) DeleteAllByCompany(ctx context.Context, companyId int64) error {
-	query := fmt.Sprintf("delete from %s where `company_id` = ?", m.table)
-	_,  err := m.ExecNoCacheCtx(ctx, query, companyId)
+func (m *defaultBContractorModel) DeleteAllByFinance(ctx context.Context, financeId int64) error {
+	query := fmt.Sprintf("delete from %s where `finance_id` = ?", m.table)
+	_,  err := m.ExecNoCacheCtx(ctx, query, financeId)
 	return err
 }
 

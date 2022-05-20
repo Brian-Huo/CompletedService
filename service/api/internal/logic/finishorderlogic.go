@@ -44,28 +44,32 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	if uid != ord.EmployeeId.Int64 {
+	if uid != ord.ContractorId.Int64 {
 		return nil, status.Error(404, "Invalid, Order not found.")
 	}
 
 	// Finish order
-	ord.Status = int64(variables.Unpaid)
+	if ord.Status == int64(variables.Working) {
+		ord.Status = int64(variables.Unpaid)
+	} else {
+		return nil, status.Error(401, "Order cannot be finished twice.")
+	}
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Update employee status
-	empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, ord.EmployeeId.Int64)
+	// Update contractor status
+	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, ord.ContractorId.Int64)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
-	empl.WorkStatus = int64(variables.Vacant)
-	empl.OrderId = sql.NullInt64{0, false}
+	cont.WorkStatus = int64(variables.Vacant)
+	cont.OrderId = sql.NullInt64{0, false}
 
-	err = l.svcCtx.BEmployeeModel.Update(l.ctx, empl)
+	err = l.svcCtx.BContractorModel.Update(l.ctx, cont)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

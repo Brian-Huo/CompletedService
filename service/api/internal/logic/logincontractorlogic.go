@@ -16,26 +16,26 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type LoginEmployeeLogic struct {
+type LoginContractorLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewLoginEmployeeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginEmployeeLogic {
-	return &LoginEmployeeLogic{
+func NewLoginContractorLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginContractorLogic {
+	return &LoginContractorLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *LoginEmployeeLogic) LoginEmployee(req *types.LoginEmployeeRequest) (resp *types.LoginEmployeeResponse, err error) {
-	// find employee by contact_details
+func (l *LoginContractorLogic) LoginContractor(req *types.LoginContractorRequest) (resp *types.LoginContractorResponse, err error) {
+	// find contractor by contact_details
 	item, err := l.svcCtx.BContractorModel.FindOneByContactDetails(l.ctx, req.Contact_details)
 	if err != nil {
 		if err == contractor.ErrNotFound {
-			return nil, errorx.NewCodeError(404, "Invalid, Employee not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Contractor not found.")
 		}
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
@@ -52,7 +52,7 @@ func (l *LoginEmployeeLogic) LoginEmployee(req *types.LoginEmployeeRequest) (res
 		if item.LinkCode != req.LinkCode {
 			return nil, errorx.NewCodeError(401, "Invalid, Link code incorrect.")
 		} else {
-			// Update employee first update
+			// Update contractor first update
 			item.WorkStatus = int64(variables.Vacant)
 			item.LinkCode = cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, item.LinkCode)
 			err = l.svcCtx.BContractorModel.Update(l.ctx, item)
@@ -72,7 +72,7 @@ func (l *LoginEmployeeLogic) LoginEmployee(req *types.LoginEmployeeRequest) (res
 		return nil, errorx.NewCodeError(500, "Jwt token error.")
 	}
 
-	return &types.LoginEmployeeResponse{
+	return &types.LoginContractorResponse{
 		Code:        200,
 		Msg:         "success",
 		AccessToken: token,

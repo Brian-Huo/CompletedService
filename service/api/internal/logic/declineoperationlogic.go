@@ -33,12 +33,12 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 	if err != nil {
 		return nil, status.Error(500, "Invalid, JWT format error")
 	} else if role != variables.Contractor {
-		return nil, status.Error(401, "Invalid, Not employee.")
+		return nil, status.Error(401, "Invalid, Not contractor.")
 	}
 
-	_, err = l.svcCtx.BEmployeeModel.FindOne(l.ctx, uid)
+	_, err = l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
 	if err != nil {
-		return nil, status.Error(404, "Invalid, Employee not found.")
+		return nil, status.Error(404, "Invalid, Contractor not found.")
 	}
 
 	_, err = l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)

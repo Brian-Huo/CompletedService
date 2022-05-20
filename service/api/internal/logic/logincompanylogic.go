@@ -42,6 +42,7 @@ func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *
 			ContactDetails:    req.Contact_details,
 			RegisteredAddress: sql.NullInt64{0, false},
 			DepositeRate:      10,
+			FinanceStatus:     int64(variables.Active),
 		})
 		if err != nil {
 			return nil, status.Error(500, err.Error())
@@ -68,8 +69,8 @@ func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *
 	}
 
 	return &types.LoginCompanyResponse{
-		Code:        "200",
-		Message:     "success",
+		Code:        200,
+		Msg:         "success",
 		AccessToken: token,
 	}, nil
 }

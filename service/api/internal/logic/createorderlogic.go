@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"strconv"
 	"time"
 
 	"cleaningservice/common/broadcast"
@@ -96,8 +97,12 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		Street:    req.Address_info.Street,
 		Suburb:    req.Address_info.Suburb,
 		Postcode:  req.Address_info.Postcode,
+		City:      req.Address_info.City,
 		StateCode: req.Address_info.State_code,
-		Country:   "AU",
+		Country:   req.Address_info.Country,
+		Lat:       req.Address_info.Lat,
+		Lng:       req.Address_info.Lng,
+		Formatted: req.Address_info.Formatted,
 	}
 
 	res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_Item)
@@ -119,7 +124,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	// Calculate fees and get full service strings
 	var service_fee float64 = 0
 	var service_list string = ""
-	for _, service_id := range req.Service_list {
+	for service_id, quantity := range req.Service_list {
 		service_list += variables.Separator
 		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, service_id)
 		if err != nil {
@@ -128,8 +133,8 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			}
 			return nil, status.Error(500, err.Error())
 		}
-		service_fee += service_item.ServicePrice
-		service_list += service_item.ServiceType
+		service_fee += service_item.ServicePrice * float64(quantity)
+		service_list += service_item.ServiceType + "x" + strconv.Itoa(quantity)
 	}
 
 	deposite_amount := service_fee / variables.Deposite_rate
@@ -141,8 +146,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	newItem := order.BOrder{
 		CustomerId:          customerId,
 		AddressId:           addressId,
-		CompanyId:           sql.NullInt64{0, false},
-		EmployeeId:          sql.NullInt64{0, false},
+		ContractorId:        sql.NullInt64{0, false},
 		ServiceList:         service_list,
 		DepositePayment:     paymentId,
 		DepositeAmount:      deposite_amount,

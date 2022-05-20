@@ -8,7 +8,7 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
-	"cleaningservice/service/model/employee"
+	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/order"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -45,18 +45,18 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, ord.EmployeeId.Int64)
+	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, ord.ContractorId.Int64)
 	if err != nil {
-		if err == employee.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Employee not found.")
+		if err == contractor.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Contractor not found.")
 		}
 		return nil, status.Error(500, err.Error())
 	}
 
-	empl.WorkStatus = int64(variables.Vacant)
-	empl.OrderId = sql.NullInt64{0, false}
+	cont.WorkStatus = int64(variables.Vacant)
+	cont.OrderId = sql.NullInt64{0, false}
 
-	err = l.svcCtx.BEmployeeModel.Update(l.ctx, empl)
+	err = l.svcCtx.BContractorModel.Update(l.ctx, cont)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

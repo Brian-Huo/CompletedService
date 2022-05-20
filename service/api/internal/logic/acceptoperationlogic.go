@@ -9,7 +9,7 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
-	"cleaningservice/service/model/employee"
+	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/operation"
 	"cleaningservice/service/model/order"
 
@@ -36,20 +36,20 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	if err != nil {
 		return nil, status.Error(500, "Invalid, JWT format error")
 	} else if role != variables.Contractor {
-		return nil, status.Error(401, "Invalid, Not employee.")
+		return nil, status.Error(401, "Invalid, Not contractor.")
 	}
 
-	// Check employee status
-	empl, err := l.svcCtx.BEmployeeModel.FindOne(l.ctx, uid)
+	// Check contractor status
+	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
 	if err != nil {
-		if err == employee.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Employee not found.")
+		if err == contractor.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Contractor not found.")
 		}
 		return nil, status.Error(500, err.Error())
 	}
 
-	if empl.WorkStatus != int64(variables.Vacant) {
-		return nil, status.Error(401, "Invalid, Employee should not double accept order(s).")
+	if cont.WorkStatus != int64(variables.Vacant) {
+		return nil, status.Error(401, "Invalid, Contractor should not double accept order(s).")
 	}
 
 	// Check order status
@@ -84,16 +84,17 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	}
 
 	// Update order details
-	ord.EmployeeId = sql.NullInt64{uid, true}
+	ord.ContractorId = sql.NullInt64{uid, true}
+	ord.FinanceId = sql.NullInt64{cont.FinanceId, true}
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Update employee details
-	empl.WorkStatus = int64(variables.InWork)
-	empl.OrderId = sql.NullInt64{req.Order_id, true}
-	err = l.svcCtx.BEmployeeModel.Update(l.ctx, empl)
+	// Update contractor details
+	cont.WorkStatus = int64(variables.InWork)
+	cont.OrderId = sql.NullInt64{req.Order_id, true}
+	err = l.svcCtx.BContractorModel.Update(l.ctx, cont)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

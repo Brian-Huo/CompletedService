@@ -60,22 +60,36 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 		}
 		res.ReserveDate = reserve_date
 	}
-	res.OrderDescription = sql.NullString{req.Order_description, req.Order_description != ""}
 
-	// Modify address details
-	err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
-		Street:    req.Address_info.Street,
-		Suburb:    req.Address_info.Suburb,
-		Postcode:  req.Address_info.Postcode,
-		StateCode: req.Address_info.State_code,
-		Country:   "AU",
-	})
+	// if modify address
+	address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, req.Address_info.Address_id)
 	if err != nil {
 		if err == address.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Address not found.")
 		}
 		return nil, status.Error(500, err.Error())
 	}
+
+	if req.Address_info.Street != address_item.Street {
+		// if address is close to current time in 12 hours, return error
+		if time.Now().Add(time.Hour * 12).Before(reserve_date) {
+			return nil, status.Error(500, "Address update is futher less than 12 hours.")
+		}
+
+		// Modify address details
+		err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
+			Street:    req.Address_info.Street,
+			Suburb:    req.Address_info.Suburb,
+			Postcode:  req.Address_info.Postcode,
+			City:      req.Address_info.City,
+			StateCode: req.Address_info.State_code,
+			Country:   req.Address_info.Country,
+			Lat:       req.Address_info.Lat,
+			Lng:       req.Address_info.Lng,
+			Formatted: req.Address_info.Formatted,
+		})
+	}
+	res.OrderDescription = sql.NullString{req.Order_description, req.Order_description != ""}
 
 	// Modify customer details
 	err = l.svcCtx.BCustomerModel.Update(l.ctx, &customer.BCustomer{

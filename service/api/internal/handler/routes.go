@@ -26,6 +26,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/api/user/login_contractor",
+				Handler: LoginContractorHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/api/user/login_company",
 				Handler: LoginCompanyHandler(serverCtx),
 			},

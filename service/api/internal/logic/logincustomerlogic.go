@@ -61,8 +61,8 @@ func (l *LoginCustomerLogic) LoginCustomer(req *types.LoginCustomerRequest) (res
 	}
 
 	return &types.LoginCustomerResponse{
-		Code:        "200",
-		Message:     "success",
+		Code:        200,
+		Msg:         "success",
 		AccessToken: token,
 	}, nil
 }
