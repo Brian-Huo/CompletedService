@@ -72,27 +72,10 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 	}
 
 	// Update address details
-	if req.Address_info.Street != "" {
-		_, err = l.svcCtx.BAddressModel.FindOne(l.ctx, cont.AddressId.Int64)
-		if err == nil {
-			err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
-				AddressId: cont.AddressId.Int64,
-				Street:    req.Address_info.Street,
-				Suburb:    req.Address_info.Suburb,
-				Postcode:  req.Address_info.Postcode,
-				City:      req.Address_info.City,
-				StateCode: req.Address_info.State_code,
-				Country:   req.Address_info.Country,
-				Lat:       req.Address_info.Lat,
-				Lng:       req.Address_info.Lng,
-				Formatted: req.Address_info.Formatted,
-			})
-
-			if err != nil {
-				return nil, status.Error(500, err.Error())
-			}
-		} else if err == address.ErrNotFound {
-			newAddr := address.BAddress{
+	if req.Address_info.Street != "No Address" {
+		if !cont.AddressId.Valid {
+			// Create new address
+			newItem := address.BAddress{
 				Street:    req.Address_info.Street,
 				Suburb:    req.Address_info.Suburb,
 				Postcode:  req.Address_info.Postcode,
@@ -104,7 +87,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 				Formatted: req.Address_info.Formatted,
 			}
 
-			res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &newAddr)
+			res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &newItem)
 			if err != nil {
 				return nil, status.Error(500, err.Error())
 			}
@@ -113,7 +96,28 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 			if err != nil {
 				return nil, status.Error(500, err.Error())
 			}
+
 			cont.AddressId = sql.NullInt64{newId, true}
+		} else {
+			// Update address
+			if err == nil {
+				err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
+					AddressId: cont.AddressId.Int64,
+					Street:    req.Address_info.Street,
+					Suburb:    req.Address_info.Suburb,
+					Postcode:  req.Address_info.Postcode,
+					City:      req.Address_info.City,
+					StateCode: req.Address_info.State_code,
+					Country:   req.Address_info.Country,
+					Lat:       req.Address_info.Lat,
+					Lng:       req.Address_info.Lng,
+					Formatted: req.Address_info.Formatted,
+				})
+
+				if err != nil {
+					return nil, status.Error(500, err.Error())
+				}
+			}
 		}
 	}
 

@@ -93,17 +93,10 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 	// Contractor address details
 	newAddr := types.DetailAddressResponse{
 		Address_id: -1,
-		Street:     "Not Found",
-		Suburb:     "Not Found",
-		Postcode:   "Not Found",
-		City:       "Not Found",
-		State_code: "Not Found",
-		Country:    "Not Found",
-		Lng:        -1,
-		Lat:        -1,
-		Formatted:  "Not Found",
+		Street:     "No Address",
 	}
 
+	// Get address details
 	address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, res.AddressId.Int64)
 	if err == nil {
 		newAddr.Address_id = address_item.AddressId
