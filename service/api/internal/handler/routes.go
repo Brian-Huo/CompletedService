@@ -181,6 +181,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/api/contractor/schedule",
+				Handler: GetContractorScheduleHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/api/order/finish",
 				Handler: FinishOrderHandler(serverCtx),
 			},

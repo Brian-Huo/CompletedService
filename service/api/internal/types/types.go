@@ -6,7 +6,7 @@ type VerifyCodeRequest struct {
 }
 
 type VerifyCodeResponse struct {
-	Code int `json:"code"`
+	Code int    `json:"code"`
 	Msg  string `json:"msg"`
 }
 
@@ -17,7 +17,7 @@ type LoginEmployeeRequest struct {
 }
 
 type LoginEmployeeResponse struct {
-	Code        int `json:"code"`
+	Code        int    `json:"code"`
 	Msg         string `json:"msg"`
 	AccessToken string `json:"access_token,optional"`
 }
@@ -29,7 +29,7 @@ type LoginContractorRequest struct {
 }
 
 type LoginContractorResponse struct {
-	Code        int `json:"code"`
+	Code        int    `json:"code"`
 	Msg         string `json:"msg"`
 	AccessToken string `json:"access_token,optional"`
 }
@@ -40,7 +40,7 @@ type LoginCompanyRequest struct {
 }
 
 type LoginCompanyResponse struct {
-	Code        int `json:"code"`
+	Code        int    `json:"code"`
 	Msg         string `json:"msg"`
 	AccessToken string `json:"access_token,optional"`
 }
@@ -57,15 +57,15 @@ type LoginCustomerResponse struct {
 }
 
 type CreateAddressRequest struct {
-	Street     string `json:"street"`
-	Suburb     string `json:"suburb"`
-	Postcode   string `json:"postcode"`
-	City       string `json:"city"`
-	State_code string `json:"state_code"`
-	Country    string `json:"country"`
+	Street     string  `json:"street"`
+	Suburb     string  `json:"suburb"`
+	Postcode   string  `json:"postcode"`
+	City       string  `json:"city"`
+	State_code string  `json:"state_code"`
+	Country    string  `json:"country"`
 	Lat        float64 `json:"lat"`
 	Lng        float64 `json:"lng"`
-	Formatted  string `json:"formatted"`
+	Formatted  string  `json:"formatted"`
 }
 
 type CreateAddressResponse struct {
@@ -73,16 +73,16 @@ type CreateAddressResponse struct {
 }
 
 type UpdateAddressRequest struct {
-	Address_id int64  `json:"address_id"`
-	Street     string `json:"street"`
-	Suburb     string `json:"suburb"`
-	Postcode   string `json:"postcode"`
-	City       string `json:"city"`
-	State_code string `json:"state_code"`
-	Country    string `json:"country"`
+	Address_id int64   `json:"address_id"`
+	Street     string  `json:"street"`
+	Suburb     string  `json:"suburb"`
+	Postcode   string  `json:"postcode"`
+	City       string  `json:"city"`
+	State_code string  `json:"state_code"`
+	Country    string  `json:"country"`
 	Lat        float64 `json:"lat"`
 	Lng        float64 `json:"lng"`
-	Formatted  string `json:"formatted"`
+	Formatted  string  `json:"formatted"`
 }
 
 type UpdateAddressResponse struct {
@@ -100,16 +100,16 @@ type DetailAddressRequest struct {
 }
 
 type DetailAddressResponse struct {
-	Address_id int64  `json:"address_id"`
-	Street     string `json:"street"`
-	Suburb     string `json:"suburb"`
-	Postcode   string `json:"postcode"`
-	City       string `json:"city"`
-	State_code string `json:"state_code"`
-	Country    string `json:"country"`
+	Address_id int64   `json:"address_id"`
+	Street     string  `json:"street"`
+	Suburb     string  `json:"suburb"`
+	Postcode   string  `json:"postcode"`
+	City       string  `json:"city"`
+	State_code string  `json:"state_code"`
+	Country    string  `json:"country"`
 	Lat        float64 `json:"lat"`
 	Lng        float64 `json:"lng"`
-	Formatted  string `json:"formatted"`
+	Formatted  string  `json:"formatted"`
 }
 
 type ListAddressRequest struct {
@@ -262,9 +262,9 @@ type ListEmployeeResponse struct {
 }
 
 type CreateContractorRequest struct {
-	Contractor_photo string               `json:"contractor_photo"`
-	Contractor_name  string               `json:"contractor_name"`
-	Contact_details  string               `json:"contact_details"`
+	Contractor_photo string `json:"contractor_photo"`
+	Contractor_name  string `json:"contractor_name"`
+	Contact_details  string `json:"contact_details"`
 }
 
 type CreateContractorResponse struct {
@@ -346,7 +346,7 @@ type ListContractorServiceResponse struct {
 type CreateOrderRequest struct {
 	Customer_info     CreateCustomerRequest `json:"customer_info"`
 	Address_info      CreateAddressRequest  `json:"address_info"`
-	Service_list      map[int64]int         `json:"service_list"`
+	Service_list      map[string]int        `json:"service_list"`
 	Deposite_info     CreatePaymentRequest  `json:"deposite_info"`
 	Order_description string                `json:"order_description,optional"`
 	Reserve_date      string                `json:"reserve_date"`
@@ -402,26 +402,26 @@ type DetailOrderRequest struct {
 }
 
 type DetailOrderResponse struct {
-	Order_id              int64                  `json:"order_id"`
-	Customer_info         DetailCustomerResponse `json:"customer_info"`
-	Address_info          DetailAddressResponse  `json:"address_info"`
+	Order_id              int64                    `json:"order_id"`
+	Customer_info         DetailCustomerResponse   `json:"customer_info"`
+	Address_info          DetailAddressResponse    `json:"address_info"`
 	Contractor_info       DetailContractorResponse `json:"contractor_info"`
-	Finance_id            int64                  `json:"finance_id"`
-	Service_list          string                 `json:"service_list"`
-	Deposite_payment      int64                  `json:"deposite_payment"`
-	Deposite_amount       float64                `json:"deposite_amount"`
-	Deposite_date         string                 `json:"deposite_date"`
-	Final_payment         int64                  `json:"final_payment"`
-	Final_amount          float64                `json:"final_amount"`
-	Final_payment_date    string                 `json:"final_payment_date"`
-	Current_deposite_rate int                    `json:"current_deposite_rate"`
-	Gst_amount            float64                `json:"gst_amount"`
-	Total_fee             float64                `json:"total_fee"`
-	Order_description     string                 `json:"order_description"`
-	Post_date             string                 `json:"post_date"`
-	Reserve_date          string                 `json:"reserve_date"`
-	Finish_date           string                 `json:"finish_date"`
-	Status                int                    `json:"status"`
+	Finance_id            int64                    `json:"finance_id"`
+	Service_list          string                   `json:"service_list"`
+	Deposite_payment      int64                    `json:"deposite_payment"`
+	Deposite_amount       float64                  `json:"deposite_amount"`
+	Deposite_date         string                   `json:"deposite_date"`
+	Final_payment         int64                    `json:"final_payment"`
+	Final_amount          float64                  `json:"final_amount"`
+	Final_payment_date    string                   `json:"final_payment_date"`
+	Current_deposite_rate int                      `json:"current_deposite_rate"`
+	Gst_amount            float64                  `json:"gst_amount"`
+	Total_fee             float64                  `json:"total_fee"`
+	Order_description     string                   `json:"order_description"`
+	Post_date             string                   `json:"post_date"`
+	Reserve_date          string                   `json:"reserve_date"`
+	Finish_date           string                   `json:"finish_date"`
+	Status                int                      `json:"status"`
 }
 
 type GetOrderDetailsRequest struct {
@@ -603,4 +603,11 @@ type UploadContractorPhotoRequest struct {
 
 type UploadContractorPhotoResponse struct {
 	Contractor_photo string `json:"contractor_photo"`
+}
+
+type GetContractorScheduleRequest struct {
+}
+
+type GetContractorScheduleResponse struct {
+	Items []DetailOrderResponse `json:"items"`
 }

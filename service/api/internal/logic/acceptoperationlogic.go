@@ -86,6 +86,7 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	// Update order details
 	ord.ContractorId = sql.NullInt64{uid, true}
 	ord.FinanceId = sql.NullInt64{cont.FinanceId, true}
+	ord.Status = int64(variables.Working)
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
@@ -99,7 +100,13 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 		return nil, status.Error(500, err.Error())
 	}
 
+	l.receiveOrder(uid, ord.OrderId)
+
 	return &types.AcceptOperationResponse{
 		Operation_id: newId,
 	}, nil
+}
+
+func (l *AcceptOperationLogic) receiveOrder(contractorId int64, orderId int64) {
+	go l.svcCtx.BScheduleModel.Delete(contractorId, orderId)
 }

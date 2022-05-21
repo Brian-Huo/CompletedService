@@ -47,22 +47,25 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	if uid != ord.ContractorId.Int64 {
 		return nil, status.Error(404, "Invalid, Order not found.")
 	}
-
+	logx.Info("finishing order")
 	// Finish order
 	if ord.Status == int64(variables.Working) {
 		ord.Status = int64(variables.Unpaid)
 	} else {
+		logx.Info(ord.Status)
 		return nil, status.Error(401, "Order cannot be finished twice.")
 	}
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
 	if err != nil {
+		logx.Info("update order")
 		return nil, status.Error(500, err.Error())
 	}
 
 	// Update contractor status
 	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, ord.ContractorId.Int64)
 	if err != nil {
+		logx.Info("update contractor")
 		return nil, status.Error(500, err.Error())
 	}
 

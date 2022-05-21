@@ -6,14 +6,15 @@ import (
 	"strconv"
 	"time"
 
-	"cleaningservice/common/broadcast"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/address"
+	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/customer"
 	"cleaningservice/service/model/order"
 	"cleaningservice/service/model/payment"
+	"cleaningservice/service/model/schedule"
 	"cleaningservice/service/model/service"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -124,7 +125,13 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	// Calculate fees and get full service strings
 	var service_fee float64 = 0
 	var service_list string = ""
-	for service_id, quantity := range req.Service_list {
+	for idString, quantity := range req.Service_list {
+		// Convert service id
+		service_id, err := strconv.ParseInt(idString, 10, 64)
+		if err != nil {
+			continue
+		}
+
 		service_list += variables.Separator
 		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, service_id)
 		if err != nil {
@@ -175,9 +182,23 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Timing to broadcast the order
-	go broadcast.TimerBroadcast()
+	l.broadcastOrder(newId)
 
 	return &types.CreateOrderResponse{
 		Order_id: newId,
 	}, nil
+}
+
+func (l *CreateOrderLogic) broadcastOrder(orderId int64) {
+	vacant_contractor, err := l.svcCtx.BContractorModel.ListVacant(l.ctx)
+	if err != nil || err == contractor.ErrNotFound {
+		return
+	}
+
+	for _, contractor_id := range vacant_contractor {
+		go l.svcCtx.BScheduleModel.Insert(&schedule.BSchedule{
+			OrderId:      orderId,
+			ContractorId: contractor_id,
+		})
+	}
 }

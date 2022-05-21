@@ -32,6 +32,7 @@ type (
 		FindOne(ctx context.Context, contractorId int64) (*BContractor, error)
 		FindOneByContactDetails(ctx context.Context, contactDetails string) (*BContractor, error)
 		FindAllByFinance(ctx context.Context, financeId int64) ([]*BContractor, error)
+		ListVacant(ctx context.Context) ([]int64, error)
 		Update(ctx context.Context, data *BContractor) error
 		Resign(ctx context.Context, contractorId int64) error
 		ResignByFinance(ctx context.Context, financeId int64) error
@@ -114,6 +115,22 @@ func (m *defaultBContractorModel) FindAllByFinance(ctx context.Context, financeI
 
 	query := fmt.Sprintf("select %s from %s where `finance_id` = ?", bContractorRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, financeId)
+
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultBContractorModel) ListVacant(ctx context.Context) ([]int64, error) {
+	var resp []int64
+
+	query := fmt.Sprintf("select %s from %s where `work_status` = ?", "contractor_id", m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, variables.Vacant)
 
 	switch err {
 	case nil:

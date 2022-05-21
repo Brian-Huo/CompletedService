@@ -6,6 +6,7 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/address"
 	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/order"
 
@@ -61,7 +62,7 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 	// Get address details
 	addr, err := l.svcCtx.BAddressModel.FindOne(l.ctx, res.AddressId)
 	if err != nil {
-		if err == order.ErrNotFound {
+		if err == address.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Address not found.")
 		}
 		return nil, status.Error(500, err.Error())

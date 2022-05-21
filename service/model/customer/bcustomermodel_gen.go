@@ -84,13 +84,10 @@ func (m *defaultBCustomerModel) FindOne(ctx context.Context, customerId int64) (
 func (m *defaultBCustomerModel) FindOneByContactDetails(ctx context.Context, contactDetails string) (*BCustomer, error) {
 	bCustomerContactDetailsKey := fmt.Sprintf("%s%v", cacheBCustomerContactDetailsPrefix, contactDetails)
 	var resp BCustomer
-	err := m.QueryRowIndexCtx(ctx, &resp, bCustomerContactDetailsKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
+	err := m.QueryRowCtx(ctx, &resp, bCustomerContactDetailsKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
 		query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bCustomerRows, m.table)
-		if err := conn.QueryRowCtx(ctx, &resp, query, contactDetails); err != nil {
-			return nil, err
-		}
-		return resp.CustomerId, nil
-	}, m.queryPrimary)
+		return conn.QueryRowCtx(ctx, v, query, contactDetails)
+	})
 	switch err {
 	case nil:
 		return &resp, nil

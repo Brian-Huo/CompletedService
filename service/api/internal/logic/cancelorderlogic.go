@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 
-	"cleaningservice/common/broadcast"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -60,8 +59,6 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
-
-	go broadcast.OneBroadcast()
 
 	return
 }

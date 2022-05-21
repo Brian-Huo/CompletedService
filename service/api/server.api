@@ -4,7 +4,7 @@ type (
 		Contact_details string `json:"contact_details"`
 	}
 	VerifyCodeResponse {
-		Code int `json:"code"`
+		Code int    `json:"code"`
 		Msg  string `json:"msg"`
 	}
 
@@ -14,7 +14,7 @@ type (
 		LinkCode        string `json:"link_code"`
 	}
 	LoginEmployeeResponse {
-		Code        int `json:"code"`
+		Code        int    `json:"code"`
 		Msg         string `json:"msg"`
 		AccessToken string `json:"access_token,optional"`
 	}
@@ -25,7 +25,7 @@ type (
 		LinkCode        string `json:"link_code"`
 	}
 	LoginContractorResponse {
-		Code        int `json:"code"`
+		Code        int    `json:"code"`
 		Msg         string `json:"msg"`
 		AccessToken string `json:"access_token,optional"`
 	}
@@ -35,7 +35,7 @@ type (
 		VerifyCode      string `json:"verify_code"`
 	}
 	LoginCompanyResponse {
-		Code        int `json:"code"`
+		Code        int    `json:"code"`
 		Msg         string `json:"msg"`
 		AccessToken string `json:"access_token,optional"`
 	}
@@ -45,7 +45,7 @@ type (
 		VerifyCode      string `json:"verify_code"`
 	}
 	LoginCustomerResponse {
-		Code        string `json:"code"`
+		Code        int `json:"code"`
 		Msg         string `json:"msg"`
 		AccessToken string `json:"access_token,optional"`
 	}
@@ -53,15 +53,15 @@ type (
 	// -------------------- Address -------------------------
 	//  Create Address
 	CreateAddressRequest {
-		Street     string `json:"street"`
-		Suburb     string `json:"suburb"`
-		Postcode   string `json:"postcode"`
-		City       string `json:"city"`
-		State_code string `json:"state_code"`
-		Country    string `json:"country"`
+		Street     string  `json:"street"`
+		Suburb     string  `json:"suburb"`
+		Postcode   string  `json:"postcode"`
+		City       string  `json:"city"`
+		State_code string  `json:"state_code"`
+		Country    string  `json:"country"`
 		Lat        float64 `json:"lat"`
 		Lng        float64 `json:"lng"`
-		Formatted  string `json:"formatted"`
+		Formatted  string  `json:"formatted"`
 	}
 	CreateAddressResponse {
 		Address_id int64 `json:"address_id"`
@@ -69,16 +69,16 @@ type (
 
 	// Update Address
 	UpdateAddressRequest {
-		Address_id int64  `json:"address_id"`
-		Street     string `json:"street"`
-		Suburb     string `json:"suburb"`
-		Postcode   string `json:"postcode"`
-		City       string `json:"city"`
-		State_code string `json:"state_code"`
-		Country    string `json:"country"`
+		Address_id int64   `json:"address_id"`
+		Street     string  `json:"street"`
+		Suburb     string  `json:"suburb"`
+		Postcode   string  `json:"postcode"`
+		City       string  `json:"city"`
+		State_code string  `json:"state_code"`
+		Country    string  `json:"country"`
 		Lat        float64 `json:"lat"`
 		Lng        float64 `json:"lng"`
-		Formatted  string `json:"formatted"`
+		Formatted  string  `json:"formatted"`
 	}
 	UpdateAddressResponse {
 	}
@@ -95,16 +95,16 @@ type (
 		Address_id int64 `json:"address_id"`
 	}
 	DetailAddressResponse {
-		Address_id int64  `json:"address_id"`
-		Street     string `json:"street"`
-		Suburb     string `json:"suburb"`
-		Postcode   string `json:"postcode"`
-		City       string `json:"city"`
-		State_code string `json:"state_code"`
-		Country    string `json:"country"`
+		Address_id int64   `json:"address_id"`
+		Street     string  `json:"street"`
+		Suburb     string  `json:"suburb"`
+		Postcode   string  `json:"postcode"`
+		City       string  `json:"city"`
+		State_code string  `json:"state_code"`
+		Country    string  `json:"country"`
 		Lat        float64 `json:"lat"`
 		Lng        float64 `json:"lng"`
-		Formatted  string `json:"formatted"`
+		Formatted  string  `json:"formatted"`
 	}
 
 	// List Address
@@ -262,9 +262,9 @@ type (
 	// -------------------- Contractor -------------------------
 	//  Create Constractor
 	CreateContractorRequest {
-		Contractor_photo string               `json:"contractor_photo"`
-		Contractor_name  string               `json:"contractor_name"`
-		Contact_details  string               `json:"contact_details"`
+		Contractor_photo string `json:"contractor_photo"`
+		Contractor_name  string `json:"contractor_name"`
+		Contact_details  string `json:"contact_details"`
 	}
 	CreateContractorResponse {
 		Contractor_id int64 `json:"contractor_id"`
@@ -348,7 +348,7 @@ type (
 	CreateOrderRequest {
 		Customer_info     CreateCustomerRequest `json:"customer_info"`
 		Address_info      CreateAddressRequest  `json:"address_info"`
-		Service_list       map[int]int          `json:"service_list"`
+		Service_list      map[string]int        `json:"service_list"`
 		Deposite_info     CreatePaymentRequest  `json:"deposite_info"`
 		Order_description string                `json:"order_description,optional"`
 		Reserve_date      string                `json:"reserve_date"`
@@ -601,7 +601,7 @@ type (
 		Items []DetailServiceResponse `json:"items"`
 	}
 
-	// -------------------- Employee Photo -------------------------
+	// -------------------- Contractor Photo -------------------------
 	// Upload Contractor Photo
 	UploadContractorPhotoRequest {
 		Contractor_id    int64  `json:"contractor_id,optional"`
@@ -609,6 +609,14 @@ type (
 	}
 	UploadContractorPhotoResponse {
 		Contractor_photo string `json:"contractor_photo"`
+	}
+
+	// -------------------- Get Contractor Schedule -------------------------
+	// Get Contractor Schedule
+	GetContractorScheduleRequest {
+	}
+	GetContractorScheduleResponse {
+		Items []DetailOrderResponse `json:"items"`
 	}
 )
 
@@ -723,6 +731,10 @@ service Server {
 	// contractor photo apis
 	@handler UploadContractPhoto
 	post /api/contractor/photo(UploadContractorPhotoRequest) returns (UploadContractorPhotoResponse)
+	
+	// get broadcast order apis
+	@handler GetContractorSchedule
+	post /api/contractor/schedule(GetContractorScheduleRequest) returns (GetContractorScheduleResponse)
 	
 	// order apis
 	@handler FinishOrder

@@ -3,10 +3,10 @@ package broadcast
 type OrderBrief struct {
 }
 
-func TimerBroadcast() {
+func BroadcastOrder() {
 
 }
 
-func OneBroadcast() {
+func ConsumeOrder() {
 
 }

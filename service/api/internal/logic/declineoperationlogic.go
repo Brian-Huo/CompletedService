@@ -41,9 +41,13 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 		return nil, status.Error(404, "Invalid, Contractor not found.")
 	}
 
-	_, err = l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
+	ord, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		return nil, status.Error(404, "Invalid, Order not found.")
+	}
+
+	if ord.Status != int64(variables.Queuing) {
+		return nil, status.Error(401, "Order is currently unavailable.")
 	}
 
 	newItem := operation.BOperation{
@@ -63,8 +67,14 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 		return nil, status.Error(500, err.Error())
 	}
 
+	l.receiveOrder(uid, ord.OrderId)
+
 	return &types.DeclineOperationResponse{
 		Operation_id: newId,
 	}, nil
-	return
+
+}
+
+func (l *DeclineOperationLogic) receiveOrder(contractorId int64, orderId int64) {
+	go l.svcCtx.BScheduleModel.Delete(contractorId, orderId)
 }

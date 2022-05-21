@@ -12,6 +12,7 @@ import (
 	"cleaningservice/service/model/operation"
 	"cleaningservice/service/model/order"
 	"cleaningservice/service/model/payment"
+	"cleaningservice/service/model/schedule"
 	"cleaningservice/service/model/service"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -32,6 +33,7 @@ type ServiceContext struct {
 	BOrderModel             order.BOrderModel
 	BPaymentModel           payment.BPaymentModel
 	BServiceModel           service.BServiceModel
+	BScheduleModel          schedule.BScheduleModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -49,5 +51,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		BOperationModel:         operation.NewBOperationModel(conn, c.CacheRedis),
 		BPaymentModel:           payment.NewBPaymentModel(conn, c.CacheRedis),
 		BServiceModel:           service.NewBServiceModel(conn, c.CacheRedis),
+		BScheduleModel:          schedule.NewBScheduleModel(c.RedisConf),
 	}
 }

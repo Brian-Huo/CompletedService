@@ -10,6 +10,11 @@ CacheRedis:
   Pass: CUG!@#
   Type: node
 
+RedisConf:
+  Host: 127.0.0.1:6379
+  Pass: CUG!@#
+  Type: node
+
 Auth:
   AccessSecret: uOvKLmVfztaXGpNYd4Z0I1SiT7MweJhl
   AccessExpire: 86400
