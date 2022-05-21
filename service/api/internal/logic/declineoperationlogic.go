@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
@@ -41,13 +42,15 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 		return nil, status.Error(404, "Invalid, Contractor not found.")
 	}
 
+	l.receiveOrder(uid, req.Order_id)
+
 	ord, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		return nil, status.Error(404, "Invalid, Order not found.")
 	}
 
 	if ord.Status != int64(variables.Queuing) {
-		return nil, status.Error(401, "Order is currently unavailable.")
+		return nil, errorx.NewCodeError(401, "Order is currently unavailable.")
 	}
 
 	newItem := operation.BOperation{
@@ -67,12 +70,9 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 		return nil, status.Error(500, err.Error())
 	}
 
-	l.receiveOrder(uid, ord.OrderId)
-
 	return &types.DeclineOperationResponse{
 		Operation_id: newId,
 	}, nil
-
 }
 
 func (l *DeclineOperationLogic) receiveOrder(contractorId int64, orderId int64) {

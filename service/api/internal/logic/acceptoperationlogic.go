@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
@@ -49,7 +50,7 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	}
 
 	if cont.WorkStatus != int64(variables.Vacant) {
-		return nil, status.Error(401, "Invalid, Contractor should not double accept order(s).")
+		return nil, errorx.NewCodeError(401, "Invalid, Contractor should not double accept order(s).")
 	}
 
 	// Check order status
@@ -62,7 +63,7 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	}
 
 	if ord.Status != int64(variables.Queuing) {
-		return nil, status.Error(401, "Order is currently unavailable.")
+		return nil, errorx.NewCodeError(401, "Order is currently unavailable.")
 	}
 
 	// Create operaction records
