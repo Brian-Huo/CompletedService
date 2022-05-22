@@ -21,11 +21,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/user/login_employee",
-				Handler: LoginEmployeeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
 				Path:    "/api/user/login_contractor",
 				Handler: LoginContractorHandler(serverCtx),
 			},
@@ -253,31 +248,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/api/operation/list",
 				Handler: ListOperationHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/employee/create",
-				Handler: CreateEmployeeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/employee/update",
-				Handler: UpdateEmployeeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/employee/remove",
-				Handler: RemoveEmployeeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/employee/detail",
-				Handler: DetailEmployeeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/employee/list",
-				Handler: ListEmployeeHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

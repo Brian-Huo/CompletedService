@@ -8,17 +8,6 @@ type (
 		Msg  string `json:"msg"`
 	}
 
-	LoginEmployeeRequest {
-		Contact_details string `json:"contact_details"`
-		VerifyCode      string `json:"verify_code,optional"`
-		LinkCode        string `json:"link_code"`
-	}
-	LoginEmployeeResponse {
-		Code        int    `json:"code"`
-		Msg         string `json:"msg"`
-		AccessToken string `json:"access_token,optional"`
-	}
-
 	LoginContractorRequest {
 		Contact_details string `json:"contact_details"`
 		VerifyCode      string `json:"verify_code,optional"`

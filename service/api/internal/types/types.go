@@ -10,18 +10,6 @@ type VerifyCodeResponse struct {
 	Msg  string `json:"msg"`
 }
 
-type LoginEmployeeRequest struct {
-	Contact_details string `json:"contact_details"`
-	VerifyCode      string `json:"verify_code,optional"`
-	LinkCode        string `json:"link_code"`
-}
-
-type LoginEmployeeResponse struct {
-	Code        int    `json:"code"`
-	Msg         string `json:"msg"`
-	AccessToken string `json:"access_token,optional"`
-}
-
 type LoginContractorRequest struct {
 	Contact_details string `json:"contact_details"`
 	VerifyCode      string `json:"verify_code,optional"`
@@ -205,60 +193,6 @@ type DetailCustomerResponse struct {
 	Customer_name   string `json:"customer_name"`
 	Country_code    string `json:"country_code"`
 	Contact_details string `json:"contact_details"`
-}
-
-type CreateEmployeeRequest struct {
-	Employee_photo  string `json:"employee_photo"`
-	Employee_name   string `json:"employee_name"`
-	Contact_details string `json:"contact_details"`
-}
-
-type CreateEmployeeResponse struct {
-	Employee_id int64 `json:"employee_id"`
-}
-
-type UpdateEmployeeRequest struct {
-	Employee_id     int64   `json:"employee_id"`
-	Employee_photo  string  `json:"employee_photo"`
-	Employee_name   string  `json:"employee_name"`
-	Contact_details string  `json:"contact_details"`
-	Link_code       string  `json:"link_code"`
-	Work_status     int     `json:"work_status"`
-	New_services    []int64 `json:"new_services"`
-	Remove_services []int64 `json:"remove_services"`
-}
-
-type UpdateEmployeeResponse struct {
-}
-
-type RemoveEmployeeRequest struct {
-	Employee_id int64 `json:"employee_id,optional"`
-}
-
-type RemoveEmployeeResponse struct {
-}
-
-type DetailEmployeeRequest struct {
-	Employee_id int64 `json:"employee_id,optional"`
-}
-
-type DetailEmployeeResponse struct {
-	Employee_id      int64                       `json:"employee_id"`
-	Employee_photo   string                      `json:"employee_photo"`
-	Employee_name    string                      `json:"employee_name"`
-	Contact_details  string                      `json:"contact_details"`
-	Company_id       int64                       `json:"company_id"`
-	Link_code        string                      `json:"link_code"`
-	Work_status      int                         `json:"work_status"`
-	Order_id         int64                       `json:"order_id"`
-	Employee_service ListEmployeeServiceResponse `json:"employee_service"`
-}
-
-type ListEmployeeRequest struct {
-}
-
-type ListEmployeeResponse struct {
-	Items []DetailEmployeeResponse `json:"items"`
 }
 
 type CreateContractorRequest struct {
@@ -578,30 +512,6 @@ type ListOperationRequest struct {
 
 type ListOperationResponse struct {
 	Items []DetailOperationResponse `json:"items"`
-}
-
-type CreateEmployeeServiceRequest struct {
-	Employee_id int64 `json:"employee_id,optional"`
-	Service_id  int64 `json:"service_id"`
-}
-
-type CreateEmployeeServiceResponse struct {
-}
-
-type RemoveEmployeeServiceRequest struct {
-	Employee_id int64 `json:"employee_id,optional"`
-	Service_id  int64 `json:"service_id"`
-}
-
-type RemoveEmployeeServiceResponse struct {
-}
-
-type ListEmployeeServiceRequest struct {
-	Employee_id int64 `json:"employee_id"`
-}
-
-type ListEmployeeServiceResponse struct {
-	Items []DetailServiceResponse `json:"items"`
 }
 
 type UploadContractorPhotoRequest struct {
