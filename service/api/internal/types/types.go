@@ -51,7 +51,7 @@ type LoginCustomerRequest struct {
 }
 
 type LoginCustomerResponse struct {
-	Code        int `json:"code"`
+	Code        int    `json:"code"`
 	Msg         string `json:"msg"`
 	AccessToken string `json:"access_token,optional"`
 }
@@ -344,12 +344,12 @@ type ListContractorServiceResponse struct {
 }
 
 type CreateOrderRequest struct {
-	Customer_info     CreateCustomerRequest `json:"customer_info"`
-	Address_info      CreateAddressRequest  `json:"address_info"`
-	Service_list      map[string]int        `json:"service_list"`
-	Deposite_info     CreatePaymentRequest  `json:"deposite_info"`
-	Order_description string                `json:"order_description,optional"`
-	Reserve_date      string                `json:"reserve_date"`
+	Customer_info     CreateCustomerRequest  `json:"customer_info"`
+	Address_info      CreateAddressRequest   `json:"address_info"`
+	Service_list      []SelectServiceRequest `json:"service_list"`
+	Deposite_info     CreatePaymentRequest   `json:"deposite_info"`
+	Order_description string                 `json:"order_description,optional"`
+	Reserve_date      string                 `json:"reserve_date"`
 }
 
 type CreateOrderResponse struct {
@@ -397,8 +397,8 @@ type RemoveOrderResponse struct {
 }
 
 type DetailOrderRequest struct {
-	Order_id      int64  `json:"order_id"`
-	Customer_name string `json:"customer_name"`
+	Order_id        int64  `json:"order_id"`
+	Contact_details string `json:"contact_details"`
 }
 
 type DetailOrderResponse struct {
@@ -456,6 +456,14 @@ type ListOrderRequest struct {
 
 type ListOrderResponse struct {
 	Items []DetailOrderResponse `json:"items"`
+}
+
+type SelectServiceRequest struct {
+	Service_id       int64 `json:"service_id"`
+	Service_quantity int   `json:"service_quantity"`
+}
+
+type SelectServiceResponse struct {
 }
 
 type DetailServiceRequest struct {

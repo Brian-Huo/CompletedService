@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
@@ -53,7 +54,7 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 		ord.Status = int64(variables.Unpaid)
 	} else {
 		logx.Info(ord.Status)
-		return nil, status.Error(401, "Order cannot be finished twice.")
+		return nil, errorx.NewCodeError(401, "Order cannot be finished twice.")
 	}
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
@@ -77,5 +78,5 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	return
+	return &types.FinishOrderResponse{}, nil
 }

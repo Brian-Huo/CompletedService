@@ -49,6 +49,8 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 		return nil, status.Error(500, err.Error())
 	}
 
+	l.receiveOrder(uid, req.Order_id)
+
 	if cont.WorkStatus != int64(variables.Vacant) {
 		return nil, errorx.NewCodeError(401, "Invalid, Contractor should not double accept order(s).")
 	}
@@ -100,8 +102,6 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
-
-	l.receiveOrder(uid, ord.OrderId)
 
 	return &types.AcceptOperationResponse{
 		Operation_id: newId,

@@ -125,23 +125,17 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	// Calculate fees and get full service strings
 	var service_fee float64 = 0
 	var service_list string = ""
-	for idString, quantity := range req.Service_list {
-		// Convert service id
-		service_id, err := strconv.ParseInt(idString, 10, 64)
-		if err != nil {
-			continue
-		}
-
+	for _, order_service := range req.Service_list {
 		service_list += variables.Separator
-		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, service_id)
+		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, order_service.Service_id)
 		if err != nil {
 			if err == service.ErrNotFound {
 				return nil, status.Error(404, "Invalid, Service(s) not found.")
 			}
 			return nil, status.Error(500, err.Error())
 		}
-		service_fee += service_item.ServicePrice * float64(quantity)
-		service_list += service_item.ServiceType + "x" + strconv.Itoa(quantity)
+		service_fee += service_item.ServicePrice * float64(order_service.Service_quantity)
+		service_list += service_item.ServiceType + "x" + strconv.Itoa(order_service.Service_quantity)
 	}
 
 	deposite_amount := service_fee / variables.Deposite_rate
