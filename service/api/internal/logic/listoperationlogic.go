@@ -7,7 +7,7 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
-	"cleaningservice/service/model/employee"
+	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/operation"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -39,7 +39,7 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 	// Verify contractor
 	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, req.Contractor_id)
 	if err != nil {
-		if err == employee.ErrNotFound {
+		if err == contractor.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Contractor not found.")
 		}
 		return nil, status.Error(500, err.Error())
