@@ -204,61 +204,6 @@ type (
 		Contact_details string `json:"contact_details"`
 	}
 
-	// -------------------- Employee -------------------------
-	//  Create Employee
-	CreateEmployeeRequest {
-		Employee_photo  string `json:"employee_photo"`
-		Employee_name   string `json:"employee_name"`
-		Contact_details string `json:"contact_details"`
-	}
-	CreateEmployeeResponse {
-		Employee_id int64 `json:"employee_id"`
-	}
-
-	// Update Employee
-	UpdateEmployeeRequest {
-		Employee_id     int64   `json:"employee_id"`
-		Employee_photo  string  `json:"employee_photo"`
-		Employee_name   string  `json:"employee_name"`
-		Contact_details string  `json:"contact_details"`
-		Link_code       string  `json:"link_code"`
-		Work_status     int     `json:"work_status"`
-		New_services    []int64 `json:"new_services"`
-		Remove_services []int64 `json:"remove_services"`
-	}
-	UpdateEmployeeResponse {
-	}
-
-	// Remove Employee
-	RemoveEmployeeRequest {
-		Employee_id int64 `json:"employee_id,optional"`
-	}
-	RemoveEmployeeResponse {
-	}
-
-	// Detail Employee
-	DetailEmployeeRequest {
-		Employee_id int64 `json:"employee_id,optional"`
-	}
-	DetailEmployeeResponse {
-		Employee_id      int64                       `json:"employee_id"`
-		Employee_photo   string                      `json:"employee_photo"`
-		Employee_name    string                      `json:"employee_name"`
-		Contact_details  string                      `json:"contact_details"`
-		Company_id       int64                       `json:"company_id"`
-		Link_code        string                      `json:"link_code"`
-		Work_status      int                         `json:"work_status"`
-		Order_id         int64                       `json:"order_id"`
-		Employee_service ListEmployeeServiceResponse `json:"employee_service"`
-	}
-
-	// List Employee
-	ListEmployeeRequest {
-	}
-	ListEmployeeResponse {
-		Items []DetailEmployeeResponse `json:"items"`
-	}
-
 	// -------------------- Contractor -------------------------
 	//  Create Constractor
 	CreateContractorRequest {
@@ -584,31 +529,6 @@ type (
 		Items []DetailOperationResponse `json:"items"`
 	}
 
-	// -------------------- Employee Service -------------------------
-	// Create Employee Service
-	CreateEmployeeServiceRequest {
-		Employee_id int64 `json:"employee_id,optional"`
-		Service_id  int64 `json:"service_id"`
-	}
-	CreateEmployeeServiceResponse {
-	}
-
-	// Remove Employee Service
-	RemoveEmployeeServiceRequest {
-		Employee_id int64 `json:"employee_id,optional"`
-		Service_id  int64 `json:"service_id"`
-	}
-	RemoveEmployeeServiceResponse {
-	}
-
-	// List Employee Service
-	ListEmployeeServiceRequest {
-		Employee_id int64 `json:"employee_id"`
-	}
-	ListEmployeeServiceResponse {
-		Items []DetailServiceResponse `json:"items"`
-	}
-
 	// -------------------- Contractor Photo -------------------------
 	// Upload Contractor Photo
 	UploadContractorPhotoRequest {
@@ -633,9 +553,6 @@ service Server {
 	// -------------------- Login -------------------------
 	@handler VerifyCode
 	post /api/user/verify_code(VerifyCodeRequest) returns (VerifyCodeResponse)
-	
-	@handler LoginEmployee
-	post /api/user/login_employee(LoginEmployeeRequest) returns (LoginEmployeeResponse)
 	
 	@handler LoginContractor
 	post /api/user/login_contractor(LoginContractorRequest) returns (LoginContractorResponse)
@@ -788,20 +705,4 @@ service Server {
 	
 	@handler ListOperation
 	post /api/operation/list(ListOperationRequest) returns (ListOperationResponse)
-	
-	// employee apis
-	@handler CreateEmployee
-	post /api/employee/create(CreateEmployeeRequest) returns (CreateEmployeeResponse)
-	
-	@handler UpdateEmployee
-	post /api/employee/update(UpdateEmployeeRequest) returns (UpdateEmployeeResponse)
-	
-	@handler RemoveEmployee
-	post /api/employee/remove(RemoveEmployeeRequest) returns (RemoveEmployeeResponse)
-	
-	@handler DetailEmployee
-	post /api/employee/detail(DetailEmployeeRequest) returns (DetailEmployeeResponse)
-	
-	@handler ListEmployee
-	post /api/employee/list(ListEmployeeRequest) returns (ListEmployeeResponse)
 }

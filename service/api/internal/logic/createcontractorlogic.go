@@ -30,7 +30,6 @@ func NewCreateContractorLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *CreateContractorLogic) CreateContractor(req *types.CreateContractorRequest) (resp *types.CreateContractorResponse, err error) {
-	logx.Info("function entrance")
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
 		logx.Info("jwt issue")

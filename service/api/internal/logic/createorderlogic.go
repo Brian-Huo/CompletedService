@@ -135,7 +135,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			return nil, status.Error(500, err.Error())
 		}
 		service_fee += service_item.ServicePrice * float64(order_service.Service_quantity)
-		service_list += service_item.ServiceType + "x" + strconv.Itoa(order_service.Service_quantity)
+		service_list += service_item.ServiceType + ":x" + strconv.Itoa(order_service.Service_quantity)
 	}
 
 	deposite_amount := service_fee / variables.Deposite_rate

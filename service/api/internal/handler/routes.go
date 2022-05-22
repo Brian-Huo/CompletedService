@@ -2,7 +2,9 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"cleaningservice/service/api/internal/svc"
 
@@ -280,4 +282,84 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
+
+	
+	// Static files resgistration
+	var patern string
+	var dirpath string
+	dirlevel := []string{":1", ":2", ":3", ":4"}
+	// // CSS files
+	// patern = "/css/"
+	// dirpath = "./static/css/"
+	// for i := 1; i < 2; i++ {
+	// 	path := patern + strings.Join(dirlevel[:i], "/")
+	// 	server.AddRoute(
+	// 		rest.Route{
+	// 			Method:  http.MethodGet,
+	// 			Path:    path,
+	// 			Handler: StaticHandler(patern,dirpath),
+	// 		},
+	// 	)
+	// 	fmt.Printf("registered css file %s  %s\n", path,dirpath)
+	// }
+
+	// Images files
+	patern = "/images/"
+	dirpath = "./static/images/"
+	for i := 1; i < 3; i++ {
+		path := patern + strings.Join(dirlevel[:i], "/")
+		server.AddRoute(
+			rest.Route{
+				Method:  http.MethodGet,
+				Path:    path,
+				Handler: StaticHandler(patern,dirpath),
+			},
+		)
+		fmt.Printf("registered images file %s  %s\n", path,dirpath)
+	}
+
+	// // JS files
+	// patern = "/js/"
+	// dirpath = "./static/js/"
+	// for i := 1; i < 2; i++ {
+	// 	path := patern + strings.Join(dirlevel[:i], "/")
+	// 	server.AddRoute(
+	// 		rest.Route{
+	// 			Method:  http.MethodGet,
+	// 			Path:    path,
+	// 			Handler: StaticHandler(patern,dirpath),
+	// 		},
+	// 	)
+	// 	fmt.Printf("registered JS file %s  %s\n", path,dirpath)
+	// }
+
+	// // SCSS files
+	// patern = "/scss/"
+	// dirpath = "./static/scss/"
+	// for i := 1; i < 2; i++ {
+	// 	path := patern + strings.Join(dirlevel[:i], "/")
+	// 	server.AddRoute(
+	// 		rest.Route{
+	// 			Method:  http.MethodGet,
+	// 			Path:    path,
+	// 			Handler: StaticHandler(patern,dirpath),
+	// 		},
+	// 	)
+	// 	fmt.Printf("registered SCSS file %s  %s\n", path,dirpath)
+	// }
+
+	// // Vendor files
+	// patern = "/vendor/"
+	// dirpath = "./static/vendor/"
+	// for i := 1; i < 2; i++ {
+	// 	path := patern + strings.Join(dirlevel[:i], "/")
+	// 	server.AddRoute(
+	// 		rest.Route{
+	// 			Method:  http.MethodGet,
+	// 			Path:    path,
+	// 			Handler: StaticHandler(patern,dirpath),
+	// 		},
+	// 	)
+	// 	fmt.Printf("registered Vendor file %s  %s\n", path,dirpath)
+	// }
 }
