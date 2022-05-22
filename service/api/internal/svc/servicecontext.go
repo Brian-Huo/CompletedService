@@ -7,8 +7,6 @@ import (
 	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/contractorservice"
 	"cleaningservice/service/model/customer"
-	"cleaningservice/service/model/employee"
-	"cleaningservice/service/model/employeeservice"
 	"cleaningservice/service/model/operation"
 	"cleaningservice/service/model/order"
 	"cleaningservice/service/model/payment"
@@ -27,8 +25,6 @@ type ServiceContext struct {
 	BCustomerModel          customer.BCustomerModel
 	BContractorModel        contractor.BContractorModel
 	RContractorServiceModel contractorservice.RContractorServiceModel
-	BEmployeeModel          employee.BEmployeeModel
-	REmployeeServiceModel   employeeservice.REmployeeServiceModel
 	BOperationModel         operation.BOperationModel
 	BOrderModel             order.BOrderModel
 	BPaymentModel           payment.BPaymentModel
@@ -45,8 +41,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		BCustomerModel:          customer.NewBCustomerModel(conn, c.CacheRedis),
 		BContractorModel:        contractor.NewBContractorModel(conn, c.CacheRedis),
 		RContractorServiceModel: contractorservice.NewRContractorServiceModel(conn),
-		BEmployeeModel:          employee.NewBEmployeeModel(conn, c.CacheRedis),
-		REmployeeServiceModel:   employeeservice.NewREmployeeServiceModel(conn),
 		BOrderModel:             order.NewBOrderModel(conn, c.CacheRedis),
 		BOperationModel:         operation.NewBOperationModel(conn, c.CacheRedis),
 		BPaymentModel:           payment.NewBPaymentModel(conn, c.CacheRedis),
