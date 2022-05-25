@@ -222,7 +222,7 @@ type UpdateContractorResponse struct {
 }
 
 type RemoveContractorRequest struct {
-	Contractor_id int64 `json:"Contractor_id,optional"`
+	Contractor_id int64 `json:"contractor_id,optional"`
 }
 
 type RemoveContractorResponse struct {

@@ -16,6 +16,7 @@ import (
 	"cleaningservice/service/model/payment"
 	"cleaningservice/service/model/schedule"
 	"cleaningservice/service/model/service"
+	"cleaningservice/util"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -53,6 +54,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			SecurityCode: req.Deposite_info.Security_code,
 		}
 
+		// Check if data valid
+		if !util.CheckPaymentDetails(&newPayment) {
+			return nil, status.Error(500, err.Error())
+		}
+
 		res, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &newPayment)
 		if err != nil {
 			return nil, status.Error(500, err.Error())
@@ -69,6 +75,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Customer
+	// Check if data valid
+	if !util.CheckContactDetails(req.Customer_info.Contact_details) {
+		return nil, status.Error(500, err.Error())
+	}
+
 	var customerId int64
 	customer_item, err := l.svcCtx.BCustomerModel.FindOneByContactDetails(l.ctx, req.Customer_info.Contact_details)
 	if err == customer.ErrNotFound {
@@ -106,6 +117,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		Formatted: req.Address_info.Formatted,
 	}
 
+	// Check if data valid
+	if !util.CheckAddressDetails(&address_Item) {
+		return nil, status.Error(500, err.Error())
+	}
+
 	res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_Item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
@@ -135,13 +151,13 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			return nil, status.Error(500, err.Error())
 		}
 		service_fee += service_item.ServicePrice * float64(order_service.Service_quantity)
-		service_list += service_item.ServiceType + ":x" + strconv.Itoa(order_service.Service_quantity)
+		service_list += service_item.ServiceName + ":x" + strconv.Itoa(order_service.Service_quantity)
 	}
 
 	deposite_amount := service_fee / variables.Deposite_rate
-	final_amount := service_fee - deposite_amount
 	gst_amount := service_fee / variables.GST
-	total_fee := service_fee + gst_amount
+	final_amount := service_fee + gst_amount - deposite_amount
+	total_fee := deposite_amount + final_amount
 
 	// Create order
 	newItem := order.BOrder{

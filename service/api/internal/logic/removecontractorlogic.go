@@ -56,5 +56,5 @@ func (l *RemoveContractorLogic) RemoveContractor(req *types.RemoveContractorRequ
 		return nil, status.Error(500, err.Error())
 	}
 
-	return
+	return &types.RemoveContractorResponse{}, nil
 }

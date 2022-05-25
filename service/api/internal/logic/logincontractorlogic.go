@@ -60,6 +60,9 @@ func (l *LoginContractorLogic) LoginContractor(req *types.LoginContractorRequest
 				return nil, errorx.NewCodeError(500, err.Error())
 			}
 		}
+	} else if item.WorkStatus == int64(variables.Resigned) {
+		return nil, errorx.NewCodeError(404, "Invalid, Contractor Not Found.")
+
 	} else if item.LinkCode != cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, req.LinkCode) {
 		return nil, errorx.NewCodeError(401, "Invalid, Link code incorrect.")
 	}

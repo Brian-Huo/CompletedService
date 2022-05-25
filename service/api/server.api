@@ -222,14 +222,14 @@ type (
 
 	// Remove Contractor
 	RemoveContractorRequest {
-		Contractor_id int64 `json:"Contractor_id,optional"`
+		Contractor_id int64 `json:"contractor_id,optional"`
 	}
 	RemoveContractorResponse {
 	}
 
 	// Detail Contractor
 	DetailContractorRequest {
-		Contractor_id int64 `json:"Contractor_id,optional"`
+		Contractor_id int64 `json:"contractor_id,optional"`
 	}
 	DetailContractorResponse {
 		Contractor_id      int64                         `json:"contractor_id"`
