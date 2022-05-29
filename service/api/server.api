@@ -241,17 +241,17 @@ type (
 		Contractor_id int64 `json:"contractor_id,optional"`
 	}
 	DetailContractorResponse {
-		Contractor_id      int64                         `json:"contractor_id"`
-		Contractor_photo   string                        `json:"contractor_photo"`
-		Contractor_name    string                        `json:"contractor_name"`
-		Contractor_type    string                        `json:"contractor_type"`
-		Contact_details    string                        `json:"contact_details"`
-		Address_info       DetailAddressResponse         `json:"address_info"`
-		Finance_id         int64                         `json:"finance_id"`
-		Link_code          string                        `json:"link_code"`
-		Work_status        int                           `json:"work_status"`
-		Order_id           int64                         `json:"order_id"`
-		Category_list      []int64                       `json:"category_list"`
+		Contractor_id    int64                 `json:"contractor_id"`
+		Contractor_photo string                `json:"contractor_photo"`
+		Contractor_name  string                `json:"contractor_name"`
+		Contractor_type  string                `json:"contractor_type"`
+		Contact_details  string                `json:"contact_details"`
+		Address_info     DetailAddressResponse `json:"address_info"`
+		Finance_id       int64                 `json:"finance_id"`
+		Link_code        string                `json:"link_code"`
+		Work_status      int                   `json:"work_status"`
+		Order_id         int64                 `json:"order_id"`
+		Category_list    []int64               `json:"category_list"`
 	}
 
 	// List Contractor
@@ -564,7 +564,7 @@ type (
 	// -------------------- Category -------------------------
 	// Detail Category
 	DetailCategoryRequest {
-		Category_id   int64  `json:"category_id"`
+		Category_id int64 `json:"category_id"`
 	}
 	DetailCategoryResponse {
 		Category_id          int64  `json:"category_id"`
@@ -583,7 +583,7 @@ type (
 	// Join Subscribe Group
 	JoinSubscribeGroupRequest {
 		Category_list []int64 `json:"category_list"`
-		Location      string `json:"location,optional"`
+		Location      string  `json:"location,optional"`
 	}
 	JoinSubscribeGroupResponse {
 		Code int    `json:"code"`
@@ -593,7 +593,7 @@ type (
 	// Leave Subscribe Group
 	LeaveSubscribeGroupRequest {
 		Category_list []int64 `json:"category_list"`
-		Location      string `json:"location,optional"`
+		Location      string  `json:"location,optional"`
 	}
 	LeaveSubscribeGroupResponse {
 		Code int    `json:"code"`
@@ -741,7 +741,7 @@ service Server {
 	// get recommend order apis
 	@handler RecommendOrder
 	post /api/order/recommend(RecommendOrderRequest) returns (RecommendOrderResponse)
-
+	
 	// payment apis
 	@handler CreatePayment
 	post /api/payment/create(CreatePaymentRequest) returns (CreatePaymentResponse)

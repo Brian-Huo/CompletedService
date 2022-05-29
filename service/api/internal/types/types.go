@@ -241,17 +241,17 @@ type DetailContractorRequest struct {
 }
 
 type DetailContractorResponse struct {
-	Contractor_id      int64                         `json:"contractor_id"`
-	Contractor_photo   string                        `json:"contractor_photo"`
-	Contractor_name    string                        `json:"contractor_name"`
-	Contractor_type    string                        `json:"contractor_type"`
-	Contact_details    string                        `json:"contact_details"`
-	Address_info       DetailAddressResponse         `json:"address_info"`
-	Finance_id         int64                         `json:"finance_id"`
-	Link_code          string                        `json:"link_code"`
-	Work_status        int                           `json:"work_status"`
-	Order_id           int64                         `json:"order_id"`
-	Category_list      []int64                       `json:"category_list"`
+	Contractor_id    int64                 `json:"contractor_id"`
+	Contractor_photo string                `json:"contractor_photo"`
+	Contractor_name  string                `json:"contractor_name"`
+	Contractor_type  string                `json:"contractor_type"`
+	Contact_details  string                `json:"contact_details"`
+	Address_info     DetailAddressResponse `json:"address_info"`
+	Finance_id       int64                 `json:"finance_id"`
+	Link_code        string                `json:"link_code"`
+	Work_status      int                   `json:"work_status"`
+	Order_id         int64                 `json:"order_id"`
+	Category_list    []int64               `json:"category_list"`
 }
 
 type ListContractorRequest struct {
@@ -403,6 +403,13 @@ type ListOrderRequest struct {
 }
 
 type ListOrderResponse struct {
+	Items []DetailOrderResponse `json:"items"`
+}
+
+type RecommendOrderRequest struct {
+}
+
+type RecommendOrderResponse struct {
 	Items []DetailOrderResponse `json:"items"`
 }
 
@@ -575,7 +582,7 @@ type JoinSubscribeGroupResponse struct {
 
 type LeaveSubscribeGroupRequest struct {
 	Category_list []int64 `json:"category_list"`
-	Location      string `json:"location,optional"`
+	Location      string  `json:"location,optional"`
 }
 
 type LeaveSubscribeGroupResponse struct {
