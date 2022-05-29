@@ -10,7 +10,7 @@ import (
 	"cleaningservice/service/model/address"
 	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/order"
-	"cleaningservice/service/model/schedule"
+	"cleaningservice/service/model/orderrecommend"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -39,7 +39,7 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 	}
 
 	var orderList []types.DetailOrderResponse
-	schedule_items, err := l.svcCtx.BScheduleModel.List(uid)
+	schedule_items, err := l.svcCtx.ROrderRecommendModel.List(uid)
 	if err == nil {
 		for _, order_id := range *schedule_items {
 			// Get order details
@@ -145,7 +145,7 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 
 			orderList = append(orderList, order_response)
 		}
-	} else if err != schedule.ErrNotFound {
+	} else if err != orderrecommend.ErrNotFound {
 		return nil, status.Error(500, err.Error())
 	}
 

@@ -11,7 +11,6 @@ import (
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/address"
 	"cleaningservice/service/model/contractor"
-	"cleaningservice/service/model/contractorservice"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -138,24 +137,24 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Add new contractor services
-	for _, new_service := range req.New_services {
-		_, err = l.svcCtx.RContractorServiceModel.Insert(l.ctx, &contractorservice.RContractorService{
-			ContractorId: contractorId,
-			ServiceId:    new_service,
-		})
-		if err != nil {
-			return nil, status.Error(500, err.Error())
-		}
-	}
+	// // Add new contractor services
+	// for _, new_service := range req.New_services {
+	// 	_, err = l.svcCtx.RContractorServiceModel.Insert(l.ctx, &contractorservice.RContractorService{
+	// 		ContractorId: contractorId,
+	// 		ServiceId:    new_service,
+	// 	})
+	// 	if err != nil {
+	// 		return nil, status.Error(500, err.Error())
+	// 	}
+	// }
 
-	// Remove old contractor services
-	for _, old_service := range req.Remove_services {
-		err = l.svcCtx.RContractorServiceModel.Delete(l.ctx, contractorId, old_service)
-		if err != nil {
-			return nil, status.Error(500, err.Error())
-		}
-	}
+	// // Remove old contractor services
+	// for _, old_service := range req.Remove_services {
+	// 	err = l.svcCtx.RContractorServiceModel.Delete(l.ctx, contractorId, old_service)
+	// 	if err != nil {
+	// 		return nil, status.Error(500, err.Error())
+	// 	}
+	// }
 
 	return &types.UpdateContractorResponse{}, nil
 }

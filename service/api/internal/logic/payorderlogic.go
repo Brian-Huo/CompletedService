@@ -60,6 +60,9 @@ func (l *PayOrderLogic) PayOrder(req *types.PayOrderRequest) (resp *types.PayOrd
 			ExpiryTime:   exp_time,
 			SecurityCode: req.Final_info.Security_code,
 		})
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
 
 		paymentId, err = payment_item.LastInsertId()
 		if err != nil {

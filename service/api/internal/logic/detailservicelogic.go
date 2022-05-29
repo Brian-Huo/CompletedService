@@ -46,8 +46,9 @@ func (l *DetailServiceLogic) DetailService(req *types.DetailServiceRequest) (ser
 	return &types.DetailServiceResponse{
 		Service_id: service_item.ServiceId,
 		Service_type: types.DetailCategoryResponse{
-			Category_id:   category_item.CategoryId,
-			Category_name: category_item.CategoryName,
+			Category_id:          category_item.CategoryId,
+			Category_name:        category_item.CategoryName,
+			Category_description: category_item.CategoryDescription,
 		},
 		Service_scope:       service_item.ServiceScope,
 		Service_name:        service_item.ServiceName,

@@ -15,6 +15,9 @@ func CheckAddressDetails(data *address.BAddress) bool {
 	if _, err := strconv.Atoi(data.Postcode); err != nil {
 		return false
 	}
+	if data.City != "" {
+		return false
+	}
 	if data.Lat == 0.0 || data.Lng == 0.0 {
 		return false
 	}

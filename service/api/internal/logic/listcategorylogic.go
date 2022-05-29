@@ -38,8 +38,9 @@ func (l *ListCategoryLogic) ListCategory(req *types.ListCategoryRequest) (resp *
 
 	for _, item := range category_items {
 		newItem := types.DetailCategoryResponse{
-			Category_id:   item.CategoryId,
-			Category_name: item.CategoryName,
+			Category_id:          item.CategoryId,
+			Category_name:        item.CategoryName,
+			Category_description: item.CategoryDescription,
 		}
 
 		allItems = append(allItems, newItem)

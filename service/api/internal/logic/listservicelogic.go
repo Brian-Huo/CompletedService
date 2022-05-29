@@ -49,11 +49,13 @@ func (l *ListServiceLogic) ListService(req *types.ListServiceRequest) (service_i
 		service_response := types.DetailServiceResponse{
 			Service_id: item.ServiceId,
 			Service_type: types.DetailCategoryResponse{
-				Category_id:   category_item.CategoryId,
-				Category_name: category_item.CategoryName,
+				Category_id:          category_item.CategoryId,
+				Category_name:        category_item.CategoryName,
+				Category_description: category_item.CategoryDescription,
 			},
 			Service_scope:       item.ServiceScope,
 			Service_name:        item.ServiceName,
+			Service_photo:       item.ServicePhoto.String,
 			Service_description: item.ServiceDescription,
 			Service_price:       item.ServicePrice,
 		}

@@ -121,8 +121,9 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 	category_response := types.DetailCategoryResponse{
-		Category_id:   category_item.CategoryId,
-		Category_name: category_item.CategoryName,
+		Category_id:          category_item.CategoryId,
+		Category_name:        category_item.CategoryName,
+		Category_description: category_item.CategoryDescription,
 	}
 
 	order_response := types.DetailOrderResponse{

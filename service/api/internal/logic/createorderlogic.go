@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strconv"
 	"time"
 
@@ -10,11 +11,10 @@ import (
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/address"
-	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/customer"
 	"cleaningservice/service/model/order"
+	"cleaningservice/service/model/orderrecommend"
 	"cleaningservice/service/model/payment"
-	"cleaningservice/service/model/schedule"
 	"cleaningservice/service/model/service"
 	"cleaningservice/util"
 
@@ -59,12 +59,12 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			return nil, status.Error(500, err.Error())
 		}
 
-		res, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment_struct)
+		payment_res, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment_struct)
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
 
-		paymentId, err = res.LastInsertId()
+		paymentId, err = payment_res.LastInsertId()
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
@@ -90,12 +90,12 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			ContactDetails: req.Customer_info.Contact_details,
 		}
 
-		res, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &customer_struct)
+		customer_item, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &customer_struct)
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
 
-		customerId, err = res.LastInsertId()
+		customerId, err = customer_item.LastInsertId()
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
@@ -123,12 +123,12 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
+	address_res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
-	addressId, err := res.LastInsertId()
+	addressId, err := address_res.LastInsertId()
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -184,32 +184,39 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		UrgantFlag:          int64(req.Urgent_flag),
 	}
 
-	res, err = l.svcCtx.BOrderModel.Insert(l.ctx, &newItem)
+	order_res, err := l.svcCtx.BOrderModel.Insert(l.ctx, &newItem)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
-	newId, err := res.LastInsertId()
+	newId, err := order_res.LastInsertId()
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
 	// Timing to broadcast the order
-	l.broadcastOrder(newId)
+	l.broadcastOrder(newId, req.Address_info.City, req.Category_id)
 
 	return &types.CreateOrderResponse{
 		Order_id: newId,
 	}, nil
 }
 
-func (l *CreateOrderLogic) broadcastOrder(orderId int64) {
-	vacant_contractor, err := l.svcCtx.BContractorModel.ListVacant(l.ctx)
-	if err != nil || err == contractor.ErrNotFound {
+func (l *CreateOrderLogic) broadcastOrder(orderId int64, location string, categoryId int64) {
+	subscribegroup_item, err := l.svcCtx.BSubscribeGroupModel.FindOneByCategoryLocation(l.ctx, categoryId, location)
+	if err != nil {
+		logx.Info(errors.New("invalid, broadcast failed."))
 		return
 	}
 
-	for _, contractor_id := range vacant_contractor {
-		go l.svcCtx.BScheduleModel.Insert(&schedule.BSchedule{
+	subscription_items, err := l.svcCtx.BSubscriptionModel.List(subscribegroup_item.GroupId)
+	if err != nil {
+		logx.Info(errors.New("invalid, broadcast failed."))
+		return
+	}
+
+	for _, contractor_id := range *subscription_items {
+		go l.svcCtx.ROrderRecommendModel.Insert(&orderrecommend.ROrderRecommend{
 			OrderId:      orderId,
 			ContractorId: contractor_id,
 		})

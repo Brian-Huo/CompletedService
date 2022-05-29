@@ -58,29 +58,31 @@ func (l *JoinSubscribeGroupLogic) JoinSubscribeGroup(req *types.JoinSubscribeGro
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Subscribe
-	subscribegroup_item, err := l.svcCtx.BSubscribeGroupModel.FindOneByCategoryLocation(l.ctx, req.Category_id, address_item.City)
-	if err != nil {
-		if err == subscribegroup.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Subscribe group not found.")
+	// Subscribe all category groups
+	for _, category_id := range req.Category_list {
+		subscribegroup_item, err := l.svcCtx.BSubscribeGroupModel.FindOneByCategoryLocation(l.ctx, category_id, address_item.City)
+		if err != nil {
+			if err == subscribegroup.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Subscribe group not found.")
+			}
+			return nil, status.Error(500, err.Error())
 		}
-		return nil, status.Error(500, err.Error())
-	}
 
-	_, err = l.svcCtx.RSubscribeRecordModel.Insert(l.ctx, &subscriberecord.RSubscribeRecord{
-		GroupId:      subscribegroup_item.GroupId,
-		ContractorId: uid,
-	})
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
+		_, err = l.svcCtx.RSubscribeRecordModel.Insert(l.ctx, &subscriberecord.RSubscribeRecord{
+			GroupId:      subscribegroup_item.GroupId,
+			ContractorId: uid,
+		})
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
 
-	_, err = l.svcCtx.BSubscriptionModel.Insert(&subscription.BSubscription{
-		GroupId:      subscribegroup_item.GroupId,
-		ContractorId: uid,
-	})
-	if err != nil {
-		return nil, status.Error(500, err.Error())
+		_, err = l.svcCtx.BSubscriptionModel.Insert(&subscription.BSubscription{
+			GroupId:      subscribegroup_item.GroupId,
+			ContractorId: uid,
+		})
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
 	}
 
 	return &types.JoinSubscribeGroupResponse{

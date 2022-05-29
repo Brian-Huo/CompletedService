@@ -39,8 +39,9 @@ type (
 	}
 
 	BCategory struct {
-		CategoryId   int64  `db:"category_id"`
-		CategoryName string `db:"category_name"`
+		CategoryId          int64  `db:"category_id"`
+		CategoryName        string `db:"category_name"`
+		CategoryDescription string `db:"category_description"`
 	}
 )
 
@@ -54,8 +55,8 @@ func newBCategoryModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBCategoryMo
 func (m *defaultBCategoryModel) Insert(ctx context.Context, data *BCategory) (sql.Result, error) {
 	bCategoryCategoryIdKey := fmt.Sprintf("%s%v", cacheBCategoryCategoryIdPrefix, data.CategoryId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?)", m.table, bCategoryRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.CategoryName)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?)", m.table, bCategoryRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.CategoryName, data.CategoryDescription)
 	}, bCategoryCategoryIdKey)
 	return ret, err
 }
@@ -97,7 +98,7 @@ func (m *defaultBCategoryModel) Update(ctx context.Context, data *BCategory) err
 	bCategoryCategoryIdKey := fmt.Sprintf("%s%v", cacheBCategoryCategoryIdPrefix, data.CategoryId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `category_id` = ?", m.table, bCategoryRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.CategoryName, data.CategoryId)
+		return conn.ExecCtx(ctx, query, data.CategoryName, data.CategoryDescription, data.CategoryId)
 	}, bCategoryCategoryIdKey)
 	return err
 }

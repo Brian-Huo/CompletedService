@@ -222,8 +222,8 @@ type UpdateContractorRequest struct {
 	Address_info     UpdateAddressRequest `json:"address_info,optional"`
 	Link_code        string               `json:"link_code,optional"`
 	Work_status      int                  `json:"work_status"`
-	New_services     []int64              `json:"new_services"`
-	Remove_services  []int64              `json:"remove_services"`
+	New_category     []int64              `json:"new_category"`
+	Remove_category  []int64              `json:"remove_category"`
 }
 
 type UpdateContractorResponse struct {
@@ -251,6 +251,7 @@ type DetailContractorResponse struct {
 	Link_code          string                        `json:"link_code"`
 	Work_status        int                           `json:"work_status"`
 	Order_id           int64                         `json:"order_id"`
+	Category_list      []int64                       `json:"category_list"`
 }
 
 type ListContractorRequest struct {
@@ -550,8 +551,9 @@ type DetailCategoryRequest struct {
 }
 
 type DetailCategoryResponse struct {
-	Category_id   int64  `json:"category_id"`
-	Category_name string `json:"category_name"`
+	Category_id          int64  `json:"category_id"`
+	Category_name        string `json:"category_name"`
+	Category_description string `json:"category_description"`
 }
 
 type ListCategoryRequest struct {
@@ -562,8 +564,8 @@ type ListCategoryResponse struct {
 }
 
 type JoinSubscribeGroupRequest struct {
-	Category_id int64  `json:"category_id"`
-	Location    string `json:"location,optional"`
+	Category_list []int64 `json:"category_list"`
+	Location      string  `json:"location,optional"`
 }
 
 type JoinSubscribeGroupResponse struct {
@@ -572,8 +574,8 @@ type JoinSubscribeGroupResponse struct {
 }
 
 type LeaveSubscribeGroupRequest struct {
-	Category_id int64  `json:"category_id"`
-	Location    string `json:"location,optional"`
+	Category_list []int64 `json:"category_list"`
+	Location      string `json:"location,optional"`
 }
 
 type LeaveSubscribeGroupResponse struct {

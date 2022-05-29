@@ -56,23 +56,25 @@ func (l *LeaveSubscribeGroupLogic) LeaveSubscribeGroup(req *types.LeaveSubscribe
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Unsubscribe
-	subscribegroup_item, err := l.svcCtx.BSubscribeGroupModel.FindOneByCategoryLocation(l.ctx, req.Category_id, address_item.City)
-	if err != nil {
-		if err == subscribegroup.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Subscribe group not found.")
+	// Unsubscribe all category group
+	for _, category_id := range req.Category_list {
+		subscribegroup_item, err := l.svcCtx.BSubscribeGroupModel.FindOneByCategoryLocation(l.ctx, category_id, address_item.City)
+		if err != nil {
+			if err == subscribegroup.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Subscribe group not found.")
+			}
+			return nil, status.Error(500, err.Error())
 		}
-		return nil, status.Error(500, err.Error())
-	}
 
-	err = l.svcCtx.RSubscribeRecordModel.Delete(l.ctx, subscribegroup_item.GroupId, uid)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
+		err = l.svcCtx.RSubscribeRecordModel.Delete(l.ctx, subscribegroup_item.GroupId, uid)
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
 
-	_, err = l.svcCtx.BSubscriptionModel.Delete(subscribegroup_item.GroupId, uid)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
+		_, err = l.svcCtx.BSubscriptionModel.Delete(subscribegroup_item.GroupId, uid)
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
 	}
 
 	return &types.LeaveSubscribeGroupResponse{

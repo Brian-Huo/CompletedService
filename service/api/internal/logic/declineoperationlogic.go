@@ -73,5 +73,5 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 }
 
 func (l *DeclineOperationLogic) receiveOrder(contractorId int64, orderId int64) {
-	go l.svcCtx.BScheduleModel.Delete(contractorId, orderId)
+	go l.svcCtx.ROrderRecommendModel.Delete(contractorId, orderId)
 }

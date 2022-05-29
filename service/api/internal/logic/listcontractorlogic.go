@@ -8,6 +8,7 @@ import (
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/contractor"
+	"cleaningservice/service/model/subscriberecord"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -87,6 +88,25 @@ func (l *ListContractorLogic) ListContractor(req *types.ListContractorRequest) (
 			address_response.Formatted = address_item.Formatted
 		}
 
+		// Get category details
+		subscriberecord_items, err := l.svcCtx.RSubscribeRecordModel.FindAllByContractorId(l.ctx, uid)
+		if err != nil {
+			if err == subscriberecord.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Category not found.")
+			}
+			return nil, status.Error(500, err.Error())
+		}
+
+		var category_list []int64
+		for _, item := range subscriberecord_items {
+			group_item, err := l.svcCtx.BSubscribeGroupModel.FindOne(l.ctx, item.GroupId)
+			if err != nil {
+				continue
+			}
+
+			category_list = append(category_list, group_item.Category)
+		}
+
 		// Get contractor details
 		contractor_response := types.DetailContractorResponse{
 			Contractor_id:    item.ContractorId,
@@ -99,6 +119,7 @@ func (l *ListContractorLogic) ListContractor(req *types.ListContractorRequest) (
 			Link_code:        item.LinkCode,
 			Work_status:      int(item.WorkStatus),
 			Order_id:         item.OrderId.Int64,
+			Category_list:    category_list,
 		}
 
 		allItems = append(allItems, contractor_response)

@@ -25,6 +25,7 @@ type (
 		Insert(ctx context.Context, data *RSubscribeRecord) (sql.Result, error)
 		FindOne(ctx context.Context, groupId int64, contractorId int64) (*RSubscribeRecord, error)
 		FindAllByGroupId(ctx context.Context, groupId int64) ([]*RSubscribeRecord, error)
+		FindAllByContractorId(ctx context.Context, contractorId int64) ([]*RSubscribeRecord, error)
 		Delete(ctx context.Context, groupId int64, contractorId int64) error
 	}
 
@@ -70,6 +71,20 @@ func (m *defaultRSubscribeRecordModel) FindAllByGroupId(ctx context.Context, gro
 	query := fmt.Sprintf("select %s from %s where `group_id` = ?", rSubscribeRecordRows, m.table)
 	var resp []*RSubscribeRecord
 	err := m.conn.QueryRowsCtx(ctx, &resp, query, groupId)
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultRSubscribeRecordModel) FindAllByContractorId(ctx context.Context, contractorId int64) ([]*RSubscribeRecord, error) {
+	query := fmt.Sprintf("select %s from %s where `contractor_id` = ?", rSubscribeRecordRows, m.table)
+	var resp []*RSubscribeRecord
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, contractorId)
 	switch err {
 	case nil:
 		return resp, nil

@@ -105,5 +105,5 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 }
 
 func (l *AcceptOperationLogic) receiveOrder(contractorId int64, orderId int64) {
-	go l.svcCtx.BScheduleModel.Delete(contractorId, orderId)
+	go l.svcCtx.ROrderRecommendModel.Delete(contractorId, orderId)
 }

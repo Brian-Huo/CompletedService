@@ -10,8 +10,8 @@ import (
 	"cleaningservice/service/model/customer"
 	"cleaningservice/service/model/operation"
 	"cleaningservice/service/model/order"
+	"cleaningservice/service/model/orderrecommend"
 	"cleaningservice/service/model/payment"
-	"cleaningservice/service/model/schedule"
 	"cleaningservice/service/model/service"
 	"cleaningservice/service/model/subscribegroup"
 	"cleaningservice/service/model/subscriberecord"
@@ -32,9 +32,9 @@ type ServiceContext struct {
 	RContractorServiceModel contractorservice.RContractorServiceModel
 	BOperationModel         operation.BOperationModel
 	BOrderModel             order.BOrderModel
+	ROrderRecommendModel    orderrecommend.ROrderRecommendModel
 	BPaymentModel           payment.BPaymentModel
 	BServiceModel           service.BServiceModel
-	BScheduleModel          schedule.BScheduleModel
 	BSubscribeGroupModel    subscribegroup.BSubscribeGroupModel
 	RSubscribeRecordModel   subscriberecord.RSubscribeRecordModel
 	BSubscriptionModel      subscription.BSubscriptionModel
@@ -51,10 +51,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		BContractorModel:        contractor.NewBContractorModel(conn, c.CacheRedis),
 		RContractorServiceModel: contractorservice.NewRContractorServiceModel(conn),
 		BOrderModel:             order.NewBOrderModel(conn, c.CacheRedis),
+		ROrderRecommendModel:    orderrecommend.NewROrderRecommendModel(c.RedisConf),
 		BOperationModel:         operation.NewBOperationModel(conn, c.CacheRedis),
 		BPaymentModel:           payment.NewBPaymentModel(conn, c.CacheRedis),
 		BServiceModel:           service.NewBServiceModel(conn, c.CacheRedis),
-		BScheduleModel:          schedule.NewBScheduleModel(c.RedisConf),
 		BSubscribeGroupModel:    subscribegroup.NewBSubscribeGroupModel(conn, c.CacheRedis),
 		RSubscribeRecordModel:   subscriberecord.NewRSubscribeRecordModel(conn),
 		BSubscriptionModel:      subscription.NewBSubscriptionModel(c.RedisConf),

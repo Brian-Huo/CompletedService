@@ -7,6 +7,7 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/category"
 	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/order"
 
@@ -114,6 +115,20 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Contact_details:  contractor_item.ContactDetails,
 		}
 
+		// Get Category Details
+		category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, item.CategoryId)
+		if err != nil {
+			if err == category.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Category not found.")
+			}
+			return nil, status.Error(500, err.Error())
+		}
+		category_response := types.DetailCategoryResponse{
+			Category_id:          category_item.CategoryId,
+			Category_name:        category_item.CategoryName,
+			Category_description: category_item.CategoryDescription,
+		}
+
 		// Create order detail response
 		order_response := types.DetailOrderResponse{
 			Order_id:              item.OrderId,
@@ -121,6 +136,7 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Contractor_info:       contractor_response,
 			Address_info:          address_response,
 			Finance_id:            item.FinanceId.Int64,
+			Category:              category_response,
 			Service_list:          item.ServiceList,
 			Deposite_payment:      item.DepositePayment,
 			Deposite_amount:       item.DepositeAmount,
@@ -136,6 +152,7 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Reserve_date:          item.ReserveDate.Format("2006-01-02 15:04:05"),
 			Finish_date:           item.FinishDate.Time.Format("2006-01-02 15:04:05"),
 			Status:                int(item.Status),
+			Urgent_flag:           int(item.UrgantFlag),
 		}
 
 		allItems = append(allItems, order_response)
