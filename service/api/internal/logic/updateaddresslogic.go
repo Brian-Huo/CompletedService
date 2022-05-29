@@ -39,7 +39,7 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 		return nil, status.Error(401, "Invalid, Not company.")
 	}
 
-	res, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
+	address_item, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
 	if err != nil {
 		if err == company.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Company not found.")
@@ -47,7 +47,7 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
-	if res.RegisteredAddress.Valid && res.RegisteredAddress.Int64 != req.Address_id {
+	if address_item.RegisteredAddress.Valid && address_item.RegisteredAddress.Int64 != req.Address_id {
 		return nil, status.Error(401, "Invalid company address id.")
 	}
 

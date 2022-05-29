@@ -32,30 +32,30 @@ func NewLoginCompanyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Logi
 func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *types.LoginCompanyResponse, err error) {
 	// find company by contact_details
 	var companyId int64
-	item, err := l.svcCtx.BCompanyModel.FindOneByContactDetails(l.ctx, req.Contact_details)
+	res, err := l.svcCtx.BCompanyModel.FindOneByContactDetails(l.ctx, req.Contact_details)
 	if err == company.ErrNotFound {
 		// if company not found, insert company
-		res, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &company.BCompany{
+		company_item, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &company.BCompany{
 			CompanyName:       req.Contact_details,
 			PaymentId:         sql.NullInt64{0, false},
 			DirectorName:      sql.NullString{"", false},
 			ContactDetails:    req.Contact_details,
 			RegisteredAddress: sql.NullInt64{0, false},
 			DepositeRate:      10,
-			FinanceStatus:     int64(variables.Active),
+			FinanceStatus:     company.Active,
 		})
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
 
 		// get company id
-		newId, err := res.LastInsertId()
+		newId, err := company_item.LastInsertId()
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
 		companyId = newId
 	} else if err == nil {
-		companyId = item.CompanyId
+		companyId = res.CompanyId
 	} else {
 		return nil, status.Error(500, err.Error())
 	}

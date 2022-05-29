@@ -51,7 +51,7 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 
 	l.receiveOrder(uid, req.Order_id)
 
-	if cont.WorkStatus != int64(variables.Vacant) {
+	if cont.WorkStatus != contractor.Vacant {
 		return nil, errorx.NewCodeError(401, "Invalid, Contractor should not double accept order(s).")
 	}
 
@@ -64,7 +64,7 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 		return nil, status.Error(500, err.Error())
 	}
 
-	if ord.Status != int64(variables.Queuing) {
+	if ord.Status != order.Queuing {
 		return nil, errorx.NewCodeError(401, "Order is currently unavailable.")
 	}
 
@@ -72,16 +72,11 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	newItem := operation.BOperation{
 		ContractorId: uid,
 		OrderId:      req.Order_id,
-		Operation:    int64(variables.Accept),
+		Operation:    operation.Accept,
 		IssueDate:    time.Now(),
 	}
 
-	res, err := l.svcCtx.BOperationModel.Insert(l.ctx, &newItem)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
-
-	newId, err := res.LastInsertId()
+	_, err = l.svcCtx.BOperationModel.Insert(l.ctx, &newItem)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -89,14 +84,14 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	// Update order details
 	ord.ContractorId = sql.NullInt64{uid, true}
 	ord.FinanceId = sql.NullInt64{cont.FinanceId, true}
-	ord.Status = int64(variables.Working)
+	ord.Status = order.Working
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
 	// Update contractor details
-	cont.WorkStatus = int64(variables.InWork)
+	cont.WorkStatus = contractor.InWork
 	cont.OrderId = sql.NullInt64{req.Order_id, true}
 	err = l.svcCtx.BContractorModel.Update(l.ctx, cont)
 	if err != nil {
@@ -104,7 +99,8 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	}
 
 	return &types.AcceptOperationResponse{
-		Operation_id: newId,
+		Code: 200,
+		Msg:  "success",
 	}, nil
 }
 

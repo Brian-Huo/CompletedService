@@ -9,16 +9,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func CreateOperationHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func InitSystemHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.CreateOperationRequest
+		var req types.InitSystemRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewCreateOperationLogic(r.Context(), svcCtx)
-		resp, err := l.CreateOperation(&req)
+		l := logic.NewInitSystemLogic(r.Context(), svcCtx)
+		resp, err := l.InitSystem(&req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

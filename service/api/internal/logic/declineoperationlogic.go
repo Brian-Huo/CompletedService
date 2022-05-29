@@ -10,6 +10,7 @@ import (
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/operation"
+	"cleaningservice/service/model/order"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -49,29 +50,25 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 		return nil, status.Error(404, "Invalid, Order not found.")
 	}
 
-	if ord.Status != int64(variables.Queuing) {
+	if ord.Status != order.Queuing {
 		return nil, errorx.NewCodeError(401, "Order is currently unavailable.")
 	}
 
 	newItem := operation.BOperation{
 		ContractorId: uid,
 		OrderId:      req.Order_id,
-		Operation:    int64(variables.Decline),
+		Operation:    operation.Decline,
 		IssueDate:    time.Now(),
 	}
 
-	res, err := l.svcCtx.BOperationModel.Insert(l.ctx, &newItem)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
-
-	newId, err := res.LastInsertId()
+	_, err = l.svcCtx.BOperationModel.Insert(l.ctx, &newItem)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
 	return &types.DeclineOperationResponse{
-		Operation_id: newId,
+		Code: 200,
+		Msg:  "success",
 	}, nil
 }
 

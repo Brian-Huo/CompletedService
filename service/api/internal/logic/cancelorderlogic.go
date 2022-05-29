@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 
-	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/contractor"
@@ -37,7 +36,7 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	ord.Status = int64(variables.Cancelled)
+	ord.Status = order.Cancelled
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
 	if err != nil {
@@ -52,7 +51,7 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	cont.WorkStatus = int64(variables.Vacant)
+	cont.WorkStatus = contractor.Vacant
 	cont.OrderId = sql.NullInt64{0, false}
 
 	err = l.svcCtx.BContractorModel.Update(l.ctx, cont)
@@ -60,5 +59,5 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	return
+	return &types.CancelOrderResponse{}, nil
 }

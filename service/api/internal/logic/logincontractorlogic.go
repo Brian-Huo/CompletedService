@@ -32,7 +32,7 @@ func NewLoginContractorLogic(ctx context.Context, svcCtx *svc.ServiceContext) *L
 
 func (l *LoginContractorLogic) LoginContractor(req *types.LoginContractorRequest) (resp *types.LoginContractorResponse, err error) {
 	// find contractor by contact_details
-	item, err := l.svcCtx.BContractorModel.FindOneByContactDetails(l.ctx, req.Contact_details)
+	res, err := l.svcCtx.BContractorModel.FindOneByContactDetails(l.ctx, req.Contact_details)
 	if err != nil {
 		if err == contractor.ErrNotFound {
 			return nil, errorx.NewCodeError(404, "Invalid, Contractor not found.")
@@ -40,37 +40,37 @@ func (l *LoginContractorLogic) LoginContractor(req *types.LoginContractorRequest
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	fmt.Println(len(item.LinkCode), "      ", len(req.LinkCode))
+	fmt.Println(len(res.LinkCode), "      ", len(req.LinkCode))
 	// Verify if first login
-	if item.WorkStatus == int64(variables.Await) {
+	if res.WorkStatus == contractor.Await {
 		if req.VerifyCode == "" {
 			return nil, errorx.NewCodeError(1002, "Invalid, Verify code required.")
 		} else if false {
 			return nil, errorx.NewCodeError(401, "Invalid, Verfiy code incorrect.")
 		}
 
-		if item.LinkCode != req.LinkCode {
+		if res.LinkCode != req.LinkCode {
 			return nil, errorx.NewCodeError(401, "Invalid, Link code incorrect.")
 		} else {
 			// Update contractor first update
-			item.WorkStatus = int64(variables.Vacant)
-			item.LinkCode = cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, item.LinkCode)
-			err = l.svcCtx.BContractorModel.Update(l.ctx, item)
+			res.WorkStatus = contractor.Vacant
+			res.LinkCode = cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, res.LinkCode)
+			err = l.svcCtx.BContractorModel.Update(l.ctx, res)
 			if err != nil {
 				return nil, errorx.NewCodeError(500, err.Error())
 			}
 		}
-	} else if item.WorkStatus == int64(variables.Resigned) {
+	} else if res.WorkStatus == contractor.Resigned {
 		return nil, errorx.NewCodeError(404, "Invalid, Contractor Not Found.")
 
-	} else if item.LinkCode != cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, req.LinkCode) {
+	} else if res.LinkCode != cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, req.LinkCode) {
 		return nil, errorx.NewCodeError(401, "Invalid, Link code incorrect.")
 	}
 
 	// 签发 jwt token
 	now := time.Now().Unix()
 	token, err := jwtx.GetToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire,
-		item.ContractorId, variables.Contractor)
+		res.ContractorId, variables.Contractor)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, "Jwt token error.")
 	}

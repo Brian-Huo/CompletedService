@@ -37,7 +37,7 @@ func (l *RemoveContractorLogic) RemoveContractor(req *types.RemoveContractorRequ
 		return nil, status.Error(401, "Invalid, Unauthorised action.")
 	}
 
-	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, req.Contractor_id)
+	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, req.Contractor_id)
 	if err != nil {
 		if err == contractor.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Contractor not found.")
@@ -45,13 +45,13 @@ func (l *RemoveContractorLogic) RemoveContractor(req *types.RemoveContractorRequ
 		return nil, status.Error(500, err.Error())
 	}
 
-	if uid != cont.FinanceId {
+	if uid != contractor_item.FinanceId {
 		return nil, status.Error(404, "Invalid, Contractor not found.")
 	}
 
-	cont.WorkStatus = int64(variables.Resigned)
+	contractor_item.WorkStatus = contractor.Resigned
 
-	err = l.svcCtx.BContractorModel.Update(l.ctx, cont)
+	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

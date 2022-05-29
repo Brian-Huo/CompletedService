@@ -37,7 +37,7 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 	}
 
 	// Verify contractor
-	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, req.Contractor_id)
+	contractor_items, err := l.svcCtx.BContractorModel.FindOne(l.ctx, req.Contractor_id)
 	if err != nil {
 		if err == contractor.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Contractor not found.")
@@ -45,12 +45,12 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
-	if cont.FinanceId != uid {
+	if contractor_items.FinanceId != uid {
 		return nil, status.Error(404, "Invalid, Contractor not found.")
 	}
 
 	// Get all operations
-	res, err := l.svcCtx.BOperationModel.FindAllByContractor(l.ctx, req.Contractor_id)
+	operation_items, err := l.svcCtx.BOperationModel.FindAllByContractor(l.ctx, req.Contractor_id)
 	if err != nil {
 		if err == operation.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Operation not found.")
@@ -60,8 +60,8 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 
 	allItems := []types.DetailOperationResponse{}
 
-	for _, item := range res {
-		newItem := types.DetailOperationResponse{
+	for _, item := range operation_items {
+		operation_response := types.DetailOperationResponse{
 			Operation_id:  item.OperationId,
 			Contractor_id: item.ContractorId,
 			Order_id:      item.OrderId,
@@ -69,7 +69,7 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 			Issue_date:    item.IssueDate.String(),
 		}
 
-		allItems = append(allItems, newItem)
+		allItems = append(allItems, operation_response)
 	}
 
 	return &types.ListOperationResponse{

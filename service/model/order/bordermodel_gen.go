@@ -50,6 +50,7 @@ type (
 		AddressId           int64          `db:"address_id"`
 		ContractorId        sql.NullInt64  `db:"contractor_id"`
 		FinanceId           sql.NullInt64  `db:"finance_id"`
+		CategoryId          int64          `db:"category_id"`
 		ServiceList         string         `db:"service_list"`
 		DepositePayment     int64          `db:"deposite_payment"`
 		DepositeAmount      float64        `db:"deposite_amount"`
@@ -65,6 +66,7 @@ type (
 		ReserveDate         time.Time      `db:"reserve_date"`
 		FinishDate          sql.NullTime   `db:"finish_date"`
 		Status              int64          `db:"status"`
+		UrgantFlag          int64          `db:"urgant_flag"`
 	}
 )
 
@@ -78,8 +80,8 @@ func newBOrderModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBOrderModel {
 func (m *defaultBOrderModel) Insert(ctx context.Context, data *BOrder) (sql.Result, error) {
 	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, data.OrderId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bOrderRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.ServiceList, data.DepositePayment, data.DepositeAmount, data.DepositeDate, data.FinalPayment, data.FinalAmount, data.FinalPaymentDate, data.CurrentDepositeRate, data.GstAmount, data.TotalFee, data.OrderDescription, data.PostDate, data.ReserveDate, data.FinishDate, data.Status)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bOrderRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.ServiceList, data.DepositePayment, data.DepositeAmount, data.DepositeDate, data.FinalPayment, data.FinalAmount, data.FinalPaymentDate, data.CurrentDepositeRate, data.GstAmount, data.TotalFee, data.OrderDescription, data.PostDate, data.ReserveDate, data.FinishDate, data.Status, data.UrgantFlag)
 	}, bOrderOrderIdKey)
 	return ret, err
 }
@@ -169,7 +171,7 @@ func (m *defaultBOrderModel) Update(ctx context.Context, data *BOrder) error {
 	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, data.OrderId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `order_id` = ?", m.table, bOrderRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.ServiceList, data.DepositePayment, data.DepositeAmount, data.DepositeDate, data.FinalPayment, data.FinalAmount, data.FinalPaymentDate, data.CurrentDepositeRate, data.GstAmount, data.TotalFee, data.OrderDescription, data.PostDate, data.ReserveDate, data.FinishDate, data.Status, data.OrderId)
+		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.ServiceList, data.DepositePayment, data.DepositeAmount, data.DepositeDate, data.FinalPayment, data.FinalAmount, data.FinalPaymentDate, data.CurrentDepositeRate, data.GstAmount, data.TotalFee, data.OrderDescription, data.PostDate, data.ReserveDate, data.FinishDate, data.Status, data.UrgantFlag, data.OrderId)
 	}, bOrderOrderIdKey)
 	return err
 }

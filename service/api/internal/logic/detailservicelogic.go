@@ -5,6 +5,7 @@ import (
 
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/category"
 	"cleaningservice/service/model/service"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -25,8 +26,8 @@ func NewDetailServiceLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Det
 	}
 }
 
-func (l *DetailServiceLogic) DetailService(req *types.DetailServiceRequest) (resp *types.DetailServiceResponse, err error) {
-	res, err := l.svcCtx.BServiceModel.FindOne(l.ctx, req.Service_id)
+func (l *DetailServiceLogic) DetailService(req *types.DetailServiceRequest) (service_itemp *types.DetailServiceResponse, err error) {
+	service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, req.Service_id)
 	if err != nil {
 		if err == service.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Service not found.")
@@ -34,13 +35,23 @@ func (l *DetailServiceLogic) DetailService(req *types.DetailServiceRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
+	category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, service_item.ServiceType)
+	if err != nil {
+		if err == category.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Category not found.")
+		}
+		return nil, status.Error(500, err.Error())
+	}
+
 	return &types.DetailServiceResponse{
-		Service_id:          res.ServiceId,
-		Service_type:        res.ServiceType,
-		Service_scope:       res.ServiceScope,
-		Service_name:        res.ServiceName,
-		Service_photo:       res.ServicePhoto,
-		Service_description: res.ServiceDescription,
-		Service_price:       res.ServicePrice,
+		Service_id: service_item.ServiceId,
+		Service_type: types.DetailCategoryResponse{
+			Category_id:   category_item.CategoryId,
+			Category_name: category_item.CategoryName,
+		},
+		Service_scope:       service_item.ServiceScope,
+		Service_name:        service_item.ServiceName,
+		Service_description: service_item.ServiceDescription,
+		Service_price:       service_item.ServicePrice,
 	}, nil
 }

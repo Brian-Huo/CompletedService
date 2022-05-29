@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"fmt"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -40,12 +39,11 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 	}
 
 	var orderList []types.DetailOrderResponse
-	schedules, err := l.svcCtx.BScheduleModel.List(uid)
-	fmt.Println(schedules)
+	schedule_items, err := l.svcCtx.BScheduleModel.List(uid)
 	if err == nil {
-		for _, order_id := range *schedules {
+		for _, order_id := range *schedule_items {
 			// Get order details
-			res, err := l.svcCtx.BOrderModel.FindOne(l.ctx, order_id)
+			order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, order_id)
 			if err != nil {
 				if err == order.ErrNotFound {
 					return nil, status.Error(404, "Invalid, Order not found.")
@@ -54,7 +52,7 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 			}
 
 			// Get customer details
-			cus, err := l.svcCtx.BCustomerModel.FindOne(l.ctx, res.CustomerId)
+			customer_item, err := l.svcCtx.BCustomerModel.FindOne(l.ctx, order_item.CustomerId)
 			if err != nil {
 				if err == order.ErrNotFound {
 					return nil, status.Error(404, "Invalid, Customer not found.")
@@ -62,37 +60,37 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 				return nil, status.Error(500, err.Error())
 			}
 
-			newCus := types.DetailCustomerResponse{
-				Customer_id:     cus.CustomerId,
-				Customer_name:   cus.CustomerName,
-				Contact_details: cus.ContactDetails,
-				Country_code:    cus.CountryCode,
+			customer_response := types.DetailCustomerResponse{
+				Customer_id:     customer_item.CustomerId,
+				Customer_name:   customer_item.CustomerName,
+				Contact_details: customer_item.ContactDetails,
+				Country_code:    customer_item.CountryCode,
 			}
 
 			// Get address details
-			addr, err := l.svcCtx.BAddressModel.FindOne(l.ctx, res.AddressId)
+			address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, order_item.AddressId)
 			if err != nil {
 				if err == address.ErrNotFound {
 					return nil, status.Error(404, "Invalid, Address not found.")
 				}
 				return nil, status.Error(500, err.Error())
 			}
-			newAddr := types.DetailAddressResponse{
-				Address_id: addr.AddressId,
-				Street:     addr.Street,
-				Suburb:     addr.Suburb,
-				Postcode:   addr.Postcode,
-				City:       addr.City,
-				State_code: addr.StateCode,
-				Country:    addr.Country,
-				Lat:        addr.Lat,
-				Lng:        addr.Lng,
-				Formatted:  addr.Formatted,
+			address_response := types.DetailAddressResponse{
+				Address_id: address_item.AddressId,
+				Street:     address_item.Street,
+				Suburb:     address_item.Suburb,
+				Postcode:   address_item.Postcode,
+				City:       address_item.City,
+				State_code: address_item.StateCode,
+				Country:    address_item.Country,
+				Lat:        address_item.Lat,
+				Lng:        address_item.Lng,
+				Formatted:  address_item.Formatted,
 			}
 
 			// Get contractor details
 			// Default contractor details (not found/ haven't been assigned)
-			newCont := types.DetailContractorResponse{
+			contractor_response := types.DetailContractorResponse{
 				Contractor_id:    -1,
 				Contractor_photo: "No Contractor Assigned",
 				Contractor_name:  "No Contractor Assigned",
@@ -100,52 +98,52 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 				Contact_details:  "No Contractor Assigned",
 			}
 
-			cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, res.ContractorId.Int64)
+			contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, order_item.ContractorId.Int64)
 			if err == nil {
 				// Contractor type
 				var contractorType string
-				if cont.ContractorType == int64(variables.Employee) {
+				if contractor_item.ContractorType == contractor.Employee {
 					contractorType = "Employee"
-				} else if cont.ContractorType == int64(variables.Individual) {
+				} else if contractor_item.ContractorType == contractor.Individual {
 					contractorType = "Individual"
 				}
 
-				newCont.Contractor_id = cont.ContractorId
-				newCont.Contractor_photo = cont.ContractorPhoto.String
-				newCont.Contractor_name = cont.ContractorName
-				newCont.Contractor_type = contractorType
-				newCont.Contact_details = cont.ContactDetails
-				newCont.Finance_id = -1
-				newCont.Work_status = -1
-				newCont.Order_id = -1
+				contractor_response.Contractor_id = contractor_item.ContractorId
+				contractor_response.Contractor_photo = contractor_item.ContractorPhoto.String
+				contractor_response.Contractor_name = contractor_item.ContractorName
+				contractor_response.Contractor_type = contractorType
+				contractor_response.Contact_details = contractor_item.ContactDetails
+				contractor_response.Finance_id = -1
+				contractor_response.Work_status = -1
+				contractor_response.Order_id = -1
 			} else if err != contractor.ErrNotFound {
 				return nil, status.Error(500, err.Error())
 			}
 
-			order_item := types.DetailOrderResponse{
-				Order_id:              res.OrderId,
-				Customer_info:         newCus,
-				Contractor_info:       newCont,
-				Address_info:          newAddr,
-				Finance_id:            res.FinanceId.Int64,
-				Service_list:          res.ServiceList,
-				Deposite_payment:      res.DepositePayment,
-				Deposite_amount:       res.DepositeAmount,
-				Current_deposite_rate: int(res.CurrentDepositeRate),
-				Deposite_date:         res.DepositeDate.Format("2006-01-02 15:04:05"),
-				Final_payment:         res.FinalPayment.Int64,
-				Final_amount:          res.FinalAmount,
-				Final_payment_date:    res.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
-				Gst_amount:            res.GstAmount,
-				Total_fee:             res.TotalFee,
-				Order_description:     res.OrderDescription.String,
-				Post_date:             res.PostDate.Format("2006-01-02 15:04:05"),
-				Reserve_date:          res.ReserveDate.Format("2006-01-02 15:04:05"),
-				Finish_date:           res.FinishDate.Time.Format("2006-01-02 15:04:05"),
-				Status:                int(res.Status),
+			order_response := types.DetailOrderResponse{
+				Order_id:              order_item.OrderId,
+				Customer_info:         customer_response,
+				Contractor_info:       contractor_response,
+				Address_info:          address_response,
+				Finance_id:            order_item.FinanceId.Int64,
+				Service_list:          order_item.ServiceList,
+				Deposite_payment:      order_item.DepositePayment,
+				Deposite_amount:       order_item.DepositeAmount,
+				Current_deposite_rate: int(order_item.CurrentDepositeRate),
+				Deposite_date:         order_item.DepositeDate.Format("2006-01-02 15:04:05"),
+				Final_payment:         order_item.FinalPayment.Int64,
+				Final_amount:          order_item.FinalAmount,
+				Final_payment_date:    order_item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
+				Gst_amount:            order_item.GstAmount,
+				Total_fee:             order_item.TotalFee,
+				Order_description:     order_item.OrderDescription.String,
+				Post_date:             order_item.PostDate.Format("2006-01-02 15:04:05"),
+				Reserve_date:          order_item.ReserveDate.Format("2006-01-02 15:04:05"),
+				Finish_date:           order_item.FinishDate.Time.Format("2006-01-02 15:04:05"),
+				Status:                int(order_item.Status),
 			}
 
-			orderList = append(orderList, order_item)
+			orderList = append(orderList, order_response)
 		}
 	} else if err != schedule.ErrNotFound {
 		return nil, status.Error(500, err.Error())

@@ -48,7 +48,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 	}
 
 	// Get contractor details
-	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, contractorId)
+	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, contractorId)
 	if err != nil {
 		if err == contractor.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Contractor not found.")
@@ -58,24 +58,24 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 
 	// Verify company and contractor
 	if role == variables.Contractor {
-		if req.Work_status == variables.Vacant || req.Work_status == variables.InRest {
-			cont.WorkStatus = int64(req.Work_status)
+		if req.Work_status == int(contractor.Vacant) || req.Work_status == int(contractor.InRest) {
+			contractor_item.WorkStatus = int64(req.Work_status)
 		}
 
 		if req.Link_code != "" {
-			cont.LinkCode = cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, req.Link_code)
+			contractor_item.LinkCode = cryptx.PasswordEncrypt(l.svcCtx.Config.Salt, req.Link_code)
 		}
 	} else if role == variables.Company {
-		if cont.FinanceId != uid {
+		if contractor_item.FinanceId != uid {
 			return nil, status.Error(404, "Invalid, Contractor not found.")
 		}
 	}
 
 	// Update address details
-	if req.Address_info.Street != "No Address" {
-		if !cont.AddressId.Valid {
+	if req.Address_info.Street != "No Address" && req.Address_info.Address_id != -1 {
+		if !contractor_item.AddressId.Valid {
 			// Create new address
-			newItem := address.BAddress{
+			address_struct := address.BAddress{
 				Street:    req.Address_info.Street,
 				Suburb:    req.Address_info.Suburb,
 				Postcode:  req.Address_info.Postcode,
@@ -87,7 +87,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 				Formatted: req.Address_info.Formatted,
 			}
 
-			res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &newItem)
+			res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
 			if err != nil {
 				return nil, status.Error(500, err.Error())
 			}
@@ -97,12 +97,12 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 				return nil, status.Error(500, err.Error())
 			}
 
-			cont.AddressId = sql.NullInt64{newId, true}
+			contractor_item.AddressId = sql.NullInt64{newId, true}
 		} else {
 			// Update address
 			if err == nil {
 				err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
-					AddressId: cont.AddressId.Int64,
+					AddressId: contractor_item.AddressId.Int64,
 					Street:    req.Address_info.Street,
 					Suburb:    req.Address_info.Suburb,
 					Postcode:  req.Address_info.Postcode,
@@ -126,13 +126,13 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 		ContractorId:    contractorId,
 		ContractorPhoto: sql.NullString{req.Contractor_photo, req.Contractor_photo != ""},
 		ContractorName:  req.Contractor_name,
-		ContractorType:  cont.ContractorType,
+		ContractorType:  contractor_item.ContractorType,
 		ContactDetails:  req.Contact_details,
-		FinanceId:       cont.FinanceId,
-		AddressId:       cont.AddressId,
-		LinkCode:        cont.LinkCode,
-		WorkStatus:      cont.WorkStatus,
-		OrderId:         cont.OrderId,
+		FinanceId:       contractor_item.FinanceId,
+		AddressId:       contractor_item.AddressId,
+		LinkCode:        contractor_item.LinkCode,
+		WorkStatus:      contractor_item.WorkStatus,
+		OrderId:         contractor_item.OrderId,
 	})
 	if err != nil {
 		return nil, status.Error(500, err.Error())

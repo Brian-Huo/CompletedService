@@ -39,7 +39,7 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 	}
 
 	// Get origin order
-	res, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
+	order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, status.Error(404, "Order not found.")
@@ -53,12 +53,12 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 	}
 
 	// if modify reserve_date
-	if reserve_date != res.ReserveDate {
+	if reserve_date != order_item.ReserveDate {
 		// if reserve_date is close to current time in 12 hours, return error
 		if time.Now().Add(time.Hour * 12).Before(reserve_date) {
 			return nil, status.Error(500, "Reserve date is futher less than 12 hours.")
 		}
-		res.ReserveDate = reserve_date
+		order_item.ReserveDate = reserve_date
 	}
 
 	// if modify address
@@ -88,8 +88,11 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 			Lng:       req.Address_info.Lng,
 			Formatted: req.Address_info.Formatted,
 		})
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
 	}
-	res.OrderDescription = sql.NullString{req.Order_description, req.Order_description != ""}
+	order_item.OrderDescription = sql.NullString{req.Order_description, req.Order_description != ""}
 
 	// Modify customer details
 	err = l.svcCtx.BCustomerModel.Update(l.ctx, &customer.BCustomer{
@@ -98,7 +101,6 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 		CountryCode:    req.Customer_info.Country_code,
 		ContactDetails: req.Customer_info.Contact_details,
 	})
-
 	if err != nil {
 		if err == customer.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Customer not found.")
@@ -106,7 +108,7 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	err = l.svcCtx.BOrderModel.Update(l.ctx, res)
+	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

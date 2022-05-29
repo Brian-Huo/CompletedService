@@ -49,11 +49,11 @@ func (l *CreateContractorLogic) CreateContractor(req *types.CreateContractorRequ
 		ContractorPhoto: sql.NullString{req.Contractor_photo, req.Contractor_photo != ""},
 		ContractorName:  req.Contractor_name,
 		ContactDetails:  req.Contact_details,
-		ContractorType:  int64(variables.Employee),
+		ContractorType:  contractor.Employee,
 		FinanceId:       uid,
 		AddressId:       sql.NullInt64{0, false},
 		LinkCode:        util.RandStringBytesMaskImprSrcUnsafe(8),
-		WorkStatus:      int64(variables.Await),
+		WorkStatus:      contractor.Await,
 		OrderId:         sql.NullInt64{0, false},
 	}
 

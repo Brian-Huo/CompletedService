@@ -30,10 +30,10 @@ func NewLoginCustomerLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Log
 
 func (l *LoginCustomerLogic) LoginCustomer(req *types.LoginCustomerRequest) (resp *types.LoginCustomerResponse, err error) {
 	// find customer by contact_details
-	item, err := l.svcCtx.BCustomerModel.FindOneByContactDetails(l.ctx, req.Contact_details)
+	res, err := l.svcCtx.BCustomerModel.FindOneByContactDetails(l.ctx, req.Contact_details)
 	if err == customer.ErrNotFound {
 		// if customer not found, insert customer
-		res, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &customer.BCustomer{
+		customer_item, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &customer.BCustomer{
 			CustomerName:   req.Contact_details,
 			CountryCode:    "Astralia",
 			ContactDetails: req.Contact_details,
@@ -43,11 +43,11 @@ func (l *LoginCustomerLogic) LoginCustomer(req *types.LoginCustomerRequest) (res
 		}
 
 		// get customer id
-		newId, err := res.LastInsertId()
+		newId, err := customer_item.LastInsertId()
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
-		item.CustomerId = newId
+		res.CustomerId = newId
 	} else if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -55,7 +55,7 @@ func (l *LoginCustomerLogic) LoginCustomer(req *types.LoginCustomerRequest) (res
 	// 签发 jwt token
 	now := time.Now().Unix()
 	token, err := jwtx.GetToken(l.svcCtx.Config.Auth.AccessSecret, now, l.svcCtx.Config.Auth.AccessExpire,
-		item.CustomerId, variables.Customer)
+		res.CustomerId, variables.Customer)
 	if err != nil {
 		return nil, status.Error(500, "Jwt token error.")
 	}

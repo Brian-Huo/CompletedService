@@ -7,6 +7,7 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/order"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -34,11 +35,11 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 	}
 
 	// Get all order list
-	var res []*order.BOrder
+	var order_items []*order.BOrder
 	if role == variables.Customer {
-		res, err = l.svcCtx.BOrderModel.FindAllByCustomer(l.ctx, uid)
+		order_items, err = l.svcCtx.BOrderModel.FindAllByCustomer(l.ctx, uid)
 	} else if role == variables.Company {
-		res, err = l.svcCtx.BOrderModel.FindAllByFinance(l.ctx, uid)
+		order_items, err = l.svcCtx.BOrderModel.FindAllByFinance(l.ctx, uid)
 	} else {
 		return nil, status.Error(401, "Invalid, Unauthorised action.")
 	}
@@ -51,45 +52,45 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 	}
 
 	allItems := []types.DetailOrderResponse{}
-	for _, item := range res {
+	for _, item := range order_items {
 		// Get customer details
-		cus, err := l.svcCtx.BCustomerModel.FindOne(l.ctx, item.CustomerId)
+		customer_item, err := l.svcCtx.BCustomerModel.FindOne(l.ctx, item.CustomerId)
 		if err != nil {
 			if err == order.ErrNotFound {
 				return nil, status.Error(404, "Invalid, Customer not found.")
 			}
 			return nil, status.Error(500, err.Error())
 		}
-		newCus := types.DetailCustomerResponse{
-			Customer_id:     cus.CustomerId,
-			Customer_name:   cus.CustomerName,
-			Contact_details: cus.ContactDetails,
-			Country_code:    cus.CountryCode,
+		customer_response := types.DetailCustomerResponse{
+			Customer_id:     customer_item.CustomerId,
+			Customer_name:   customer_item.CustomerName,
+			Contact_details: customer_item.ContactDetails,
+			Country_code:    customer_item.CountryCode,
 		}
 
 		// Get address details
-		addr, err := l.svcCtx.BAddressModel.FindOne(l.ctx, item.AddressId)
+		address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, item.AddressId)
 		if err != nil {
 			if err == order.ErrNotFound {
 				return nil, status.Error(404, "Invalid, Address not found.")
 			}
 			return nil, status.Error(500, err.Error())
 		}
-		newAddr := types.DetailAddressResponse{
-			Address_id: addr.AddressId,
-			Street:     addr.Street,
-			Suburb:     addr.Suburb,
-			Postcode:   addr.Postcode,
-			City:       addr.City,
-			State_code: addr.StateCode,
-			Country:    addr.Country,
-			Lat:        addr.Lat,
-			Lng:        addr.Lng,
-			Formatted:  addr.Formatted,
+		address_response := types.DetailAddressResponse{
+			Address_id: address_item.AddressId,
+			Street:     address_item.Street,
+			Suburb:     address_item.Suburb,
+			Postcode:   address_item.Postcode,
+			City:       address_item.City,
+			State_code: address_item.StateCode,
+			Country:    address_item.Country,
+			Lat:        address_item.Lat,
+			Lng:        address_item.Lng,
+			Formatted:  address_item.Formatted,
 		}
 
 		// Get contractor details
-		cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, item.ContractorId.Int64)
+		contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, item.ContractorId.Int64)
 		if err != nil {
 			if err == order.ErrNotFound {
 				return nil, status.Error(404, "Invalid, Contractor not found.")
@@ -99,26 +100,26 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 
 		// Contractor type
 		var contractorType string
-		if cont.ContractorType == int64(variables.Employee) {
+		if contractor_item.ContractorType == contractor.Employee {
 			contractorType = "Employee"
-		} else if cont.ContractorType == int64(variables.Individual) {
+		} else if contractor_item.ContractorType == contractor.Individual {
 			contractorType = "Individual"
 		}
 
-		newCont := types.DetailContractorResponse{
-			Contractor_id:    cont.ContractorId,
-			Contractor_photo: cont.ContractorPhoto.String,
-			Contractor_name:  cont.ContractorName,
+		contractor_response := types.DetailContractorResponse{
+			Contractor_id:    contractor_item.ContractorId,
+			Contractor_photo: contractor_item.ContractorPhoto.String,
+			Contractor_name:  contractor_item.ContractorName,
 			Contractor_type:  contractorType,
-			Contact_details:  cont.ContactDetails,
+			Contact_details:  contractor_item.ContactDetails,
 		}
 
 		// Create order detail response
-		newItem := types.DetailOrderResponse{
+		order_response := types.DetailOrderResponse{
 			Order_id:              item.OrderId,
-			Customer_info:         newCus,
-			Contractor_info:       newCont,
-			Address_info:          newAddr,
+			Customer_info:         customer_response,
+			Contractor_info:       contractor_response,
+			Address_info:          address_response,
 			Finance_id:            item.FinanceId.Int64,
 			Service_list:          item.ServiceList,
 			Deposite_payment:      item.DepositePayment,
@@ -137,7 +138,7 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Status:                int(item.Status),
 		}
 
-		allItems = append(allItems, newItem)
+		allItems = append(allItems, order_response)
 	}
 
 	return &types.ListOrderResponse{

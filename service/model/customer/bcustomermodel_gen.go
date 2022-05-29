@@ -42,6 +42,7 @@ type (
 	BCustomer struct {
 		CustomerId     int64  `db:"customer_id"`
 		CustomerName   string `db:"customer_name"`
+		CustomerType   int64  `db:"customer_type"`
 		CountryCode    string `db:"country_code"`
 		ContactDetails string `db:"contact_details"`
 	}
@@ -55,12 +56,12 @@ func newBCustomerModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBCustomerMo
 }
 
 func (m *defaultBCustomerModel) Insert(ctx context.Context, data *BCustomer) (sql.Result, error) {
-	bCustomerContactDetailsKey := fmt.Sprintf("%s%v", cacheBCustomerContactDetailsPrefix, data.ContactDetails)
 	bCustomerCustomerIdKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerIdPrefix, data.CustomerId)
+	bCustomerContactDetailsKey := fmt.Sprintf("%s%v", cacheBCustomerContactDetailsPrefix, data.ContactDetails)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?)", m.table, bCustomerRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.CustomerName, data.CountryCode, data.ContactDetails)
-	}, bCustomerCustomerIdKey, bCustomerContactDetailsKey)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, bCustomerRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.CustomerName, data.CustomerType, data.CountryCode, data.ContactDetails)
+	}, bCustomerContactDetailsKey, bCustomerCustomerIdKey)
 	return ret, err
 }
 
@@ -84,10 +85,13 @@ func (m *defaultBCustomerModel) FindOne(ctx context.Context, customerId int64) (
 func (m *defaultBCustomerModel) FindOneByContactDetails(ctx context.Context, contactDetails string) (*BCustomer, error) {
 	bCustomerContactDetailsKey := fmt.Sprintf("%s%v", cacheBCustomerContactDetailsPrefix, contactDetails)
 	var resp BCustomer
-	err := m.QueryRowCtx(ctx, &resp, bCustomerContactDetailsKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
+	err := m.QueryRowIndexCtx(ctx, &resp, bCustomerContactDetailsKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
 		query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bCustomerRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, contactDetails)
-	})
+		if err := conn.QueryRowCtx(ctx, &resp, query, contactDetails); err != nil {
+			return nil, err
+		}
+		return resp.CustomerId, nil
+	}, m.queryPrimary)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -103,7 +107,7 @@ func (m *defaultBCustomerModel) Update(ctx context.Context, data *BCustomer) err
 	bCustomerContactDetailsKey := fmt.Sprintf("%s%v", cacheBCustomerContactDetailsPrefix, data.ContactDetails)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `customer_id` = ?", m.table, bCustomerRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.CustomerName, data.CountryCode, data.ContactDetails, data.CustomerId)
+		return conn.ExecCtx(ctx, query, data.CustomerName, data.CustomerType, data.CountryCode, data.ContactDetails, data.CustomerId)
 	}, bCustomerCustomerIdKey, bCustomerContactDetailsKey)
 	return err
 }

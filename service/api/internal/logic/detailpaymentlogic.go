@@ -35,7 +35,7 @@ func (l *DetailPaymentLogic) DetailPayment(req *types.DetailPaymentRequest) (res
 	}
 
 	if role == variables.Company {
-		comp, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
+		company_item, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
 		if err != nil {
 			if err == company.ErrNotFound {
 				return nil, status.Error(404, "Invalid, Company not found.")
@@ -43,12 +43,12 @@ func (l *DetailPaymentLogic) DetailPayment(req *types.DetailPaymentRequest) (res
 			return nil, status.Error(500, err.Error())
 		}
 
-		if comp.PaymentId.Int64 != req.Payment_id {
+		if company_item.PaymentId.Int64 != req.Payment_id {
 			return nil, status.Error(404, "Invalid, Payment not found.")
 		}
 	}
 
-	res, err := l.svcCtx.BPaymentModel.FindOne(l.ctx, req.Payment_id)
+	payment_item, err := l.svcCtx.BPaymentModel.FindOne(l.ctx, req.Payment_id)
 	if err != nil {
 		if err == payment.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Payment not found.")
@@ -57,10 +57,10 @@ func (l *DetailPaymentLogic) DetailPayment(req *types.DetailPaymentRequest) (res
 	}
 
 	return &types.DetailPaymentResponse{
-		Payment_id:    res.PaymentId,
-		Card_number:   res.CardNumber,
-		Holder_name:   res.HolderName,
-		Expiry_time:   res.ExpiryTime.Format("02/01/2006"),
-		Security_code: res.SecurityCode,
+		Payment_id:    payment_item.PaymentId,
+		Card_number:   payment_item.CardNumber,
+		Holder_name:   payment_item.HolderName,
+		Expiry_time:   payment_item.ExpiryTime.Format("02/01/2006"),
+		Security_code: payment_item.SecurityCode,
 	}, nil
 }

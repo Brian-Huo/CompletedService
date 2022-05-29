@@ -3,7 +3,6 @@
 package contractor
 
 import (
-	"cleaningservice/common/variables"
 	"context"
 	"database/sql"
 	"fmt"
@@ -130,7 +129,7 @@ func (m *defaultBContractorModel) ListVacant(ctx context.Context) ([]int64, erro
 	var resp []int64
 
 	query := fmt.Sprintf("select %s from %s where `work_status` = ?", "contractor_id", m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, variables.Vacant)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, Vacant)
 
 	switch err {
 	case nil:
@@ -158,7 +157,7 @@ func (m *defaultBContractorModel) Resign(ctx context.Context, contractorId int64
 		return err
 	}
 
-	data.WorkStatus = int64(variables.Resigned)
+	data.WorkStatus = Resigned
 	bContractorContactDetailsKey := fmt.Sprintf("%s%v", cacheBContractorContactDetailsPrefix, data.ContactDetails)
 	bContractorContractorIdKey := fmt.Sprintf("%s%v", cacheBContractorContractorIdPrefix, data.ContractorId)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
@@ -170,7 +169,7 @@ func (m *defaultBContractorModel) Resign(ctx context.Context, contractorId int64
 
 func (m *defaultBContractorModel) ResignByFinance(ctx context.Context, financeId int64) error {
 	query := fmt.Sprintf("update %s set %s where `finance_id` = ?", m.table, "work_status=?")
-	_,  err := m.ExecNoCacheCtx(ctx, query, variables.Resigned, financeId)
+	_,  err := m.ExecNoCacheCtx(ctx, query, Resigned, financeId)
 	return err
 }
 

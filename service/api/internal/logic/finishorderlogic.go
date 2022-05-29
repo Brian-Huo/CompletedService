@@ -9,6 +9,7 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
+	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/order"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -50,30 +51,27 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	}
 	logx.Info("finishing order")
 	// Finish order
-	if ord.Status == int64(variables.Working) {
-		ord.Status = int64(variables.Unpaid)
+	if ord.Status == order.Working {
+		ord.Status = order.Unpaid
 	} else {
-		logx.Info(ord.Status)
 		return nil, errorx.NewCodeError(401, "Order cannot be finished twice.")
 	}
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
 	if err != nil {
-		logx.Info("update order")
 		return nil, status.Error(500, err.Error())
 	}
 
 	// Update contractor status
-	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, ord.ContractorId.Int64)
+	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, ord.ContractorId.Int64)
 	if err != nil {
-		logx.Info("update contractor")
 		return nil, status.Error(500, err.Error())
 	}
 
-	cont.WorkStatus = int64(variables.Vacant)
-	cont.OrderId = sql.NullInt64{0, false}
+	contractor_item.WorkStatus = contractor.Vacant
+	contractor_item.OrderId = sql.NullInt64{0, false}
 
-	err = l.svcCtx.BContractorModel.Update(l.ctx, cont)
+	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

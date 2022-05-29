@@ -35,16 +35,16 @@ func (l *RemoveCompanyLogic) RemoveCompany(req *types.RemoveCompanyRequest) (res
 		return nil, status.Error(401, "Invalid, Unauthorised action.")
 	}
 
-	comp, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
+	company_item, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
 	if err != nil {
 		if err == company.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Company not found.")
 		}
 	}
 
-	comp.FinanceStatus = int64(variables.Abolished)
+	company_item.FinanceStatus = company.Abolished
 
-	err = l.svcCtx.BCompanyModel.Update(l.ctx, comp)
+	err = l.svcCtx.BCompanyModel.Update(l.ctx, company_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

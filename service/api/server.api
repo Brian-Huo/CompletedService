@@ -1,4 +1,13 @@
 type (
+	// -------------------- System -------------------------
+	// Initialize system
+	InitSystemRequest {
+	}
+	InitSystemResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
 	// -------------------- Login -------------------------
 	VerifyCodeRequest {
 		Contact_details string `json:"contact_details"`
@@ -242,7 +251,6 @@ type (
 		Link_code          string                        `json:"link_code"`
 		Work_status        int                           `json:"work_status"`
 		Order_id           int64                         `json:"order_id"`
-		Contractor_service ListContractorServiceResponse `json:"contractor_service"`
 	}
 
 	// List Contractor
@@ -282,10 +290,12 @@ type (
 	CreateOrderRequest {
 		Customer_info     CreateCustomerRequest  `json:"customer_info"`
 		Address_info      CreateAddressRequest   `json:"address_info"`
+		Category_id       int64                  `json:"category_id"`
 		Service_list      []SelectServiceRequest `json:"service_list"`
 		Deposite_info     CreatePaymentRequest   `json:"deposite_info"`
 		Order_description string                 `json:"order_description,optional"`
 		Reserve_date      string                 `json:"reserve_date"`
+		Urgent_flag       int                    `json:"urgent_flag"`
 	}
 	CreateOrderResponse {
 		Order_id int64 `json:"order_id"`
@@ -342,6 +352,7 @@ type (
 		Address_info          DetailAddressResponse    `json:"address_info"`
 		Contractor_info       DetailContractorResponse `json:"contractor_info"`
 		Finance_id            int64                    `json:"finance_id"`
+		Category              DetailCategoryResponse   `json:"category"`
 		Service_list          string                   `json:"service_list"`
 		Deposite_payment      int64                    `json:"deposite_payment"`
 		Deposite_amount       float64                  `json:"deposite_amount"`
@@ -357,6 +368,7 @@ type (
 		Reserve_date          string                   `json:"reserve_date"`
 		Finish_date           string                   `json:"finish_date"`
 		Status                int                      `json:"status"`
+		Urgent_flag           int                      `json:"urgent_flag"`
 	}
 
 	// Get Order details by contractor
@@ -369,6 +381,7 @@ type (
 		Address_info          DetailAddressResponse    `json:"address_info"`
 		Contractor_info       DetailContractorResponse `json:"contractor_info"`
 		Finance_id            int64                    `json:"finance_id"`
+		Category              DetailCategoryResponse   `json:"category"`
 		Service_list          string                   `json:"service_list"`
 		Deposite_payment      int64                    `json:"deposite_payment"`
 		Deposite_amount       float64                  `json:"deposite_amount"`
@@ -384,6 +397,7 @@ type (
 		Reserve_date          string                   `json:"reserve_date"`
 		Finish_date           string                   `json:"finish_date"`
 		Status                int                      `json:"status"`
+		Urgent_flag           int                      `json:"urgent_flag"`
 	}
 
 	// List Order
@@ -407,13 +421,13 @@ type (
 		Service_id int64 `json:"service_id"`
 	}
 	DetailServiceResponse {
-		Service_id          int64   `json:"service_id"`
-		Service_type        string  `json:"service_type"`
-		Service_scope       string  `json:"service_scope"`
-		Service_name        string  `json:"service_name"`
-		Service_photo       string  `json:"service_photo"`
-		Service_description string  `json:"service_description"`
-		Service_price       float64 `json:"service_price"`
+		Service_id          int64                  `json:"service_id"`
+		Service_type        DetailCategoryResponse `json:"service_type"`
+		Service_scope       string                 `json:"service_scope"`
+		Service_name        string                 `json:"service_name"`
+		Service_photo       string                 `json:"service_photo"`
+		Service_description string                 `json:"service_description"`
+		Service_price       float64                `json:"service_price"`
 	}
 
 	// List Service
@@ -473,21 +487,13 @@ type (
 	}
 
 	// -------------------- Operation -------------------------
-	//  Create Operation
-	CreateOperationRequest {
-		Order_id  int64 `json:"order_id"`
-		Operation int64 `json:"operation"`
-	}
-	CreateOperationResponse {
-		Operation_id int64 `json:"operation_id"`
-	}
-
 	// Accept Order Operation
 	AcceptOperationRequest {
 		Order_id int64 `json:"order_id"`
 	}
 	AcceptOperationResponse {
-		Operation_id int64 `json:"operation_id"`
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Accept Order Operation
@@ -495,7 +501,17 @@ type (
 		Order_id int64 `json:"order_id"`
 	}
 	DeclineOperationResponse {
-		Operation_id int64 `json:"operation_id"`
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Transfer Order Operation
+	TransferOperationRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	TransferOperationResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Detail Operation
@@ -534,6 +550,44 @@ type (
 	}
 	GetContractorScheduleResponse {
 		Items []DetailOrderResponse `json:"items"`
+	}
+
+	// -------------------- Category -------------------------
+	// Detail Category
+	DetailCategoryRequest {
+		Category_id   int64  `json:"category_id"`
+	}
+	DetailCategoryResponse {
+		Category_id   int64  `json:"category_id"`
+		Category_name string `json:"category_name"`
+	}
+
+	// List Category
+	ListCategoryRequest {
+	}
+	ListCategoryResponse {
+		Items []DetailCategoryResponse `json:"items"`
+	}
+
+	// -------------------- Subscription -------------------------
+	// Join Subscribe Group
+	JoinSubscribeGroupRequest {
+		Category_id int64  `json:"category_id"`
+		Location    string `json:"location,optional"`
+	}
+	JoinSubscribeGroupResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Leave Subscribe Group
+	LeaveSubscribeGroupRequest {
+		Category_id int64  `json:"category_id"`
+		Location    string `json:"location,optional"`
+	}
+	LeaveSubscribeGroupResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 )
 
@@ -574,6 +628,13 @@ service Server {
 	
 	@handler ListService
 	post /api/service/list(ListServiceRequest) returns (ListServiceResponse)
+	
+	// -------------------------- category ---------------------------
+	@handler DetailCategory
+	post /api/category/detail(DetailCategoryRequest) returns (DetailCategoryResponse)
+	
+	@handler ListCategory
+	post /api/category/list(ListCategoryRequest) returns (ListCategoryResponse)
 }
 
 // jwt validate apis
@@ -581,6 +642,10 @@ service Server {
 	jwt: Auth
 )
 service Server {
+	// init system apis
+	@handler InitSystem
+	post /api/system/init(InitSystemRequest) returns (InitSystemResponse)
+	
 	// address apis
 	@handler CreateAddress
 	post /api/address/create(CreateAddressRequest) returns (CreateAddressResponse)
@@ -680,18 +745,25 @@ service Server {
 	post /api/payment/list(ListPaymentRequest) returns (ListPaymentResponse)
 	
 	// operation apis
-	@handler CreateOperation
-	post /api/operation/create(CreateOperationRequest) returns (CreateOperationResponse)
-	
 	@handler AcceptOperation
 	post /api/operation/accept(AcceptOperationRequest) returns (AcceptOperationResponse)
 	
 	@handler DeclineOperation
 	post /api/operation/decline(DeclineOperationRequest) returns (DeclineOperationResponse)
 	
+	@handler TransferOperation
+	post /api/operation/transfer(TransferOperationRequest) returns (TransferOperationResponse)
+	
 	@handler DetailOperation
 	post /api/operation/detail(DetailOperationRequest) returns (DetailOperationResponse)
 	
 	@handler ListOperation
 	post /api/operation/list(ListOperationRequest) returns (ListOperationResponse)
+	
+	// subscription apis
+	@handler JoinSubscribeGroup
+	post /api/subscribegroup/join(JoinSubscribeGroupRequest) returns (JoinSubscribeGroupResponse)
+	
+	@handler LeaveSubscribeGroup
+	post /api/subscribegroup/leave(LeaveSubscribeGroupRequest) returns (LeaveSubscribeGroupResponse)
 }

@@ -1,9 +1,9 @@
 -- Base data table: operation (contractor-order) --
 CREATE TABLE `b_operation` (
-    operation_id int unsigned NOT NUll AUTO_INCREMENT,
+    operation_id int unsigned NOT NULL AUTO_INCREMENT,
     contractor_id int unsigned NOT NULL,
-    order_id int unsigned NOT NUll,
-    operation tinyint(1) NOT NUll,
+    order_id int unsigned NOT NULL,
+    operation tinyint(3) NOT NULL,
     issue_date datetime NOT NULL,
     PRIMARY KEY(operation_id)
 );

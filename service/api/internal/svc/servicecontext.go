@@ -3,6 +3,7 @@ package svc
 import (
 	"cleaningservice/service/api/internal/config"
 	"cleaningservice/service/model/address"
+	"cleaningservice/service/model/category"
 	"cleaningservice/service/model/company"
 	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/contractorservice"
@@ -12,6 +13,9 @@ import (
 	"cleaningservice/service/model/payment"
 	"cleaningservice/service/model/schedule"
 	"cleaningservice/service/model/service"
+	"cleaningservice/service/model/subscribegroup"
+	"cleaningservice/service/model/subscriberecord"
+	"cleaningservice/service/model/subscription"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -21,6 +25,7 @@ type ServiceContext struct {
 
 	// models dao
 	BAddressModel           address.BAddressModel
+	BCategoryModel          category.BCategoryModel
 	BCompanyModel           company.BCompanyModel
 	BCustomerModel          customer.BCustomerModel
 	BContractorModel        contractor.BContractorModel
@@ -30,6 +35,9 @@ type ServiceContext struct {
 	BPaymentModel           payment.BPaymentModel
 	BServiceModel           service.BServiceModel
 	BScheduleModel          schedule.BScheduleModel
+	BSubscribeGroupModel    subscribegroup.BSubscribeGroupModel
+	RSubscribeRecordModel   subscriberecord.RSubscribeRecordModel
+	BSubscriptionModel      subscription.BSubscriptionModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -37,6 +45,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:                  c,
 		BAddressModel:           address.NewBAddressModel(conn, c.CacheRedis),
+		BCategoryModel:          category.NewBCategoryModel(conn, c.CacheRedis),
 		BCompanyModel:           company.NewBCompanyModel(conn, c.CacheRedis),
 		BCustomerModel:          customer.NewBCustomerModel(conn, c.CacheRedis),
 		BContractorModel:        contractor.NewBContractorModel(conn, c.CacheRedis),
@@ -46,5 +55,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		BPaymentModel:           payment.NewBPaymentModel(conn, c.CacheRedis),
 		BServiceModel:           service.NewBServiceModel(conn, c.CacheRedis),
 		BScheduleModel:          schedule.NewBScheduleModel(c.RedisConf),
+		BSubscribeGroupModel:    subscribegroup.NewBSubscribeGroupModel(conn, c.CacheRedis),
+		RSubscribeRecordModel:   subscriberecord.NewRSubscribeRecordModel(conn),
+		BSubscriptionModel:      subscription.NewBSubscriptionModel(c.RedisConf),
 	}
 }

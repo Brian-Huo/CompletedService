@@ -37,7 +37,7 @@ func (l *UpdatePaymentLogic) UpdatePayment(req *types.UpdatePaymentRequest) (res
 		return nil, status.Error(401, "Invalid, Not company.")
 	}
 
-	comp, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
+	company_item, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
 	if err != nil {
 		if err == company.ErrNotFound {
 			return nil, status.Error(404, "Company not found.")
@@ -45,7 +45,7 @@ func (l *UpdatePaymentLogic) UpdatePayment(req *types.UpdatePaymentRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
-	if comp.PaymentId.Int64 != req.Payment_id {
+	if company_item.PaymentId.Int64 != req.Payment_id {
 		return nil, status.Error(404, "Company payment record not found.")
 	}
 

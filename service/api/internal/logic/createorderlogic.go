@@ -47,7 +47,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
-		newPayment := payment.BPayment{
+		payment_struct := payment.BPayment{
 			CardNumber:   req.Deposite_info.Card_number,
 			HolderName:   req.Deposite_info.Holder_name,
 			ExpiryTime:   exp_time,
@@ -55,11 +55,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		}
 
 		// Check if data valid
-		if !util.CheckPaymentDetails(&newPayment) {
+		if !util.CheckPaymentDetails(&payment_struct) {
 			return nil, status.Error(500, err.Error())
 		}
 
-		res, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &newPayment)
+		res, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment_struct)
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
@@ -83,13 +83,14 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	var customerId int64
 	customer_item, err := l.svcCtx.BCustomerModel.FindOneByContactDetails(l.ctx, req.Customer_info.Contact_details)
 	if err == customer.ErrNotFound {
-		newCustomer := customer.BCustomer{
+		customer_struct := customer.BCustomer{
 			CustomerName:   req.Customer_info.Customer_name,
+			CustomerType:   customer.Individual,
 			CountryCode:    req.Customer_info.Country_code,
 			ContactDetails: req.Customer_info.Contact_details,
 		}
 
-		res, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &newCustomer)
+		res, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &customer_struct)
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
@@ -105,7 +106,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Address
-	address_Item := address.BAddress{
+	address_struct := address.BAddress{
 		Street:    req.Address_info.Street,
 		Suburb:    req.Address_info.Suburb,
 		Postcode:  req.Address_info.Postcode,
@@ -118,11 +119,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Check if data valid
-	if !util.CheckAddressDetails(&address_Item) {
+	if !util.CheckAddressDetails(&address_struct) {
 		return nil, status.Error(500, err.Error())
 	}
 
-	res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_Item)
+	res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -151,7 +152,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			return nil, status.Error(500, err.Error())
 		}
 		service_fee += service_item.ServicePrice * float64(order_service.Service_quantity)
-		service_list += service_item.ServiceName + ":x" + strconv.Itoa(order_service.Service_quantity)
+		service_list += service_item.ServiceScope + ":x" + strconv.Itoa(order_service.Service_quantity)
 	}
 
 	deposite_amount := service_fee / variables.Deposite_rate
@@ -164,6 +165,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		CustomerId:          customerId,
 		AddressId:           addressId,
 		ContractorId:        sql.NullInt64{0, false},
+		CategoryId:          req.Category_id,
 		ServiceList:         service_list,
 		DepositePayment:     paymentId,
 		DepositeAmount:      deposite_amount,
@@ -178,7 +180,8 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		PostDate:            time.Now(),
 		ReserveDate:         reserve_date,
 		FinishDate:          sql.NullTime{time.Now(), false},
-		Status:              int64(variables.Queuing),
+		Status:              order.Queuing,
+		UrgantFlag:          int64(req.Urgent_flag),
 	}
 
 	res, err = l.svcCtx.BOrderModel.Insert(l.ctx, &newItem)

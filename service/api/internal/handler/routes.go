@@ -2,9 +2,7 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 
 	"cleaningservice/service/api/internal/svc"
 
@@ -69,11 +67,26 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/api/service/list",
 				Handler: ListServiceHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/category/detail",
+				Handler: DetailCategoryHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/category/list",
+				Handler: ListCategoryHandler(serverCtx),
+			},
 		},
 	)
 
 	server.AddRoutes(
 		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/system/init",
+				Handler: InitSystemHandler(serverCtx),
+			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/api/address/create",
@@ -226,11 +239,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/operation/create",
-				Handler: CreateOperationHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
 				Path:    "/api/operation/accept",
 				Handler: AcceptOperationHandler(serverCtx),
 			},
@@ -238,6 +246,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/api/operation/decline",
 				Handler: DeclineOperationHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/operation/transfer",
+				Handler: TransferOperationHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -249,87 +262,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/api/operation/list",
 				Handler: ListOperationHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/subscribegroup/join",
+				Handler: JoinSubscribeGroupHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/subscribegroup/leave",
+				Handler: LeaveSubscribeGroupHandler(serverCtx),
+			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 	)
-
-	
-	// Static files resgistration
-	var patern string
-	var dirpath string
-	dirlevel := []string{":1", ":2", ":3", ":4"}
-	// // CSS files
-	// patern = "/css/"
-	// dirpath = "./static/css/"
-	// for i := 1; i < 2; i++ {
-	// 	path := patern + strings.Join(dirlevel[:i], "/")
-	// 	server.AddRoute(
-	// 		rest.Route{
-	// 			Method:  http.MethodGet,
-	// 			Path:    path,
-	// 			Handler: StaticHandler(patern,dirpath),
-	// 		},
-	// 	)
-	// 	fmt.Printf("registered css file %s  %s\n", path,dirpath)
-	// }
-
-	// Images files
-	patern = "/images/"
-	dirpath = "./static/images/"
-	for i := 1; i < 3; i++ {
-		path := patern + strings.Join(dirlevel[:i], "/")
-		server.AddRoute(
-			rest.Route{
-				Method:  http.MethodGet,
-				Path:    path,
-				Handler: StaticHandler(patern,dirpath),
-			},
-		)
-		fmt.Printf("registered images file %s  %s\n", path,dirpath)
-	}
-
-	// // JS files
-	// patern = "/js/"
-	// dirpath = "./static/js/"
-	// for i := 1; i < 2; i++ {
-	// 	path := patern + strings.Join(dirlevel[:i], "/")
-	// 	server.AddRoute(
-	// 		rest.Route{
-	// 			Method:  http.MethodGet,
-	// 			Path:    path,
-	// 			Handler: StaticHandler(patern,dirpath),
-	// 		},
-	// 	)
-	// 	fmt.Printf("registered JS file %s  %s\n", path,dirpath)
-	// }
-
-	// // SCSS files
-	// patern = "/scss/"
-	// dirpath = "./static/scss/"
-	// for i := 1; i < 2; i++ {
-	// 	path := patern + strings.Join(dirlevel[:i], "/")
-	// 	server.AddRoute(
-	// 		rest.Route{
-	// 			Method:  http.MethodGet,
-	// 			Path:    path,
-	// 			Handler: StaticHandler(patern,dirpath),
-	// 		},
-	// 	)
-	// 	fmt.Printf("registered SCSS file %s  %s\n", path,dirpath)
-	// }
-
-	// // Vendor files
-	// patern = "/vendor/"
-	// dirpath = "./static/vendor/"
-	// for i := 1; i < 2; i++ {
-	// 	path := patern + strings.Join(dirlevel[:i], "/")
-	// 	server.AddRoute(
-	// 		rest.Route{
-	// 			Method:  http.MethodGet,
-	// 			Path:    path,
-	// 			Handler: StaticHandler(patern,dirpath),
-	// 		},
-	// 	)
-	// 	fmt.Printf("registered Vendor file %s  %s\n", path,dirpath)
-	// }
 }

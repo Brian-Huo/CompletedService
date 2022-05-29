@@ -37,6 +37,7 @@ func (l *CreateCustomerLogic) CreateCustomer(req *types.CreateCustomerRequest) (
 
 	newItem := customer.BCustomer{
 		CustomerName:   req.Customer_name,
+		CustomerType:   customer.Individual,
 		CountryCode:    req.Country_code,
 		ContactDetails: req.Contact_details,
 	}

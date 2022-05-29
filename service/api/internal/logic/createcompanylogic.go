@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"cleaningservice/common/jwtx"
-	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/address"
@@ -47,14 +46,14 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
-	newPayment := payment.BPayment{
+	payment_struct := payment.BPayment{
 		CardNumber:   req.Payment_info.Card_number,
 		HolderName:   req.Payment_info.Holder_name,
 		ExpiryTime:   exp_time,
 		SecurityCode: req.Payment_info.Security_code,
 	}
 
-	payRes, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &newPayment)
+	payRes, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment_struct)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -65,7 +64,7 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 	}
 
 	// Create address for company
-	newAddress := address.BAddress{
+	address_struct := address.BAddress{
 		Street:    req.Address_info.Street,
 		Suburb:    req.Address_info.Suburb,
 		Postcode:  req.Address_info.Postcode,
@@ -77,7 +76,7 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 		Formatted: req.Address_info.Formatted,
 	}
 
-	addressRes, err := l.svcCtx.BAddressModel.Insert(l.ctx, &newAddress)
+	addressRes, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -88,17 +87,17 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 	}
 
 	// Create company details
-	newCompany := company.BCompany{
+	company_struct := company.BCompany{
 		CompanyName:       req.Company_name,
 		PaymentId:         sql.NullInt64{paymentId, true},
 		DirectorName:      sql.NullString{req.Director_name, req.Director_name != ""},
 		ContactDetails:    req.Contact_details,
 		RegisteredAddress: sql.NullInt64{addressId, true},
 		DepositeRate:      int64(req.Deposite_rate),
-		FinanceStatus:     int64(variables.Active),
+		FinanceStatus:     company.Active,
 	}
 
-	res, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &newCompany)
+	res, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &company_struct)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
