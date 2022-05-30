@@ -3,6 +3,7 @@ package svc
 import (
 	"cleaningservice/service/api/internal/config"
 	"cleaningservice/service/model/address"
+	"cleaningservice/service/model/broadcast"
 	"cleaningservice/service/model/category"
 	"cleaningservice/service/model/company"
 	"cleaningservice/service/model/contractor"
@@ -13,7 +14,6 @@ import (
 	"cleaningservice/service/model/orderrecommend"
 	"cleaningservice/service/model/payment"
 	"cleaningservice/service/model/service"
-	"cleaningservice/service/model/subscribegroup"
 	"cleaningservice/service/model/subscriberecord"
 	"cleaningservice/service/model/subscription"
 
@@ -25,6 +25,7 @@ type ServiceContext struct {
 
 	// models dao
 	BAddressModel           address.BAddressModel
+	BBroadcastModel         broadcast.BBroadcastModel
 	BCategoryModel          category.BCategoryModel
 	BCompanyModel           company.BCompanyModel
 	BCustomerModel          customer.BCustomerModel
@@ -35,7 +36,6 @@ type ServiceContext struct {
 	ROrderRecommendModel    orderrecommend.ROrderRecommendModel
 	BPaymentModel           payment.BPaymentModel
 	BServiceModel           service.BServiceModel
-	BSubscribeGroupModel    subscribegroup.BSubscribeGroupModel
 	RSubscribeRecordModel   subscriberecord.RSubscribeRecordModel
 	BSubscriptionModel      subscription.BSubscriptionModel
 }
@@ -45,6 +45,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:                  c,
 		BAddressModel:           address.NewBAddressModel(conn, c.CacheRedis),
+		BBroadcastModel:         broadcast.NewBBroadcastModel(c.RedisConf),
 		BCategoryModel:          category.NewBCategoryModel(conn, c.CacheRedis),
 		BCompanyModel:           company.NewBCompanyModel(conn, c.CacheRedis),
 		BCustomerModel:          customer.NewBCustomerModel(conn, c.CacheRedis),
@@ -55,7 +56,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		BOperationModel:         operation.NewBOperationModel(conn, c.CacheRedis),
 		BPaymentModel:           payment.NewBPaymentModel(conn, c.CacheRedis),
 		BServiceModel:           service.NewBServiceModel(conn, c.CacheRedis),
-		BSubscribeGroupModel:    subscribegroup.NewBSubscribeGroupModel(conn, c.CacheRedis),
 		RSubscribeRecordModel:   subscriberecord.NewRSubscribeRecordModel(conn),
 		BSubscriptionModel:      subscription.NewBSubscriptionModel(c.RedisConf),
 	}

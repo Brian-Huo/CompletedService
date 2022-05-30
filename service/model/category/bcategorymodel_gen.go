@@ -21,7 +21,8 @@ var (
 	bCategoryRowsExpectAutoSet   = strings.Join(stringx.Remove(bCategoryFieldNames, "`category_id`", "`create_time`", "`update_time`"), ",")
 	bCategoryRowsWithPlaceHolder = strings.Join(stringx.Remove(bCategoryFieldNames, "`category_id`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
-	cacheBCategoryCategoryIdPrefix = "cache:bCategory:categoryId:"
+	cacheBCategoryCategoryIdPrefix   = "cache:bCategory:categoryId:"
+	cacheBCategoryCategoryNamePrefix = "cache:bCategory:categoryName:"
 )
 
 type (
@@ -29,6 +30,7 @@ type (
 		Insert(ctx context.Context, data *BCategory) (sql.Result, error)
 		FindOne(ctx context.Context, categoryId int64) (*BCategory, error)
 		List(ctx context.Context) ([]*BCategory, error)
+		FindOneByCategoryName(ctx context.Context, categoryName string) (*BCategory, error)
 		Update(ctx context.Context, data *BCategory) error
 		Delete(ctx context.Context, categoryId int64) error
 	}
@@ -39,9 +41,10 @@ type (
 	}
 
 	BCategory struct {
-		CategoryId          int64  `db:"category_id"`
-		CategoryName        string `db:"category_name"`
-		CategoryDescription string `db:"category_description"`
+		CategoryId          int64   `db:"category_id"`
+		CategoryName        string  `db:"category_name"`
+		CategoryDescription string  `db:"category_description"`
+		ServeRange          float64 `db:"serve_range"`
 	}
 )
 
@@ -54,10 +57,11 @@ func newBCategoryModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBCategoryMo
 
 func (m *defaultBCategoryModel) Insert(ctx context.Context, data *BCategory) (sql.Result, error) {
 	bCategoryCategoryIdKey := fmt.Sprintf("%s%v", cacheBCategoryCategoryIdPrefix, data.CategoryId)
+	bCategoryCategoryNameKey := fmt.Sprintf("%s%v", cacheBCategoryCategoryNamePrefix, data.CategoryName)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?)", m.table, bCategoryRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.CategoryName, data.CategoryDescription)
-	}, bCategoryCategoryIdKey)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?)", m.table, bCategoryRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.CategoryName, data.CategoryDescription, data.ServeRange)
+	}, bCategoryCategoryIdKey, bCategoryCategoryNameKey)
 	return ret, err
 }
 
@@ -67,6 +71,23 @@ func (m *defaultBCategoryModel) FindOne(ctx context.Context, categoryId int64) (
 	err := m.QueryRowCtx(ctx, &resp, bCategoryCategoryIdKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
 		query := fmt.Sprintf("select %s from %s where `category_id` = ? limit 1", bCategoryRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, categoryId)
+	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultBCategoryModel) FindOneByCategoryName(ctx context.Context, categoryName string) (*BCategory, error) {
+	bCategoryCategoryNameKey := fmt.Sprintf("%s%v", cacheBCategoryCategoryNamePrefix, categoryName)
+	var resp BCategory
+	err := m.QueryRowCtx(ctx, &resp, bCategoryCategoryNameKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
+		query := fmt.Sprintf("select %s from %s where `category_name` = ? limit 1", bCategoryRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, categoryName)
 	})
 	switch err {
 	case nil:
@@ -96,19 +117,26 @@ func (m *defaultBCategoryModel) List(ctx context.Context) ([]*BCategory, error) 
 
 func (m *defaultBCategoryModel) Update(ctx context.Context, data *BCategory) error {
 	bCategoryCategoryIdKey := fmt.Sprintf("%s%v", cacheBCategoryCategoryIdPrefix, data.CategoryId)
+	bCategoryCategoryNameKey := fmt.Sprintf("%s%v", cacheBCategoryCategoryNamePrefix, data.CategoryName)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `category_id` = ?", m.table, bCategoryRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.CategoryName, data.CategoryDescription, data.CategoryId)
-	}, bCategoryCategoryIdKey)
+		return conn.ExecCtx(ctx, query, data.CategoryName, data.CategoryDescription, data.ServeRange, data.CategoryId)
+	}, bCategoryCategoryIdKey, bCategoryCategoryNameKey)
 	return err
 }
 
 func (m *defaultBCategoryModel) Delete(ctx context.Context, categoryId int64) error {
+	data, err := m.FindOne(ctx, categoryId)
+	if err != nil {
+		return err
+	}
+
 	bCategoryCategoryIdKey := fmt.Sprintf("%s%v", cacheBCategoryCategoryIdPrefix, categoryId)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+	bCategoryCategoryNameKey := fmt.Sprintf("%s%v", cacheBCategoryCategoryNamePrefix, data.CategoryName)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("delete from %s where `category_id` = ?", m.table)
 		return conn.ExecCtx(ctx, query, categoryId)
-	}, bCategoryCategoryIdKey)
+	}, bCategoryCategoryIdKey, bCategoryCategoryNameKey)
 	return err
 }
 

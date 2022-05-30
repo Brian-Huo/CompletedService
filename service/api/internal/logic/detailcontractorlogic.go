@@ -2,14 +2,14 @@ package logic
 
 import (
 	"context"
-	"database/sql"
+	"strconv"
+	"strings"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/contractor"
-	"cleaningservice/service/model/subscriberecord"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -36,19 +36,13 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 	}
 
 	var contractor_item *contractor.BContractor
-	if role != variables.Contractor {
+	if role == variables.Company {
 		contractor_item, err = l.svcCtx.BContractorModel.FindOne(l.ctx, req.Contractor_id)
 		if err != nil {
 			if err == contractor.ErrNotFound {
 				return nil, status.Error(404, "Invalid, Contractor not found.")
 			}
 			return nil, status.Error(500, err.Error())
-		}
-
-		if role == variables.Customer {
-			contractor_item.LinkCode = ""
-			contractor_item.OrderId = sql.NullInt64{0, false}
-			contractor_item.WorkStatus = -1
 		}
 	} else if role == variables.Contractor {
 		contractor_item, err = l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
@@ -58,6 +52,8 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 			}
 			return nil, status.Error(500, err.Error())
 		}
+	} else {
+		return nil, status.Error(401, "Invalid, Unauthorized action.")
 	}
 
 	// Contractor type
@@ -90,22 +86,15 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 	}
 
 	// Get category details
-	subscriberecord_items, err := l.svcCtx.RSubscribeRecordModel.FindAllByContractorId(l.ctx, uid)
-	if err != nil {
-		if err == subscriberecord.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Category not found.")
-		}
-		return nil, status.Error(500, err.Error())
-	}
-
 	var category_list []int64
-	for _, item := range subscriberecord_items {
-		group_item, err := l.svcCtx.BSubscribeGroupModel.FindOne(l.ctx, item.GroupId)
+	category_items := strings.Split(contractor_item.CategoryList.String, variables.Separator)
+	for _, item := range category_items {
+		category_id, err := strconv.ParseInt(item, 10, 64)
 		if err != nil {
 			continue
 		}
 
-		category_list = append(category_list, group_item.Category)
+		category_list = append(category_list, category_id)
 	}
 
 	return &types.DetailContractorResponse{

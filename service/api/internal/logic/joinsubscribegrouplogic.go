@@ -2,17 +2,18 @@ package logic
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
+	"strings"
 
-	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
-	"cleaningservice/service/model/address"
 	"cleaningservice/service/model/contractor"
-	"cleaningservice/service/model/subscribegroup"
 	"cleaningservice/service/model/subscriberecord"
 	"cleaningservice/service/model/subscription"
+	"cleaningservice/util"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -49,27 +50,21 @@ func (l *JoinSubscribeGroupLogic) JoinSubscribeGroup(req *types.JoinSubscribeGro
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Get address details
-	address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, contractor_item.AddressId.Int64)
-	if err != nil {
-		if err == address.ErrNotFound {
-			return nil, errorx.NewCodeError(401, "Invalid, Please update your address details first.")
-		}
-		return nil, status.Error(500, err.Error())
-	}
+	// Update category list in contractor
+	previous_category := strings.Split(contractor_item.CategoryList.String, variables.Separator)
+	append_category := strings.Split(fmt.Sprint(req.Category_list), " ")
+	_, new_category := util.CombineStringArray(previous_category, append_category)
+	contractor_item.CategoryList = sql.NullString{new_category, new_category != ""}
 
 	// Subscribe all category groups
 	for _, category_id := range req.Category_list {
-		subscribegroup_item, err := l.svcCtx.BSubscribeGroupModel.FindOneByCategoryLocation(l.ctx, category_id, address_item.City)
+		_, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, category_id)
 		if err != nil {
-			if err == subscribegroup.ErrNotFound {
-				return nil, status.Error(404, "Invalid, Subscribe group not found.")
-			}
-			return nil, status.Error(500, err.Error())
+			continue
 		}
 
 		_, err = l.svcCtx.RSubscribeRecordModel.Insert(l.ctx, &subscriberecord.RSubscribeRecord{
-			GroupId:      subscribegroup_item.GroupId,
+			CategoryId:   category_id,
 			ContractorId: uid,
 		})
 		if err != nil {
@@ -77,12 +72,17 @@ func (l *JoinSubscribeGroupLogic) JoinSubscribeGroup(req *types.JoinSubscribeGro
 		}
 
 		_, err = l.svcCtx.BSubscriptionModel.Insert(&subscription.BSubscription{
-			GroupId:      subscribegroup_item.GroupId,
+			GroupId:      category_id,
 			ContractorId: uid,
 		})
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
+	}
+
+	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
 	}
 
 	return &types.JoinSubscribeGroupResponse{

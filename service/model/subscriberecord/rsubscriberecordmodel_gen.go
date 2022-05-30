@@ -23,10 +23,10 @@ var (
 type (
 	rSubscribeRecordModel interface {
 		Insert(ctx context.Context, data *RSubscribeRecord) (sql.Result, error)
-		FindOne(ctx context.Context, groupId int64, contractorId int64) (*RSubscribeRecord, error)
-		FindAllByGroupId(ctx context.Context, groupId int64) ([]*RSubscribeRecord, error)
+		FindOne(ctx context.Context, categoryId int64, contractorId int64) (*RSubscribeRecord, error)
+		FindAllByCategoryId(ctx context.Context, categoryId int64) ([]*RSubscribeRecord, error)
 		FindAllByContractorId(ctx context.Context, contractorId int64) ([]*RSubscribeRecord, error)
-		Delete(ctx context.Context, groupId int64, contractorId int64) error
+		Delete(ctx context.Context, categoryId int64, contractorId int64) error
 	}
 
 	defaultRSubscribeRecordModel struct {
@@ -35,7 +35,7 @@ type (
 	}
 
 	RSubscribeRecord struct {
-		GroupId      int64 `db:"group_id"`
+		CategoryId   int64 `db:"category_id"`
 		ContractorId int64 `db:"contractor_id"`
 	}
 )
@@ -49,14 +49,14 @@ func newRSubscribeRecordModel(conn sqlx.SqlConn) *defaultRSubscribeRecordModel {
 
 func (m *defaultRSubscribeRecordModel) Insert(ctx context.Context, data *RSubscribeRecord) (sql.Result, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (?, ?)", m.table, rSubscribeRecordRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.GroupId, data.ContractorId)
+	ret, err := m.conn.ExecCtx(ctx, query, data.CategoryId, data.ContractorId)
 	return ret, err
 }
 
-func (m *defaultRSubscribeRecordModel) FindOne(ctx context.Context, groupId int64, contractorId int64) (*RSubscribeRecord, error) {
-	query := fmt.Sprintf("select %s from %s where `group_id` = ? and `contractor_id` = ? limit 1", rSubscribeRecordRows, m.table)
+func (m *defaultRSubscribeRecordModel) FindOne(ctx context.Context, categoryId int64, contractorId int64) (*RSubscribeRecord, error) {
+	query := fmt.Sprintf("select %s from %s where `category_id` = ? and `contractor_id` = ? limit 1", rSubscribeRecordRows, m.table)
 	var resp RSubscribeRecord
-	err := m.conn.QueryRowCtx(ctx, &resp, query, groupId, contractorId)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, categoryId, contractorId)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -67,10 +67,10 @@ func (m *defaultRSubscribeRecordModel) FindOne(ctx context.Context, groupId int6
 	}
 }
 
-func (m *defaultRSubscribeRecordModel) FindAllByGroupId(ctx context.Context, groupId int64) ([]*RSubscribeRecord, error) {
-	query := fmt.Sprintf("select %s from %s where `group_id` = ?", rSubscribeRecordRows, m.table)
+func (m *defaultRSubscribeRecordModel) FindAllByCategoryId(ctx context.Context, categoryId int64) ([]*RSubscribeRecord, error) {
+	query := fmt.Sprintf("select %s from %s where `category_id` = ?", rSubscribeRecordRows, m.table)
 	var resp []*RSubscribeRecord
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, groupId)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, categoryId)
 	switch err {
 	case nil:
 		return resp, nil
@@ -95,8 +95,8 @@ func (m *defaultRSubscribeRecordModel) FindAllByContractorId(ctx context.Context
 	}
 }
 
-func (m *defaultRSubscribeRecordModel) Delete(ctx context.Context, groupId int64, contractorId int64) error {
-	query := fmt.Sprintf("delete from %s where `group_id` = ? and `contractor_id` = ?", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, groupId, contractorId)
+func (m *defaultRSubscribeRecordModel) Delete(ctx context.Context, categoryId int64, contractorId int64) error {
+	query := fmt.Sprintf("delete from %s where `category_id` = ? and `contractor_id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, categoryId, contractorId)
 	return err
 }

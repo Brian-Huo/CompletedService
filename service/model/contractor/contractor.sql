@@ -10,6 +10,7 @@ CREATE TABLE `b_contractor` (
     link_code char(64) NOT NULL,
     work_status tinyint(3) NOT NULL,
     order_id int unsigned,
+    category_list varchar(255),
     PRIMARY KEY(contractor_id)
 );
 ALTER TABLE `b_contractor` ADD FOREIGN KEY (finance_id) REFERENCES b_company(company_id);

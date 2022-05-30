@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"strconv"
 	"time"
 
@@ -11,9 +10,9 @@ import (
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/address"
+	"cleaningservice/service/model/broadcast"
 	"cleaningservice/service/model/customer"
 	"cleaningservice/service/model/order"
-	"cleaningservice/service/model/orderrecommend"
 	"cleaningservice/service/model/payment"
 	"cleaningservice/service/model/service"
 	"cleaningservice/util"
@@ -195,30 +194,16 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Timing to broadcast the order
-	l.broadcastOrder(newId, req.Address_info.City, req.Category_id)
+	l.broadcastOrder(newId, req.Category_id)
 
 	return &types.CreateOrderResponse{
 		Order_id: newId,
 	}, nil
 }
 
-func (l *CreateOrderLogic) broadcastOrder(orderId int64, location string, categoryId int64) {
-	subscribegroup_item, err := l.svcCtx.BSubscribeGroupModel.FindOneByCategoryLocation(l.ctx, categoryId, location)
-	if err != nil {
-		logx.Info(errors.New("invalid, broadcast failed."))
-		return
-	}
-
-	subscription_items, err := l.svcCtx.BSubscriptionModel.List(subscribegroup_item.GroupId)
-	if err != nil {
-		logx.Info(errors.New("invalid, broadcast failed."))
-		return
-	}
-
-	for _, contractor_id := range *subscription_items {
-		go l.svcCtx.ROrderRecommendModel.Insert(&orderrecommend.ROrderRecommend{
-			OrderId:      orderId,
-			ContractorId: contractor_id,
-		})
-	}
+func (l *CreateOrderLogic) broadcastOrder(orderId int64, categoryId int64) {
+	go l.svcCtx.BBroadcastModel.Insert(&broadcast.BBroadcast{
+		GroupId: categoryId,
+		OrderId: orderId,
+	})
 }

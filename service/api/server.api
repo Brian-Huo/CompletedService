@@ -261,31 +261,6 @@ type (
 		Items []DetailContractorResponse `json:"items"`
 	}
 
-	// -------------------- Contractor Service -------------------------
-	// Create Contractor Service
-	CreateContractorServiceRequest {
-		Contractor_id int64 `json:"contractor_id,optional"`
-		Service_id    int64 `json:"service_id"`
-	}
-	CreateContractorServiceResponse {
-	}
-
-	// Remove Contractor Service
-	RemoveContractorServiceRequest {
-		Contractor_id int64 `json:"contractor_id,optional"`
-		Service_id    int64 `json:"service_id"`
-	}
-	RemoveContractorServiceResponse {
-	}
-
-	// List Contractor Service
-	ListContractorServiceRequest {
-		Contractor_id int64 `json:"contractor_id"`
-	}
-	ListContractorServiceResponse {
-		Items []DetailServiceResponse `json:"items"`
-	}
-
 	// -------------------- Order -------------------------
 	//  Create Order
 	CreateOrderRequest {
@@ -567,9 +542,10 @@ type (
 		Category_id int64 `json:"category_id"`
 	}
 	DetailCategoryResponse {
-		Category_id          int64  `json:"category_id"`
-		Category_name        string `json:"category_name"`
-		Category_description string `json:"category_description"`
+		Category_id          int64   `json:"category_id"`
+		Category_name        string  `json:"category_name"`
+		Category_description string  `json:"category_description"`
+		Serve_range          float64 `json:"serve_range"`
 	}
 
 	// List Category
@@ -721,7 +697,7 @@ service Server {
 	@handler UploadContractPhoto
 	post /api/contractor/photo(UploadContractorPhotoRequest) returns (UploadContractorPhotoResponse)
 	
-	// get broadcast order apis
+	// get contractor schedule apis
 	@handler GetContractorSchedule
 	post /api/contractor/schedule(GetContractorScheduleRequest) returns (GetContractorScheduleResponse)
 	

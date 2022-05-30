@@ -7,7 +7,6 @@ Drop table b_order;
 Drop table r_subscribe_record;
 Drop table b_contractor;
 
-Drop table b_subscribe_group;
 Drop table b_service;
 Drop table b_category;
 
@@ -70,8 +69,9 @@ ALTER TABLE `b_company` ADD FOREIGN KEY (registered_address) REFERENCES b_addres
 -- Base data table: category (service type) --
 CREATE TABLE `b_category` (
     category_id int unsigned NOT NULL AUTO_INCREMENT,
-    category_name varchar(255) NOT NULL,
+    category_name varchar(100) NOT NULL UNIQUE,
     category_description mediumtext NOT NULL,
+    serve_range float unsigned NOT NULL,
     PRIMARY KEY(category_id)
 );
 
@@ -80,23 +80,13 @@ CREATE TABLE `b_service` (
     service_id int unsigned NOT NULL AUTO_INCREMENT,
     service_type int unsigned NOT NULL,
     service_scope varchar(255) NOT NULL,
-    service_name varchar(100) NOT NULL,
+    service_name varchar(255) NOT NULL,
     service_photo varchar(255),
     service_description longtext NOT NULL,
     service_price float unsigned NOT NULL,
     PRIMARY KEY(service_id)
 );
 ALTER TABLE `b_service` ADD FOREIGN KEY (service_type) REFERENCES b_category(category_id);
-
--- Base data table: subscribe group --
-CREATE TABLE `b_subscribe_group` (
-    group_id int unsigned NOT NULL AUTO_INCREMENT,
-    category int unsigned NOT NULL,
-    location varchar(5) NOT NULL,
-    PRIMARY KEY(group_id),
-    UNIQUE KEY(category, location)
-);
-ALTER TABLE `b_subscribe_group` ADD FOREIGN KEY (category) REFERENCES b_category(category_id);
 
 -- Base data table: contractor --
 CREATE TABLE `b_contractor` (
@@ -110,6 +100,7 @@ CREATE TABLE `b_contractor` (
     link_code char(64) NOT NULL,
     work_status tinyint(3) NOT NULL,
     order_id int unsigned,
+    category_list varchar(255),
     PRIMARY KEY(contractor_id)
 );
 ALTER TABLE `b_contractor` ADD FOREIGN KEY (finance_id) REFERENCES b_company(company_id);
@@ -117,11 +108,11 @@ ALTER TABLE `b_contractor` ADD FOREIGN KEY (address_id) REFERENCES b_address(add
 
 -- Relation data table: subscribe record --
 CREATE TABLE `r_subscribe_record` (
-    group_id int unsigned NOT NULL,
+    category_id int unsigned NOT NULL,
     contractor_id int unsigned NOT NULL,
-    PRIMARY KEY(group_id, contractor_id)
+    PRIMARY KEY(category_id, contractor_id)
 );
-ALTER TABLE `r_subscribe_record` ADD FOREIGN KEY (group_id) REFERENCES b_subscribe_group(group_id);
+ALTER TABLE `r_subscribe_record` ADD FOREIGN KEY (category_id) REFERENCES b_category(category_id);
 ALTER TABLE `r_subscribe_record` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id);
 
 -- Base data table: order --
