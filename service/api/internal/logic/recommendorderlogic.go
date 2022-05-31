@@ -78,7 +78,7 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 		// Get order details
 		for _, order_id := range *order_list {
 			// Valid if order has been decline recently
-			if ret, _ := l.svcCtx.ROrderDelayModel.FindOne(uid, order_id); ret == 1 {
+			if ret, _ := l.svcCtx.ROrderDelayModel.FindOne(uid, order_id); !ret {
 				continue
 			}
 

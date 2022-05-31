@@ -4,7 +4,6 @@ package orderdelay
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/zeromicro/go-zero/core/stores/redis"
 )
@@ -15,11 +14,9 @@ var (
 
 type (
 	rOrderDelayModel interface {
-		Insert(data *ROrderDelay) (int, error)
-		FindOne(contractorId int64, orderId int64) (int, error)
-		List(contractorId int64) (*[]int64, error)
+		Insert(data *ROrderDelay) (error)
+		FindOne(contractorId int64, orderId int64) (bool, error)
 		Delete(contractorId int64, orderId int64) (int, error)
-		DeleteAll(contractorId int64) (int, error)
 	}
 
 	defaultROrderDelayModel struct {
@@ -40,50 +37,26 @@ func newROrderDelayModel(c redis.RedisConf) *defaultROrderDelayModel {
 	}
 }
 
-func (m *defaultROrderDelayModel) Insert(data *ROrderDelay) (int, error) {
-	rOrderDelayContractorIdKey := fmt.Sprintf("%s%v", cacheROrderDelayContractorIdPrefix, data.ContractorId)
-	ret, err := m.conn.Sadd(rOrderDelayContractorIdKey, data.OrderId)
+func (m *defaultROrderDelayModel) Insert(data *ROrderDelay) (error) {
+	rOrderDelayContractorIdKey := fmt.Sprintf("%s%v:%v", cacheROrderDelayContractorIdPrefix, data.ContractorId, data.OrderId)
+	err := m.conn.Set(rOrderDelayContractorIdKey, "decline")
 	m.conn.Expire(rOrderDelayContractorIdKey, 86400)
-	return ret, err
+	return err
 }
 
-func (m *defaultROrderDelayModel) FindOne(contractorId int64, orderId int64) (int, error) {
-	rOrderDelayContractorIdKey := fmt.Sprintf("%s%v", cacheROrderDelayContractorIdPrefix, contractorId)
-	ret, _, err := m.conn.Sscan(rOrderDelayContractorIdKey, 0, strconv.FormatInt(orderId, 10), 1)
+func (m *defaultROrderDelayModel) FindOne(contractorId int64, orderId int64) (bool, error) {
+	rOrderDelayContractorIdKey := fmt.Sprintf("%s%v:%v", cacheROrderDelayContractorIdPrefix, contractorId, orderId)
+	ret, err := m.conn.Get(rOrderDelayContractorIdKey)
 	if err != nil {
-		return 0, err
+		return false, err
 	} else if len(ret) == 0 {
-		return 0, ErrNotFound
+		return false, ErrNotFound
 	}
-	return 1, nil
-}
-
-func (m *defaultROrderDelayModel) List(contractorId int64) (*[]int64, error) {
-	rOrderDelayContractorIdKey := fmt.Sprintf("%s%v", cacheROrderDelayContractorIdPrefix, contractorId)
-	ret, err := m.conn.Smembers(rOrderDelayContractorIdKey)
-	switch err {
-	case nil:
-		var resp []int64
-		for _, val := range ret{
-			order_id, err := strconv.ParseInt(val, 10, 64)
-			if err == nil {
-				resp = append(resp, order_id)
-			}
-		}
-		return &resp, nil
-	default:
-		return nil, err
-	}
+	return true, nil
 }
 
 func (m *defaultROrderDelayModel) Delete(contractorId int64, orderId int64) (int, error) {
-	rOrderDelayContractorIdKey := fmt.Sprintf("%s%v", cacheROrderDelayContractorIdPrefix, contractorId)
-	ret, err := m.conn.Srem(rOrderDelayContractorIdKey, orderId)
-	return ret, err
-}
-
-func (m *defaultROrderDelayModel) DeleteAll(contractorId int64) (int, error) {
-	rOrderDelayContractorIdKey := fmt.Sprintf("%s%v", cacheROrderDelayContractorIdPrefix, contractorId)
+	rOrderDelayContractorIdKey := fmt.Sprintf("%s%v:%v", cacheROrderDelayContractorIdPrefix, contractorId, orderId)
 	ret, err := m.conn.Del(rOrderDelayContractorIdKey)
 	return ret, err
 }
