@@ -37,6 +37,6 @@ INSERT INTO b_service (service_type, service_scope, service_name, service_descri
 
 -- Company Initialize --
 -- QME TECH Company Details --
-INSERT INTO b_company (company_name, payment_id, director_name, contact_details, deposite_rate, finance_status) values ("QME Tech. Ltd.", 1, "", "0123456789", 10, 1)
+INSERT INTO b_company (company_name, payment_id, director_name, contact_details, deposite_rate, finance_status) values ("QME Tech. Ltd.", 1, "", "0123456789", 10, 1);
 -- AK Knowall Company Details --
-INSERT INTO b_company (company_name, payment_id, director_name, contact_details, deposite_rate, finance_status) values ("AK Knowall", 3, "Shengzhe Zhang", "0420830301", 10, 1)
+INSERT INTO b_company (company_name, payment_id, director_name, contact_details, deposite_rate, finance_status) values ("AK Knowall", 3, "Shengzhe Zhang", "0420830301", 10, 1);

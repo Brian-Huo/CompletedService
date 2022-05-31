@@ -11,6 +11,7 @@ import (
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/operation"
 	"cleaningservice/service/model/order"
+	"cleaningservice/service/model/orderdelay"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -38,6 +39,7 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 		return nil, status.Error(401, "Invalid, Not contractor.")
 	}
 
+	// Validate contractor details
 	_, err = l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
 	if err != nil {
 		return nil, status.Error(404, "Invalid, Contractor not found.")
@@ -45,12 +47,13 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 
 	l.receiveOrder(uid, req.Order_id)
 
-	ord, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
+	// Validate order details
+	order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		return nil, status.Error(404, "Invalid, Order not found.")
 	}
 
-	if ord.Status != order.Queuing {
+	if order_item.Status != order.Queuing {
 		return nil, errorx.NewCodeError(401, "Order is currently unavailable.")
 	}
 
@@ -72,6 +75,9 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 	}, nil
 }
 
-func (l *DeclineOperationLogic) receiveOrder(contractorId int64, orderId int64) {
-	go l.svcCtx.ROrderRecommendModel.Delete(contractorId, orderId)
+func (l *DeclineOperationLogic) receiveOrder(contractorId int64, order_itemerId int64) {
+	go l.svcCtx.ROrderDelayModel.Insert(&orderdelay.ROrderDelay{
+		ContractorId: contractorId,
+		OrderId:      order_itemerId,
+	})
 }

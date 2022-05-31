@@ -11,7 +11,7 @@ import (
 	"cleaningservice/service/model/customer"
 	"cleaningservice/service/model/operation"
 	"cleaningservice/service/model/order"
-	"cleaningservice/service/model/orderrecommend"
+	"cleaningservice/service/model/orderdelay"
 	"cleaningservice/service/model/payment"
 	"cleaningservice/service/model/service"
 	"cleaningservice/service/model/subscriberecord"
@@ -33,7 +33,7 @@ type ServiceContext struct {
 	RContractorServiceModel contractorservice.RContractorServiceModel
 	BOperationModel         operation.BOperationModel
 	BOrderModel             order.BOrderModel
-	ROrderRecommendModel    orderrecommend.ROrderRecommendModel
+	ROrderDelayModel        orderdelay.ROrderDelayModel
 	BPaymentModel           payment.BPaymentModel
 	BServiceModel           service.BServiceModel
 	RSubscribeRecordModel   subscriberecord.RSubscribeRecordModel
@@ -52,7 +52,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		BContractorModel:        contractor.NewBContractorModel(conn, c.CacheRedis),
 		RContractorServiceModel: contractorservice.NewRContractorServiceModel(conn),
 		BOrderModel:             order.NewBOrderModel(conn, c.CacheRedis),
-		ROrderRecommendModel:    orderrecommend.NewROrderRecommendModel(c.RedisConf),
+		ROrderDelayModel:        orderdelay.NewROrderDelayModel(c.RedisConf),
 		BOperationModel:         operation.NewBOperationModel(conn, c.CacheRedis),
 		BPaymentModel:           payment.NewBPaymentModel(conn, c.CacheRedis),
 		BServiceModel:           service.NewBServiceModel(conn, c.CacheRedis),

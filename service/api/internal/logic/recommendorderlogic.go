@@ -13,6 +13,7 @@ import (
 	"cleaningservice/service/model/category"
 	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/order"
+	"cleaningservice/util"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -40,10 +41,21 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 		return nil, status.Error(401, "Invalid, Not contractor.")
 	}
 
+	// Get contractor details
 	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
 	if err != nil {
 		if err == contractor.ErrNotFound {
 			return nil, status.Error(404, "Contractor not found.")
+		}
+		return nil, status.Error(500, err.Error())
+	}
+
+	// Get contractor address details
+	noAddress := false
+	contractor_address, err := l.svcCtx.BAddressModel.FindOne(l.ctx, contractor_item.AddressId.Int64)
+	if err != nil {
+		if err == address.ErrNotFound {
+			noAddress = true
 		}
 		return nil, status.Error(500, err.Error())
 	}
@@ -65,27 +77,15 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 
 		// Get order details
 		for _, order_id := range *order_list {
+			// Valid if order has been decline recently
+			if ret, _ := l.svcCtx.ROrderDelayModel.FindOne(uid, order_id); ret == 1 {
+				continue
+			}
+
+			// Get order details
 			order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, order_id)
 			if err != nil {
 				go l.svcCtx.BBroadcastModel.Delete(group_id, order_id)
-			}
-
-			// Get customer details
-			customer_item, err := l.svcCtx.BCustomerModel.FindOne(l.ctx, order_item.CustomerId)
-			if err != nil {
-				if err == order.ErrNotFound {
-					return nil, status.Error(404, "Invalid, Customer not found.")
-				}
-				return nil, status.Error(500, err.Error())
-			}
-
-			// Get address details
-			address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, order_item.AddressId)
-			if err != nil {
-				if err == address.ErrNotFound {
-					return nil, status.Error(404, "Invalid, Address not found.")
-				}
-				return nil, status.Error(500, err.Error())
 			}
 
 			// Get category details
@@ -93,6 +93,31 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 			if err != nil {
 				if err == category.ErrNotFound {
 					return nil, status.Error(404, "Invalid, Category not found.")
+				}
+				return nil, status.Error(500, err.Error())
+			}
+
+			// Get address details
+			order_address, err := l.svcCtx.BAddressModel.FindOne(l.ctx, order_item.AddressId)
+			if err != nil {
+				if err == address.ErrNotFound {
+					return nil, status.Error(404, "Invalid, Address not found.")
+				}
+				return nil, status.Error(500, err.Error())
+			}
+
+			// Valid order distance
+			if noAddress {
+				continue
+			} else if !util.CheckPointsDistance(contractor_address.Lat, contractor_address.Lng, order_address.Lat, order_address.Lng, category_item.ServeRange) {
+				continue
+			}
+
+			// Get customer details
+			customer_item, err := l.svcCtx.BCustomerModel.FindOne(l.ctx, order_item.CustomerId)
+			if err != nil {
+				if err == order.ErrNotFound {
+					return nil, status.Error(404, "Invalid, Customer not found.")
 				}
 				return nil, status.Error(500, err.Error())
 			}
@@ -107,16 +132,16 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 					Country_code:    customer_item.CountryCode,
 				},
 				Address_info: types.DetailAddressResponse{
-					Address_id: address_item.AddressId,
-					Street:     address_item.Street,
-					Suburb:     address_item.Suburb,
-					Postcode:   address_item.Postcode,
-					City:       address_item.City,
-					State_code: address_item.StateCode,
-					Country:    address_item.Country,
-					Lat:        address_item.Lat,
-					Lng:        address_item.Lng,
-					Formatted:  address_item.Formatted,
+					Address_id: order_address.AddressId,
+					Street:     order_address.Street,
+					Suburb:     order_address.Suburb,
+					Postcode:   order_address.Postcode,
+					City:       order_address.City,
+					State_code: order_address.StateCode,
+					Country:    order_address.Country,
+					Lat:        order_address.Lat,
+					Lng:        order_address.Lng,
+					Formatted:  order_address.Formatted,
 				},
 				Finance_id: order_item.FinanceId.Int64,
 				Category: types.DetailCategoryResponse{
