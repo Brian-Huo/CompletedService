@@ -41,7 +41,7 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	}
 
 	// Check contractor status
-	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
+	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
 	if err != nil {
 		if err == contractor.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Contractor not found.")
@@ -49,14 +49,8 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 		return nil, status.Error(500, err.Error())
 	}
 
-	l.receiveOrder(uid, req.Order_id)
-
-	if cont.WorkStatus != contractor.Vacant {
-		return nil, errorx.NewCodeError(401, "Invalid, Contractor should not double accept order(s).")
-	}
-
 	// Check order status
-	ord, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
+	order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		if err == order.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Order not found.")
@@ -64,7 +58,14 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 		return nil, status.Error(500, err.Error())
 	}
 
-	if ord.Status != order.Queuing {
+	l.removeBroadcast(order_item.CategoryId, order_item.OrderId)
+
+	// Validate accept operation
+	if contractor_item.WorkStatus != contractor.Vacant {
+		return nil, errorx.NewCodeError(401, "Invalid, Contractor should not double accept order(s).")
+	}
+
+	if order_item.Status != order.Queuing {
 		return nil, errorx.NewCodeError(401, "Order is currently unavailable.")
 	}
 
@@ -82,18 +83,18 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	}
 
 	// Update order details
-	ord.ContractorId = sql.NullInt64{uid, true}
-	ord.FinanceId = sql.NullInt64{cont.FinanceId, true}
-	ord.Status = order.Working
-	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
+	order_item.ContractorId = sql.NullInt64{uid, true}
+	order_item.FinanceId = sql.NullInt64{contractor_item.FinanceId, true}
+	order_item.Status = order.Working
+	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Update contractor details
-	cont.WorkStatus = contractor.InWork
-	cont.OrderId = sql.NullInt64{req.Order_id, true}
-	err = l.svcCtx.BContractorModel.Update(l.ctx, cont)
+	// Update contractor details(modify required)
+	contractor_item.WorkStatus = contractor.InWork
+	contractor_item.OrderId = sql.NullInt64{req.Order_id, true}
+	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -104,6 +105,6 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	}, nil
 }
 
-func (l *AcceptOperationLogic) receiveOrder(contractorId int64, orderId int64) {
-	go l.svcCtx.ROrderRecommendModel.Delete(contractorId, orderId)
+func (l *AcceptOperationLogic) removeBroadcast(groupId int64, orderId int64) {
+	go l.svcCtx.BBroadcastModel.Delete(groupId, orderId)
 }

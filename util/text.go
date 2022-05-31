@@ -17,4 +17,19 @@ func RemoveUnionStringArray(target []string, reference []string) ([]string, stri
 		return []string{}, ""
 	}
 
+	// Get different elements from target referring to reference
+	resultList := []string{}
+	checkMap := make(map[string]int)
+
+	for _, val := range reference {
+		checkMap[val] = 1
+	}
+	for _, val := range target {
+		_, exist := checkMap[val]
+		if !exist {
+			resultList = append(resultList, val)
+		}
+	}
+
+	return resultList, strings.Join(resultList[:], variables.Separator)
 }

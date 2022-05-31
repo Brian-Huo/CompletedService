@@ -28,7 +28,8 @@ func NewCancelOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cance
 }
 
 func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *types.CancelOrderResponse, err error) {
-	ord, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
+	// Update order details
+	order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		if err == order.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Order not found.")
@@ -36,14 +37,17 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	ord.Status = order.Cancelled
+	order_item.Status = order.Cancelled
 
-	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
+	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
-	cont, err := l.svcCtx.BContractorModel.FindOne(l.ctx, ord.ContractorId.Int64)
+	l.removeBroadcast(order_item.CategoryId, order_item.OrderId)
+
+	// Contractor workstatus update
+	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, order_item.ContractorId.Int64)
 	if err != nil {
 		if err == contractor.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Contractor not found.")
@@ -51,13 +55,17 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	cont.WorkStatus = contractor.Vacant
-	cont.OrderId = sql.NullInt64{0, false}
+	contractor_item.WorkStatus = contractor.Vacant
+	contractor_item.OrderId = sql.NullInt64{0, false}
 
-	err = l.svcCtx.BContractorModel.Update(l.ctx, cont)
+	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
 
 	return &types.CancelOrderResponse{}, nil
+}
+
+func (l *CancelOrderLogic) removeBroadcast(groupId int64, orderId int64) {
+	go l.svcCtx.BBroadcastModel.Delete(groupId, orderId)
 }
