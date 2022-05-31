@@ -151,7 +151,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			return nil, status.Error(500, err.Error())
 		}
 		service_fee += service_item.ServicePrice * float64(order_service.Service_quantity)
-		service_list += service_item.ServiceScope + ":x" + strconv.Itoa(order_service.Service_quantity)
+		service_list += service_item.ServiceName + ":x" + strconv.Itoa(order_service.Service_quantity)
 	}
 
 	deposite_amount := service_fee / variables.Deposite_rate
@@ -164,6 +164,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		CustomerId:          customerId,
 		AddressId:           addressId,
 		ContractorId:        sql.NullInt64{0, false},
+		FinanceId:           sql.NullInt64{0, false},
 		CategoryId:          req.Category_id,
 		ServiceList:         service_list,
 		DepositePayment:     paymentId,
@@ -180,7 +181,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		ReserveDate:         reserve_date,
 		FinishDate:          sql.NullTime{time.Now(), false},
 		Status:              order.Queuing,
-		UrgantFlag:          int64(req.Urgent_flag),
+		UrgantFlag:          0,
 	}
 
 	order_res, err := l.svcCtx.BOrderModel.Insert(l.ctx, &newItem)
