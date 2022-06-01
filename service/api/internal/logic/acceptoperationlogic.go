@@ -85,7 +85,7 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	// Update order details
 	order_item.ContractorId = sql.NullInt64{uid, true}
 	order_item.FinanceId = sql.NullInt64{contractor_item.FinanceId, true}
-	order_item.Status = order.Working
+	order_item.Status = order.Pending
 	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())

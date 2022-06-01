@@ -3,7 +3,9 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"cleaningservice/common/errorx"
@@ -149,7 +151,9 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		service_fee += service_item.ServicePrice * float64(order_service.Service_quantity)
 		service_list += service_item.ServiceName + ":x" + strconv.Itoa(order_service.Service_quantity)
 	}
-	service_list = service_list[1:]
+	fmt.Println(service_list)
+	service_list = strings.Replace(service_list, variables.Separator, "", 1)
+	fmt.Println(service_list)
 
 	deposite_amount := service_fee / variables.Deposite_rate
 	gst_amount := service_fee / variables.GST

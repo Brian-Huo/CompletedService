@@ -105,10 +105,8 @@ func (m *defaultBOrderModel) FindOne(ctx context.Context, orderId int64) (*BOrde
 
 func (m *defaultBOrderModel) FindAllByAddress(ctx context.Context, addressId int64) ([]*BOrder, error) {
 	var resp []*BOrder
-
 	query := fmt.Sprintf("select %s from %s where `address_id` = ?", bOrderRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, addressId)
-
 	switch err {
 	case nil:
 		return resp, nil
@@ -121,10 +119,8 @@ func (m *defaultBOrderModel) FindAllByAddress(ctx context.Context, addressId int
 
 func (m *defaultBOrderModel) FindAllByFinance(ctx context.Context, financeId int64) ([]*BOrder, error) {
 	var resp []*BOrder
-
 	query := fmt.Sprintf("select %s from %s where `finance_id` = ?", bOrderRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, financeId)
-
 	switch err {
 	case nil:
 		return resp, nil
@@ -137,10 +133,8 @@ func (m *defaultBOrderModel) FindAllByFinance(ctx context.Context, financeId int
 
 func (m *defaultBOrderModel) FindAllByCustomer(ctx context.Context, customerId int64) ([]*BOrder, error) {
 	var resp []*BOrder
-
 	query := fmt.Sprintf("select %s from %s where `customer_id` = ?", bOrderRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, customerId)
-
 	switch err {
 	case nil:
 		return resp, nil
@@ -153,10 +147,8 @@ func (m *defaultBOrderModel) FindAllByCustomer(ctx context.Context, customerId i
 
 func (m *defaultBOrderModel) FindAllByContractor(ctx context.Context, contractorId int64) ([]*BOrder, error) {
 	var resp []*BOrder
-
 	query := fmt.Sprintf("select %s from %s where `contractor_id` = ?", bOrderRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, contractorId)
-
 	switch err {
 	case nil:
 		return resp, nil

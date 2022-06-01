@@ -38,11 +38,13 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 		return nil, status.Error(401, "Invalid, Not contractor.")
 	}
 
-	var orderList []types.DetailOrderResponse
+	orderList := []types.DetailOrderResponse{}
 	items, err := l.svcCtx.BOrderModel.FindAllByContractor(l.ctx, uid)
 	if err != nil {
 		if err == order.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Order not found.")
+			return &types.GetContractorScheduleResponse{
+				Items: orderList,
+			}, nil
 		}
 		return nil, status.Error(500, err.Error())
 	}
