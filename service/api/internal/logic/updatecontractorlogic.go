@@ -132,6 +132,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 		LinkCode:        contractor_item.LinkCode,
 		WorkStatus:      contractor_item.WorkStatus,
 		OrderId:         contractor_item.OrderId,
+		CategoryList:    contractor_item.CategoryList,
 	})
 	if err != nil {
 		return nil, status.Error(500, err.Error())

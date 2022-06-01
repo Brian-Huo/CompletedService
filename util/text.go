@@ -2,6 +2,7 @@ package util
 
 import (
 	"cleaningservice/common/variables"
+	"strconv"
 	"strings"
 )
 
@@ -32,4 +33,76 @@ func RemoveUnionStringArray(target []string, reference []string) ([]string, stri
 	}
 
 	return resultList, strings.Join(resultList[:], variables.Separator)
+}
+
+// String to int64 array
+func StringToIntArray(str string) []int64 {
+	result := []int64{}
+	if str == "" {
+		return result
+	}
+
+	strList := strings.Split(str, variables.Separator)
+	for _, val := range strList {
+		if val == "" {
+			continue
+		}
+
+		id, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			continue
+		}
+
+		result = append(result, id)
+	}
+
+	return result
+}
+
+// Int64 array to string
+func IntArrayToString(arr []int64) string {
+	result := []string{}
+	for _, val := range arr {
+		result = append(result, strconv.FormatInt(val, 10))
+	}
+
+	return strings.Join(result[:], variables.Separator)
+}
+
+// Disjoint elements from two int64 array
+func DisjointIntArray(arr1 []int64, arr2 []int64) []int64 {
+	result := []int64{}
+	checkMap := make(map[int64]int)
+
+	for _, val := range arr1 {
+		checkMap[val] = 1
+	}
+	for _, val := range arr2 {
+		_, exist := checkMap[val]
+		if !exist {
+			result = append(result, val)
+		}
+	}
+
+	return result
+}
+
+// Union of two int64 array
+func UnionIntArray(arr1 []int64, arr2 []int64) []int64 {
+	result := []int64{}
+	checkMap := make(map[int64]int)
+
+	for _, val := range arr1 {
+		checkMap[val] = 1
+	}
+	for _, val := range arr2 {
+		checkMap[val] = 1
+	}
+
+	for key := range checkMap {
+		result = append(result, key)
+
+	}
+
+	return result
 }

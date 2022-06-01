@@ -222,8 +222,6 @@ type UpdateContractorRequest struct {
 	Address_info     UpdateAddressRequest `json:"address_info,optional"`
 	Link_code        string               `json:"link_code,optional"`
 	Work_status      int                  `json:"work_status"`
-	New_category     []int64              `json:"new_category"`
-	Remove_category  []int64              `json:"remove_category"`
 }
 
 type UpdateContractorResponse struct {
@@ -293,7 +291,6 @@ type CreateOrderRequest struct {
 	Deposite_info     CreatePaymentRequest   `json:"deposite_info"`
 	Order_description string                 `json:"order_description,optional"`
 	Reserve_date      string                 `json:"reserve_date"`
-	Urgent_flag       int                    `json:"urgent_flag"`
 }
 
 type CreateOrderResponse struct {

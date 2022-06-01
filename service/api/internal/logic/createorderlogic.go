@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"cleaningservice/common/errorx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -18,7 +19,6 @@ import (
 	"cleaningservice/util"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/status"
 )
 
 type CreateOrderLogic struct {
@@ -44,7 +44,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		// expiry time convert
 		exp_time, err := time.Parse("2006-01-02 15:04:05", req.Deposite_info.Expiry_time)
 		if err != nil {
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
 		payment_struct := payment.BPayment{
 			CardNumber:   req.Deposite_info.Card_number,
@@ -53,30 +53,29 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			SecurityCode: req.Deposite_info.Security_code,
 		}
 
-		// Check if data valid
+		// Check if payment detail valid
 		if !util.CheckPaymentDetails(&payment_struct) {
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, "Invalid payment details")
 		}
 
 		payment_res, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment_struct)
 		if err != nil {
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
-
 		paymentId, err = payment_res.LastInsertId()
 		if err != nil {
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
 	} else if err == nil {
 		paymentId = payment_item.PaymentId
 	} else {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Customer
-	// Check if data valid
+	// Check if contact detail valid
 	if !util.CheckContactDetails(req.Customer_info.Contact_details) {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	var customerId int64
@@ -91,17 +90,16 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 
 		customer_item, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &customer_struct)
 		if err != nil {
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
-
 		customerId, err = customer_item.LastInsertId()
 		if err != nil {
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
 	} else if err == nil {
 		customerId = customer_item.CustomerId
 	} else {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Address
@@ -118,24 +116,22 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Check if data valid
-	if !util.CheckAddressDetails(&address_struct) {
-		return nil, status.Error(500, err.Error())
+	if ret, err := util.CheckAddressDetails(&address_struct); !ret {
+		return nil, errorx.NewCodeError(500, "Invalid address details"+err.Error())
 	}
-
 	address_res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
-
 	addressId, err := address_res.LastInsertId()
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Get time variables
 	reserve_date, err := time.Parse("2006-01-02 15:04:05", req.Reserve_date)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Calculate fees and get full service strings
@@ -146,13 +142,14 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, order_service.Service_id)
 		if err != nil {
 			if err == service.ErrNotFound {
-				return nil, status.Error(404, "Invalid, Service(s) not found.")
+				return nil, errorx.NewCodeError(404, "Invalid, Service(s) not found.")
 			}
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
 		service_fee += service_item.ServicePrice * float64(order_service.Service_quantity)
 		service_list += service_item.ServiceName + ":x" + strconv.Itoa(order_service.Service_quantity)
 	}
+	service_list = service_list[1:]
 
 	deposite_amount := service_fee / variables.Deposite_rate
 	gst_amount := service_fee / variables.GST
@@ -186,12 +183,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 
 	order_res, err := l.svcCtx.BOrderModel.Insert(l.ctx, &newItem)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
-
 	newId, err := order_res.LastInsertId()
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Timing to broadcast the order

@@ -3,36 +3,28 @@ package util
 import (
 	"cleaningservice/service/model/address"
 	"cleaningservice/service/model/payment"
+	"errors"
 	"regexp"
-	"strconv"
 )
 
 // Check address strings valid
-func CheckAddressDetails(data *address.BAddress) bool {
+func CheckAddressDetails(data *address.BAddress) (bool, error) {
 	if len(data.Formatted) < 10 {
-		return false
+		return false, errors.New("invalid formatted address")
 	}
-	if _, err := strconv.Atoi(data.Postcode); err != nil {
-		return false
+	if data.Lat == 0.0 && data.Lng == 0.0 {
+		return false, errors.New("invalid lat or lng")
 	}
-	if data.City != "" {
-		return false
-	}
-	if data.Lat == 0.0 || data.Lng == 0.0 {
-		return false
-	}
-	return true
+	return true, nil
 }
 
 // Check contact details valid
 func CheckContactDetails(contact_details string) bool {
+	re := regexp.MustCompile(`^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$`)
 	if len(contact_details) <= 7 {
 		return false
 	}
-	if _, err := strconv.Atoi(contact_details); err != nil {
-		return false
-	}
-	return true
+	return re.MatchString(contact_details)
 }
 
 // Check payment details valid

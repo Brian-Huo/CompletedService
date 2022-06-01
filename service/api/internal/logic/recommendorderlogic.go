@@ -2,8 +2,6 @@ package logic
 
 import (
 	"context"
-	"strconv"
-	"strings"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -47,7 +45,7 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 		if err == contractor.ErrNotFound {
 			return nil, status.Error(404, "Contractor not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, status.Error(500, "Find Contractor: "+err.Error())
 	}
 
 	// Get contractor address details
@@ -56,29 +54,25 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 	if err != nil {
 		if err == address.ErrNotFound {
 			noAddress = true
+		} else {
+			return nil, status.Error(500, "Find Address: "+err.Error())
 		}
-		return nil, status.Error(500, err.Error())
 	}
 
-	var orderList []types.DetailOrderResponse
-	category_list := strings.Split(contractor_item.CategoryList.String, variables.Separator)
-	for _, group_str := range category_list {
+	orderList := []types.DetailOrderResponse{}
+	category_list := util.StringToIntArray(contractor_item.CategoryList.String)
+	for _, group_id := range category_list {
 		// Get all broadcasting orders from group
-		group_id, err := strconv.ParseInt(group_str, 10, 64)
-		if err != nil {
-			logx.Error("contractor category wrong format %s", group_str)
-			continue
-		}
 		order_list, err := l.svcCtx.BBroadcastModel.List(group_id)
 		if err != nil {
-			logx.Error("get broadcasting orders from group %s failed", group_id)
+			logx.Error("get broadcasting orders from group failed")
 			continue
 		}
 
 		// Get order details
 		for _, order_id := range *order_list {
 			// Valid if order has been decline recently
-			if ret, _ := l.svcCtx.ROrderDelayModel.FindOne(uid, order_id); !ret {
+			if ret, _ := l.svcCtx.ROrderDelayModel.FindOne(uid, order_id); ret {
 				continue
 			}
 
@@ -94,7 +88,7 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 				if err == category.ErrNotFound {
 					return nil, status.Error(404, "Invalid, Category not found.")
 				}
-				return nil, status.Error(500, err.Error())
+				return nil, status.Error(500, "Find Category: "+err.Error())
 			}
 
 			// Get address details
@@ -103,7 +97,7 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 				if err == address.ErrNotFound {
 					return nil, status.Error(404, "Invalid, Address not found.")
 				}
-				return nil, status.Error(500, err.Error())
+				return nil, status.Error(500, "Find Address2: "+err.Error())
 			}
 
 			// Valid order distance
@@ -119,7 +113,7 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 				if err == order.ErrNotFound {
 					return nil, status.Error(404, "Invalid, Customer not found.")
 				}
-				return nil, status.Error(500, err.Error())
+				return nil, status.Error(500, "Find Customer: "+err.Error())
 			}
 
 			// Construct order response

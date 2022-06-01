@@ -3,8 +3,6 @@ package logic
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"strings"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -49,9 +47,8 @@ func (l *LeaveSubscribeGroupLogic) LeaveSubscribeGroup(req *types.LeaveSubscribe
 	}
 
 	// Update category list in contractor
-	previous_category := strings.Split(contractor_item.CategoryList.String, variables.Separator)
-	remove_category := strings.Split(fmt.Sprint(req.Category_list), " ")
-	_, new_category := util.RemoveUnionStringArray(previous_category, remove_category)
+	previous_category := util.StringToIntArray(contractor_item.CategoryList.String)
+	new_category := util.IntArrayToString(util.DisjointIntArray(previous_category, req.Category_list))
 	contractor_item.CategoryList = sql.NullString{new_category, new_category != ""}
 
 	// Unsubscribe all category group

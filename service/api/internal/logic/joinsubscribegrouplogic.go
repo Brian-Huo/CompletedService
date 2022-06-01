@@ -3,8 +3,6 @@ package logic
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"strings"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -51,9 +49,8 @@ func (l *JoinSubscribeGroupLogic) JoinSubscribeGroup(req *types.JoinSubscribeGro
 	}
 
 	// Update category list in contractor
-	previous_category := strings.Split(contractor_item.CategoryList.String, variables.Separator)
-	append_category := strings.Split(fmt.Sprint(req.Category_list), " ")
-	_, new_category := util.CombineStringArray(previous_category, append_category)
+	previous_category := util.StringToIntArray(contractor_item.CategoryList.String)
+	new_category := util.IntArrayToString(util.UnionIntArray(previous_category, req.Category_list))
 	contractor_item.CategoryList = sql.NullString{new_category, new_category != ""}
 
 	// Subscribe all category groups
