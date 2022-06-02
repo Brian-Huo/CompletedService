@@ -58,13 +58,10 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 		return nil, status.Error(500, err.Error())
 	}
 
-	l.removeBroadcast(order_item.CategoryId, order_item.OrderId)
-
 	// Validate accept operation
-	if contractor_item.WorkStatus != contractor.Vacant {
-		return nil, errorx.NewCodeError(401, "Invalid, Contractor should not double accept order(s).")
+	if contractor_item.WorkStatus == contractor.Await {
+		return nil, errorx.NewCodeError(401, "Invalid, Contractor haven't registed.")
 	}
-
 	if order_item.Status != order.Queuing {
 		return nil, errorx.NewCodeError(401, "Order is currently unavailable.")
 	}
@@ -91,13 +88,7 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Update contractor details(modify required)
-	contractor_item.WorkStatus = contractor.InWork
-	contractor_item.OrderId = sql.NullInt64{req.Order_id, true}
-	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
-	if err != nil {
-		return nil, status.Error(500, err.Error())
-	}
+	l.removeBroadcast(order_item.CategoryId, order_item.OrderId)
 
 	return &types.AcceptOperationResponse{
 		Code: 200,

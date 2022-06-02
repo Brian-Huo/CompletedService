@@ -292,6 +292,15 @@ type (
 	CancelOrderResponse {
 	}
 
+	// Start Order
+	StartOrderRequest {
+		Order_id int64 `json:"order_id"`
+		Lat    float64 `json:"lat"`
+		Lng    float64 `json:"lng"`
+	}
+	StartOrderResponse {
+	}
+
 	// Finish Order
 	FinishOrderRequest {
 		Order_id int64 `json:"order_id"`
@@ -699,6 +708,9 @@ service Server {
 	post /api/contractor/schedule(GetContractorScheduleRequest) returns (GetContractorScheduleResponse)
 	
 	// order apis
+	@handler StartOrder
+	post /api/order/start(StartOrderRequest) returns (StartOrderResponse)
+
 	@handler FinishOrder
 	post /api/order/finish(FinishOrderRequest) returns (FinishOrderResponse)
 	

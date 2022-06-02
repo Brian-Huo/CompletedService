@@ -49,13 +49,16 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	if uid != ord.ContractorId.Int64 {
 		return nil, status.Error(404, "Invalid, Order not found.")
 	}
-	logx.Info("finishing order")
+
 	// Finish order
-	if ord.Status == order.Working {
-		ord.Status = order.Unpaid
-	} else {
-		return nil, errorx.NewCodeError(401, "Order cannot be finished twice.")
+	if ord.Status == order.Unpaid || ord.Status == order.Completed {
+		return nil, errorx.NewCodeError(401, "Order has been finished.")
+	} else if ord.Status == order.Cancelled {
+		return nil, errorx.NewCodeError(401, "Order has been canceled.")
+	} else if ord.Status == order.Queuing {
+		return nil, errorx.NewCodeError(401, "Order is in queue.")
 	}
+	ord.Status = order.Unpaid
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, ord)
 	if err != nil {
@@ -68,8 +71,12 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 		return nil, status.Error(500, err.Error())
 	}
 
-	contractor_item.WorkStatus = contractor.Vacant
-	contractor_item.OrderId = sql.NullInt64{0, false}
+	if contractor_item.WorkStatus == contractor.InWork {
+		contractor_item.WorkStatus = contractor.Vacant
+		contractor_item.OrderId = sql.NullInt64{0, false}
+	} else {
+		return nil, errorx.NewCodeError(401, "Contractor is not in work.")
+	}
 
 	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {
