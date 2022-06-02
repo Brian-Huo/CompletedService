@@ -9,9 +9,13 @@ const Deposite_rate float64 = 10.0
 // GST for cleaning services
 const GST float64 = 10.0
 
+// Inwork distance
+const Inwork_distance float64 = 1
+
 // role = {0: "company", 1: "contractor", 2: "customer"}
 const (
 	Company int = iota
 	Contractor
 	Customer
+	Admin
 )

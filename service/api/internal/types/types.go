@@ -259,30 +259,6 @@ type ListContractorResponse struct {
 	Items []DetailContractorResponse `json:"items"`
 }
 
-type CreateContractorServiceRequest struct {
-	Contractor_id int64 `json:"contractor_id,optional"`
-	Service_id    int64 `json:"service_id"`
-}
-
-type CreateContractorServiceResponse struct {
-}
-
-type RemoveContractorServiceRequest struct {
-	Contractor_id int64 `json:"contractor_id,optional"`
-	Service_id    int64 `json:"service_id"`
-}
-
-type RemoveContractorServiceResponse struct {
-}
-
-type ListContractorServiceRequest struct {
-	Contractor_id int64 `json:"contractor_id"`
-}
-
-type ListContractorServiceResponse struct {
-	Items []DetailServiceResponse `json:"items"`
-}
-
 type CreateOrderRequest struct {
 	Customer_info     CreateCustomerRequest  `json:"customer_info"`
 	Address_info      CreateAddressRequest   `json:"address_info"`
@@ -313,6 +289,15 @@ type CancelOrderRequest struct {
 }
 
 type CancelOrderResponse struct {
+}
+
+type StartOrderRequest struct {
+	Order_id int64   `json:"order_id"`
+	Lat      float64 `json:"lat"`
+	Lng      float64 `json:"lng"`
+}
+
+type StartOrderResponse struct {
 }
 
 type FinishOrderRequest struct {
@@ -555,9 +540,10 @@ type DetailCategoryRequest struct {
 }
 
 type DetailCategoryResponse struct {
-	Category_id          int64  `json:"category_id"`
-	Category_name        string `json:"category_name"`
-	Category_description string `json:"category_description"`
+	Category_id          int64   `json:"category_id"`
+	Category_name        string  `json:"category_name"`
+	Category_description string  `json:"category_description"`
+	Serve_range          float64 `json:"serve_range"`
 }
 
 type ListCategoryRequest struct {

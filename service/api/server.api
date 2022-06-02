@@ -79,6 +79,8 @@ type (
 		Formatted  string  `json:"formatted"`
 	}
 	UpdateAddressResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Remove Address
@@ -86,6 +88,8 @@ type (
 		Address_id int64 `json:"address_id"`
 	}
 	RemoveAddressResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Detail Address
@@ -133,6 +137,8 @@ type (
 		Contact_details string `json:"contact_details"`
 	}
 	UpdateCompanyResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Remove Company
@@ -140,6 +146,8 @@ type (
 		Company_id int64 `json:"company_id"`
 	}
 	RemoveCompanyResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Detail Company
@@ -182,6 +190,8 @@ type (
 		Contact_details string `json:"contact_details"`
 	}
 	UpdateCustomerResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Remove Customer
@@ -189,6 +199,8 @@ type (
 		Customer_id int64 `json:"customer_id"`
 	}
 	RemoveCustomerResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Detail Customer
@@ -225,6 +237,8 @@ type (
 		Work_status      int                  `json:"work_status"`
 	}
 	UpdateContractorResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Remove Contractor
@@ -232,6 +246,8 @@ type (
 		Contractor_id int64 `json:"contractor_id,optional"`
 	}
 	RemoveContractorResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Detail Contractor
@@ -283,6 +299,8 @@ type (
 		Reserve_date      string                `json:"reserve_date"`
 	}
 	UpdateOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Cancel Order
@@ -290,15 +308,19 @@ type (
 		Order_id int64 `json:"order_id"`
 	}
 	CancelOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Start Order
 	StartOrderRequest {
-		Order_id int64 `json:"order_id"`
-		Lat    float64 `json:"lat"`
-		Lng    float64 `json:"lng"`
+		Order_id int64   `json:"order_id"`
+		Lat      float64 `json:"lat"`
+		Lng      float64 `json:"lng"`
 	}
 	StartOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Finish Order
@@ -306,6 +328,8 @@ type (
 		Order_id int64 `json:"order_id"`
 	}
 	FinishOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Pay Order
@@ -314,6 +338,8 @@ type (
 		Final_info CreatePaymentRequest `json:"final_info"`
 	}
 	PayOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Remove Order
@@ -321,6 +347,8 @@ type (
 		Order_id int64 `json:"order_id"`
 	}
 	RemoveOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Detail Order
@@ -404,6 +432,8 @@ type (
 		Service_quantity int   `json:"service_quantity"`
 	}
 	SelectServiceResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Detail Service
@@ -448,6 +478,8 @@ type (
 		Security_code string `json:"security_code"`
 	}
 	UpdatePaymentResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Remove Payment
@@ -455,6 +487,8 @@ type (
 		Payment_id int64 `json:"payment_id"`
 	}
 	RemovePaymentResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 	}
 
 	// Detail Payment
@@ -710,7 +744,7 @@ service Server {
 	// order apis
 	@handler StartOrder
 	post /api/order/start(StartOrderRequest) returns (StartOrderResponse)
-
+	
 	@handler FinishOrder
 	post /api/order/finish(FinishOrderRequest) returns (FinishOrderResponse)
 	
