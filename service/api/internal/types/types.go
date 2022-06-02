@@ -82,6 +82,8 @@ type UpdateAddressRequest struct {
 }
 
 type UpdateAddressResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type RemoveAddressRequest struct {
@@ -89,6 +91,8 @@ type RemoveAddressRequest struct {
 }
 
 type RemoveAddressResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type DetailAddressRequest struct {
@@ -135,6 +139,8 @@ type UpdateCompanyRequest struct {
 }
 
 type UpdateCompanyResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type RemoveCompanyRequest struct {
@@ -142,6 +148,8 @@ type RemoveCompanyRequest struct {
 }
 
 type RemoveCompanyResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type DetailCompanyRequest struct {
@@ -183,6 +191,8 @@ type UpdateCustomerRequest struct {
 }
 
 type UpdateCustomerResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type RemoveCustomerRequest struct {
@@ -190,6 +200,8 @@ type RemoveCustomerRequest struct {
 }
 
 type RemoveCustomerResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type DetailCustomerRequest struct {
@@ -225,6 +237,8 @@ type UpdateContractorRequest struct {
 }
 
 type UpdateContractorResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type RemoveContractorRequest struct {
@@ -232,6 +246,8 @@ type RemoveContractorRequest struct {
 }
 
 type RemoveContractorResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type DetailContractorRequest struct {
@@ -282,6 +298,8 @@ type UpdateOrderRequest struct {
 }
 
 type UpdateOrderResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type CancelOrderRequest struct {
@@ -289,6 +307,8 @@ type CancelOrderRequest struct {
 }
 
 type CancelOrderResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type StartOrderRequest struct {
@@ -298,6 +318,8 @@ type StartOrderRequest struct {
 }
 
 type StartOrderResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type FinishOrderRequest struct {
@@ -305,6 +327,8 @@ type FinishOrderRequest struct {
 }
 
 type FinishOrderResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type PayOrderRequest struct {
@@ -313,6 +337,8 @@ type PayOrderRequest struct {
 }
 
 type PayOrderResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type RemoveOrderRequest struct {
@@ -320,6 +346,8 @@ type RemoveOrderRequest struct {
 }
 
 type RemoveOrderResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type DetailOrderRequest struct {
@@ -401,6 +429,8 @@ type SelectServiceRequest struct {
 }
 
 type SelectServiceResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type DetailServiceRequest struct {
@@ -444,6 +474,8 @@ type UpdatePaymentRequest struct {
 }
 
 type UpdatePaymentResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type RemovePaymentRequest struct {
@@ -451,6 +483,8 @@ type RemovePaymentRequest struct {
 }
 
 type RemovePaymentResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 type DetailPaymentRequest struct {

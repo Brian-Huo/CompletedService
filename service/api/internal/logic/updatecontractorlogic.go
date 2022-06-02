@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"cleaningservice/common/cryptx"
+	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
@@ -13,7 +14,6 @@ import (
 	"cleaningservice/service/model/contractor"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/status"
 )
 
 type UpdateContractorLogic struct {
@@ -34,7 +34,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 	logx.Info("function entrance")
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
-		return nil, status.Error(500, "Invalid, JWT format error")
+		return nil, errorx.NewCodeError(500, "Invalid, JWT format error")
 	}
 
 	var contractorId int64
@@ -43,16 +43,16 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 	} else if role == variables.Company {
 		contractorId = req.Contractor_id
 	} else {
-		return nil, status.Error(401, "Not Company/Contractor.")
+		return nil, errorx.NewCodeError(401, "Not Company/Contractor.")
 	}
 
 	// Get contractor details
 	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, contractorId)
 	if err != nil {
 		if err == contractor.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Contractor not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Contractor not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Verify company and contractor
@@ -66,7 +66,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 		}
 	} else if role == variables.Company {
 		if contractor_item.FinanceId != uid {
-			return nil, status.Error(404, "Invalid, Contractor not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Contractor not found.")
 		}
 	}
 
@@ -88,12 +88,12 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 
 			res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
 			if err != nil {
-				return nil, status.Error(500, err.Error())
+				return nil, errorx.NewCodeError(500, err.Error())
 			}
 
 			newId, err := res.LastInsertId()
 			if err != nil {
-				return nil, status.Error(500, err.Error())
+				return nil, errorx.NewCodeError(500, err.Error())
 			}
 
 			contractor_item.AddressId = sql.NullInt64{newId, true}
@@ -114,7 +114,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 				})
 
 				if err != nil {
-					return nil, status.Error(500, err.Error())
+					return nil, errorx.NewCodeError(500, err.Error())
 				}
 			}
 		}
@@ -135,27 +135,11 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 		CategoryList:    contractor_item.CategoryList,
 	})
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	// // Add new contractor services
-	// for _, new_service := range req.New_services {
-	// 	_, err = l.svcCtx.RContractorServiceModel.Insert(l.ctx, &contractorservice.RContractorService{
-	// 		ContractorId: contractorId,
-	// 		ServiceId:    new_service,
-	// 	})
-	// 	if err != nil {
-	// 		return nil, status.Error(500, err.Error())
-	// 	}
-	// }
-
-	// // Remove old contractor services
-	// for _, old_service := range req.Remove_services {
-	// 	err = l.svcCtx.RContractorServiceModel.Delete(l.ctx, contractorId, old_service)
-	// 	if err != nil {
-	// 		return nil, status.Error(500, err.Error())
-	// 	}
-	// }
-
-	return &types.UpdateContractorResponse{}, nil
+	return &types.UpdateContractorResponse{
+		Code: 200,
+		Msg:  "Success",
+	}, nil
 }

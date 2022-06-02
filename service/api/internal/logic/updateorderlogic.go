@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
@@ -33,7 +34,7 @@ func NewUpdateOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Updat
 func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *types.UpdateOrderResponse, err error) {
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
-		return nil, status.Error(500, "Invalid, JWT format error")
+		return nil, errorx.NewCodeError(500, "Invalid, JWT format error")
 	} else if role == variables.Company || role == variables.Contractor {
 		return nil, status.Errorf(401, "Invalid, Not customer.")
 	}
@@ -42,21 +43,21 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 	order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, status.Error(404, "Order not found.")
+			return nil, errorx.NewCodeError(404, "Order not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	reserve_date, err := time.Parse("2006-01-02 15:04:05", req.Reserve_date)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// if modify reserve_date
 	if reserve_date != order_item.ReserveDate {
 		// if reserve_date is close to current time in 12 hours, return error
 		if time.Now().Add(time.Hour * 12).Before(reserve_date) {
-			return nil, status.Error(500, "Reserve date is futher less than 12 hours.")
+			return nil, errorx.NewCodeError(500, "Reserve date is futher less than 12 hours.")
 		}
 		order_item.ReserveDate = reserve_date
 	}
@@ -65,15 +66,15 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 	address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, req.Address_info.Address_id)
 	if err != nil {
 		if err == address.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Address not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Address not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	if req.Address_info.Street != address_item.Street {
 		// if address is close to current time in 12 hours, return error
 		if time.Now().Add(time.Hour * 12).Before(reserve_date) {
-			return nil, status.Error(500, "Address update is futher less than 12 hours.")
+			return nil, errorx.NewCodeError(500, "Address update is futher less than 12 hours.")
 		}
 
 		// Modify address details
@@ -89,7 +90,7 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 			Formatted: req.Address_info.Formatted,
 		})
 		if err != nil {
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
 	}
 	order_item.OrderDescription = sql.NullString{req.Order_description, req.Order_description != ""}
@@ -103,14 +104,18 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 	})
 	if err != nil {
 		if err == customer.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Customer not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Customer not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
+	// Update order
 	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
-	return &types.UpdateOrderResponse{}, nil
+	return &types.UpdateOrderResponse{
+		Code: 200,
+		Msg:  "Success",
+	}, nil
 }

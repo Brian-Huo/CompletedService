@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
@@ -11,7 +12,6 @@ import (
 	"cleaningservice/service/model/company"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/status"
 )
 
 type UpdateAddressLogic struct {
@@ -31,24 +31,24 @@ func NewUpdateAddressLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Upd
 func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (resp *types.UpdateAddressResponse, err error) {
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
-		return nil, status.Error(500, "Invalid, JWT format error")
+		return nil, errorx.NewCodeError(500, "Invalid, JWT format error")
 	}
 
 	// check address id vaild for company
 	if role != variables.Company {
-		return nil, status.Error(401, "Invalid, Not company.")
+		return nil, errorx.NewCodeError(401, "Invalid, Not company.")
 	}
 
 	address_item, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
 	if err != nil {
 		if err == company.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Company not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Company not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	if address_item.RegisteredAddress.Valid && address_item.RegisteredAddress.Int64 != req.Address_id {
-		return nil, status.Error(401, "Invalid company address id.")
+		return nil, errorx.NewCodeError(401, "Invalid company address id.")
 	}
 
 	err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
@@ -65,10 +65,13 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 	})
 	if err != nil {
 		if err == address.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Address not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Address not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	return &types.UpdateAddressResponse{}, nil
+	return &types.UpdateAddressResponse{
+		Code: 200,
+		Msg:  "Success",
+	}, nil
 }

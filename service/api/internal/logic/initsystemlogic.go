@@ -55,5 +55,8 @@ func (l *InitSystemLogic) InitSystem(req *types.InitSystemRequest) (resp *types.
 		}
 	}
 
-	return &types.InitSystemResponse{}, nil
+	return &types.InitSystemResponse{
+		Code: 200,
+		Msg:  "Success",
+	}, nil
 }

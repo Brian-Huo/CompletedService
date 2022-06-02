@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"time"
 
+	"cleaningservice/common/errorx"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/order"
 	"cleaningservice/service/model/payment"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/status"
 )
 
 type PayOrderLogic struct {
@@ -33,12 +33,12 @@ func (l *PayOrderLogic) PayOrder(req *types.PayOrderRequest) (resp *types.PayOrd
 	order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		if err == order.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Order not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Order not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 	if order_item.Status == order.Completed {
-		return nil, status.Error(401, "Invalid, Order has been paid.")
+		return nil, errorx.NewCodeError(401, "Invalid, Order has been paid.")
 	}
 
 	// Pay order here
@@ -48,7 +48,7 @@ func (l *PayOrderLogic) PayOrder(req *types.PayOrderRequest) (resp *types.PayOrd
 	// Create or find payment details
 	exp_time, err := time.Parse("2006-01-02 15:04:05", req.Final_info.Expiry_time)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	var paymentId int64
@@ -61,17 +61,17 @@ func (l *PayOrderLogic) PayOrder(req *types.PayOrderRequest) (resp *types.PayOrd
 			SecurityCode: req.Final_info.Security_code,
 		})
 		if err != nil {
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
 
 		paymentId, err = payment_item.LastInsertId()
 		if err != nil {
-			return nil, status.Error(500, err.Error())
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
 	} else if err == nil {
 		paymentId = res.PaymentId
 	} else {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Update order details
@@ -80,8 +80,11 @@ func (l *PayOrderLogic) PayOrder(req *types.PayOrderRequest) (resp *types.PayOrd
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	return &types.PayOrderResponse{}, nil
+	return &types.PayOrderResponse{
+		Code: 200,
+		Msg:  "Success",
+	}, nil
 }

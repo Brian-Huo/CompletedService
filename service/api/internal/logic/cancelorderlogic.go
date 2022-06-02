@@ -4,13 +4,13 @@ import (
 	"context"
 	"database/sql"
 
+	"cleaningservice/common/errorx"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/contractor"
 	"cleaningservice/service/model/order"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/status"
 )
 
 type CancelOrderLogic struct {
@@ -32,16 +32,16 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 	order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		if err == order.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Order not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Order not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	order_item.Status = order.Cancelled
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	l.removeBroadcast(order_item.CategoryId, order_item.OrderId)
@@ -50,9 +50,9 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, order_item.ContractorId.Int64)
 	if err != nil {
 		if err == contractor.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Contractor not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Contractor not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	contractor_item.WorkStatus = contractor.Vacant
@@ -60,10 +60,13 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 
 	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	return &types.CancelOrderResponse{}, nil
+	return &types.CancelOrderResponse{
+		Code: 200,
+		Msg:  "Success",
+	}, nil
 }
 
 func (l *CancelOrderLogic) removeBroadcast(groupId int64, orderId int64) {

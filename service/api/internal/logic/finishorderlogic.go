@@ -13,7 +13,6 @@ import (
 	"cleaningservice/service/model/order"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/status"
 )
 
 type FinishOrderLogic struct {
@@ -33,23 +32,23 @@ func NewFinishOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Finis
 func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *types.FinishOrderResponse, err error) {
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
-		return nil, status.Error(500, "Invalid, JWT format error")
+		return nil, errorx.NewCodeError(500, "Invalid, JWT format error")
 	} else if role != variables.Contractor {
-		return nil, status.Error(401, "Invalid, Not Contractor.")
+		return nil, errorx.NewCodeError(401, "Invalid, Not Contractor.")
 	}
 
 	// Get order details
 	order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
 	if err != nil {
 		if err == order.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Order not found.")
+			return nil, errorx.NewCodeError(404, "Invalid, Order not found.")
 		}
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Validate contractor
 	if uid != order_item.ContractorId.Int64 {
-		return nil, status.Error(404, "Invalid, Order not found.")
+		return nil, errorx.NewCodeError(404, "Invalid, Order not found.")
 	}
 
 	// Finish order
@@ -67,7 +66,7 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	// Get contractor status
 	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, order_item.ContractorId.Int64)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Validate contractor status
@@ -81,14 +80,17 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	// Update order details
 	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Update contractor details
 	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {
-		return nil, status.Error(500, err.Error())
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	return &types.FinishOrderResponse{}, nil
+	return &types.FinishOrderResponse{
+		Code: 200,
+		Msg:  "Success",
+	}, nil
 }
