@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"cleaningservice/common/errorx"
+	"cleaningservice/common/orderqueue"
 	"cleaningservice/service/api/internal/config"
 	"cleaningservice/service/api/internal/handler"
 	"cleaningservice/service/api/internal/svc"
@@ -44,6 +45,9 @@ func main() {
 			return http.StatusInternalServerError, nil
 		}
 	})
+
+	fmt.Printf("Order queue initialized.\n")
+	go orderqueue.OrderQueueStart()
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()

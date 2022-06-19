@@ -112,6 +112,7 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 			Contractor_name:  contractor_item.ContractorName,
 			Contractor_type:  contractorType,
 			Contact_details:  contractor_item.ContactDetails,
+			Category_list:    []int64{},
 		}
 
 		// Get Category Details

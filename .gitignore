@@ -16,3 +16,6 @@
 
 # Vscode
 .vscode/
+
+# Ignore images
+# service/api/static/images/
