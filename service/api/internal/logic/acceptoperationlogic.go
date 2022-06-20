@@ -7,6 +7,7 @@ import (
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
+	"cleaningservice/common/orderqueue"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -59,9 +60,9 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 
 	// Validate accept operation
 	if contractor_item.WorkStatus == contractor.Await {
-		return nil, errorx.NewCodeError(401, "Invalid, Contractor haven't registed.")
+		return nil, errorx.NewCodeError(401, "Invalid, Contractor haven't registered.")
 	}
-	if order_item.Status != order.Queuing {
+	if order_item.Status != order.Queuing && order_item.Status != order.Transfering {
 		return nil, errorx.NewCodeError(401, "Order is currently unavailable.")
 	}
 
@@ -97,4 +98,5 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 
 func (l *AcceptOperationLogic) removeBroadcast(groupId int64, orderId int64) {
 	go l.svcCtx.BBroadcastModel.Delete(groupId, orderId)
+	go orderqueue.Delete(orderId)
 }

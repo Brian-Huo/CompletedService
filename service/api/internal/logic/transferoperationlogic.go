@@ -7,6 +7,7 @@ import (
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
+	"cleaningservice/common/orderqueue"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -53,6 +54,12 @@ func (l *TransferOperationLogic) TransferOperation(req *types.TransferOperationR
 		return nil, status.Error(404, "Invalid, Order not found.")
 	}
 
+	// Get Customer details
+	customer_item, err := l.svcCtx.BCustomerModel.FindOne(l.ctx, order_item.CustomerId)
+	if err != nil {
+		return nil, status.Error(404, "Invalid, Customer not found.")
+	}
+
 	// Create operation record
 	operation_item := operation.BOperation{
 		ContractorId: uid,
@@ -77,6 +84,7 @@ func (l *TransferOperationLogic) TransferOperation(req *types.TransferOperationR
 	}
 
 	// TODO: Signal tranfer order
+	orderqueue.OrderTransferStart(order_item.OrderId, customer_item.ContactDetails)
 
 	return &types.TransferOperationResponse{
 		Code: 200,

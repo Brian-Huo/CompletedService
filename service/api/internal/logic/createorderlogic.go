@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"cleaningservice/common/errorx"
+	"cleaningservice/common/orderqueue"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
@@ -207,4 +208,6 @@ func (l *CreateOrderLogic) broadcastOrder(orderId int64, categoryId int64) {
 		GroupId: categoryId,
 		OrderId: orderId,
 	})
+
+	go orderqueue.Insert(orderId)
 }

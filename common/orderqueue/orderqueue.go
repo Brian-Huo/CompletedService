@@ -9,36 +9,51 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-var orderqueue map[int64]int
+var orderawaitqueue map[int64]int
+var ordertransferqueue map[int64]string
 
 func Init() {
-	orderqueue = make(map[int64]int)
+	orderawaitqueue = make(map[int64]int)
+	ordertransferqueue = make(map[int64]string)
 }
 
 func Insert(orderid int64) {
-	orderqueue[orderid] = 0
+	orderawaitqueue[orderid] = 0
 }
 
 func Delete(orderid int64) {
-	delete(orderqueue, orderid)
+	delete(orderawaitqueue, orderid)
+	delete(ordertransferqueue, orderid)
 }
 
-func GetQueue() map[int64]int {
-	return orderqueue
+func GetAwaitQueue() map[int64]int {
+	return orderawaitqueue
+}
+
+func GetTransferQueue() map[int64]string {
+	return ordertransferqueue
 }
 
 func CountOrder() {
-	for k := range orderqueue {
-		orderqueue[k]++
+	for k := range orderawaitqueue {
+		orderawaitqueue[k]++
 	}
 }
 
-func QueueToMsg() string {
+func AwaitQueueToMsg() string {
 	msg := ""
-	for k, v := range orderqueue {
+	for k, v := range orderawaitqueue {
 		msg += fmt.Sprintf("<b>order</b> %d is remaining in the system for %d days.</br>", k, v)
 	}
 	return msg + "</br> Please inform your manager and make sure the order(s) is fully reviewed.</br>Regards.</br>QME Technology Team."
+}
+
+func TransferQueueToMsg() string {
+	msg := ""
+	for k, v := range ordertransferqueue {
+		msg += fmt.Sprintf("<b>order</b> %d is requiring immediately transfer with contact details: %s.</br>", k, v)
+	}
+	return msg + "</br> Please inform your manager and negotiate with our customers ASAP.</br>Regards.</br>QME Technology Team."
 }
 
 func SendQueue(msg string) {
@@ -62,9 +77,17 @@ func OrderQueueStart() {
 	for {
 		time.Sleep(time.Second * time.Duration(variables.Check_time))
 		CountOrder()
-		msg := QueueToMsg()
-		if len(orderqueue) > 0 {
-			SendQueue(msg)
+		if len(orderawaitqueue) > 0 {
+			SendQueue(AwaitQueueToMsg())
+			logx.Info("Send order queue email to QME Reception.")
 		}
+	}
+}
+
+func OrderTransferStart(orderId int64, contact string) {
+	ordertransferqueue[orderId] = contact
+	if len(ordertransferqueue) > 0 {
+		SendQueue(TransferQueueToMsg())
+		logx.Info("Send order transfer email to QME Reception.")
 	}
 }

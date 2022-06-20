@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"cleaningservice/common/errorx"
+	"cleaningservice/common/orderqueue"
 	"cleaningservice/service/api/internal/svc"
 	"cleaningservice/service/api/internal/types"
 	"cleaningservice/service/model/contractor"
@@ -71,4 +72,5 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 
 func (l *CancelOrderLogic) removeBroadcast(groupId int64, orderId int64) {
 	go l.svcCtx.BBroadcastModel.Delete(groupId, orderId)
+	go orderqueue.Delete(orderId)
 }
