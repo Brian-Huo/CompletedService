@@ -43,7 +43,7 @@ func CountOrder() {
 func AwaitQueueToMsg() string {
 	msg := ""
 	for k, v := range orderawaitqueue {
-		msg += fmt.Sprintf("<b>order</b> %d is remaining in the system for %d days.</br>", k, v)
+		msg += fmt.Sprintf("<b>order</b> %d is remaining in the system for %d days.<br>", k, v)
 	}
 	return msg + "</br> Please inform your manager and make sure the order(s) is fully reviewed.</br>Regards.</br>QME Technology Team."
 }
@@ -51,7 +51,7 @@ func AwaitQueueToMsg() string {
 func TransferQueueToMsg() string {
 	msg := ""
 	for k, v := range ordertransferqueue {
-		msg += fmt.Sprintf("<b>order</b> %d is requiring immediately transfer with contact details: %s.</br>", k, v)
+		msg += fmt.Sprintf("<b>order</b> %d is requiring immediately transfer with contact details: %s.<br>", k, v)
 	}
 	return msg + "</br> Please inform your manager and negotiate with our customers ASAP.</br>Regards.</br>QME Technology Team."
 }
@@ -81,13 +81,15 @@ func OrderQueueStart() {
 			SendQueue(AwaitQueueToMsg())
 			logx.Info("Send order queue email to QME Reception.")
 		}
+		if len(ordertransferqueue) > 0 {
+			SendQueue(TransferQueueToMsg())
+			logx.Info("Send order transfer email to QME Reception.")
+		}
 	}
 }
 
 func OrderTransferStart(orderId int64, contact string) {
 	ordertransferqueue[orderId] = contact
-	if len(ordertransferqueue) > 0 {
-		SendQueue(TransferQueueToMsg())
-		logx.Info("Send order transfer email to QME Reception.")
-	}
+	SendQueue(TransferQueueToMsg())
+	logx.Info("Order %d transfer email send to QME Reception.", orderId)
 }
