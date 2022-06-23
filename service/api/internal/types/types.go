@@ -52,6 +52,15 @@ type LoginCustomerResponse struct {
 	AccessToken string `json:"access_token,optional"`
 }
 
+type RefreshTokenRequest struct {
+}
+
+type RefreshTokenResponse struct {
+	Code        int    `json:"code"`
+	Msg         string `json:"msg"`
+	AccessToken string `json:"access_token"`
+}
+
 type CreateAddressRequest struct {
 	Street     string  `json:"street"`
 	Suburb     string  `json:"suburb"`

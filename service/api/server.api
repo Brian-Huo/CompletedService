@@ -48,6 +48,14 @@ type (
 		AccessToken string `json:"access_token,optional"`
 	}
 
+	RefreshTokenRequest {
+	}
+	RefreshTokenResponse {
+		Code        int    `json:"code"`
+		Msg         string `json:"msg"`
+		AccessToken string `json:"access_token"`
+	}
+
 	// -------------------- Address -------------------------
 	//  Create Address
 	CreateAddressRequest {
@@ -668,6 +676,10 @@ service Server {
 	jwt: Auth
 )
 service Server {
+	// refresh token apis
+	@handler RefreshToken
+	post /api/user/refresh_token(RefreshTokenRequest) returns (RefreshTokenResponse)
+	
 	// init system apis
 	@handler InitSystem
 	post /api/system/init(InitSystemRequest) returns (InitSystemResponse)

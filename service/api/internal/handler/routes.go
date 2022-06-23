@@ -86,6 +86,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
+				Path:    "/api/user/refresh_token",
+				Handler: RefreshTokenHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/api/system/init",
 				Handler: InitSystemHandler(serverCtx),
 			},

@@ -21,7 +21,7 @@ const (
 )
 
 // Checking Timer in
-const Check_time int64 = 86400 * 2
+const Check_time int64 = 86400
 
 // Reception Email
 const Reception_email string = "akknowall@gmail.com"

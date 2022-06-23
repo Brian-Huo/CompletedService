@@ -17,6 +17,6 @@ RedisConf:
 
 Auth:
   AccessSecret: uOvKLmVfztaXGpNYd4Z0I1SiT7MweJhl
-  AccessExpire: 2592000
+  AccessExpire: 86400
 
 Salt: 7qAAZfmgbMkqEsLxeKRvym6i28sc9UxF
