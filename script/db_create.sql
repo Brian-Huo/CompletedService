@@ -47,7 +47,8 @@ CREATE TABLE `b_customer` (
     customer_name varchar(50) NOT NULL,
     customer_type tinyint(3) NOT NULL,
     country_code char(2) NOT NULL,
-    contact_details varchar(15) NOT NULL UNIQUE,
+    customer_phone varchar(15) NOT NULL UNIQUE,
+    customer_email varchar(50) NOT NULL UNIQUE,
     PRIMARY KEY(customer_id)
 );
 
@@ -69,6 +70,7 @@ ALTER TABLE `b_company` ADD FOREIGN KEY (registered_address) REFERENCES b_addres
 -- Base data table: category (service type) --
 CREATE TABLE `b_category` (
     category_id int unsigned NOT NULL AUTO_INCREMENT,
+    category_addr varchar(10) NOT NULL,
     category_name varchar(100) NOT NULL UNIQUE,
     category_description mediumtext NOT NULL,
     serve_range float unsigned NOT NULL DEFAULT 50.0,
@@ -124,15 +126,16 @@ CREATE TABLE `b_order` (
     finance_id int unsigned,
     category_id int unsigned NOT NULL,
     service_list mediumtext NOT NULL,
-    deposite_payment int unsigned NOT NULL,
+    deposite_payment int unsigned,
     deposite_amount float unsigned NOT NULL,
-    deposite_date datetime NOT NULL,
+    deposite_date datetime,
     final_payment int unsigned,
     final_amount float unsigned NOT NULL,
     final_payment_date datetime,
     current_deposite_rate int(2) unsigned NOT NULL,
+    item_amount float unsigned NOT NULL,
     gst_amount float unsigned NOT NULL,
-    total_fee float unsigned NOT NULL,
+    total_amount float unsigned NOT NULL,
     order_description longtext,
     post_date datetime NOT NULL,
     reserve_date datetime NOT NULL,

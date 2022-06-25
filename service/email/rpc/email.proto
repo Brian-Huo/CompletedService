@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package email;
+
+option go_package = "./email";
+
+// Base message
+message AddressMsg {
+    int64   AddressId = 1;
+    string  Street = 2;
+    string  Suburb = 3;
+    string  Postcode = 4;
+    string  City = 5;
+    string  StateCode = 6;
+    string  Country = 7;
+    string  Formatted = 8;
+}
+
+message CategoryMsg {
+    int64   CategoryId = 1;
+    string  CategoryAbbr = 2;
+    string  CategoryName = 3;
+    string  CategoryDescription = 4;
+}
+
+message CustomerMsg {
+    int64  CustomerId = 1;
+    string CustomerName = 2;
+    int64  CustomerType = 3;
+    string CountryCode = 4;
+    string CustomerPhone = 5;
+    string CustomerEmail = 6;
+}
+
+message OrderMsg {
+    int64    OrderId = 1;
+    float64  DepositeAmount = 2;
+    float64  FinalAmount = 3;
+    int      DepositeRate = 4;
+    float64  GstAmount = 5;
+    float64  TotalAmount = 6;
+    string   ReserveDate = 7;
+}
+
+message ServiceMsg {
+    int64   ServiceId = 1;
+    string  ServiceScope = 2;
+    string  ServiceName = 3;
+    string  ServiceDescription = 4;
+    int     ServiceQuantity = 5;
+    float64 ServicePrice = 6;
+}
+
+// Announcement email
+message AnnouncementRequest {
+
+}
+message AnnouncementResponse {
+    int Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
+// Send invoice email
+message InvoiceEmailRequest {
+    required AddressMsg  AddressInfo = 1;
+    required CategoryMsg CategoryInfo = 2;
+    required CustomerMsg CustomerInfo = 3;
+    required OrderMsg    OrderInfo = 4;
+    repeated ServiceMsg ServiceInfo = 5;
+}
+message InvoiceEmailResponse {
+    int Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
+service Email {
+    rpc Announcement(AnnouncementRequest) returns(AnnouncementResponse);
+    rpc InvoiceEmail(InvoiceEmailRequest) returns(InvoiceEmailResponse);
+}

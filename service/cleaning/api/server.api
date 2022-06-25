@@ -1,0 +1,826 @@
+type (
+	// -------------------- System -------------------------
+	// Initialize system
+	InitSystemRequest {
+	}
+	InitSystemResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// -------------------- Login -------------------------
+	VerifyCodeRequest {
+		Contact_details string `json:"contact_details"`
+	}
+	VerifyCodeResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	LoginContractorRequest {
+		Contact_details string `json:"contact_details"`
+		VerifyCode      string `json:"verify_code,optional"`
+		LinkCode        string `json:"link_code"`
+	}
+	LoginContractorResponse {
+		Code        int    `json:"code"`
+		Msg         string `json:"msg"`
+		AccessToken string `json:"access_token,optional"`
+	}
+
+	LoginCompanyRequest {
+		Contact_details string `json:"contact_details"`
+		VerifyCode      string `json:"verify_code"`
+	}
+	LoginCompanyResponse {
+		Code        int    `json:"code"`
+		Msg         string `json:"msg"`
+		AccessToken string `json:"access_token,optional"`
+	}
+
+	LoginCustomerRequest {
+		Contact_details string `json:"contact_details"`
+		VerifyCode      string `json:"verify_code"`
+	}
+	LoginCustomerResponse {
+		Code        int    `json:"code"`
+		Msg         string `json:"msg"`
+		AccessToken string `json:"access_token,optional"`
+	}
+
+	RefreshTokenRequest {
+	}
+	RefreshTokenResponse {
+		Code        int    `json:"code"`
+		Msg         string `json:"msg"`
+		AccessToken string `json:"access_token"`
+	}
+
+	// -------------------- Address -------------------------
+	//  Create Address
+	CreateAddressRequest {
+		Street     string  `json:"street"`
+		Suburb     string  `json:"suburb"`
+		Postcode   string  `json:"postcode"`
+		City       string  `json:"city"`
+		State_code string  `json:"state_code"`
+		Country    string  `json:"country"`
+		Lat        float64 `json:"lat"`
+		Lng        float64 `json:"lng"`
+		Formatted  string  `json:"formatted"`
+	}
+	CreateAddressResponse {
+		Address_id int64 `json:"address_id"`
+	}
+
+	// Update Address
+	UpdateAddressRequest {
+		Address_id int64   `json:"address_id"`
+		Street     string  `json:"street"`
+		Suburb     string  `json:"suburb"`
+		Postcode   string  `json:"postcode"`
+		City       string  `json:"city"`
+		State_code string  `json:"state_code"`
+		Country    string  `json:"country"`
+		Lat        float64 `json:"lat"`
+		Lng        float64 `json:"lng"`
+		Formatted  string  `json:"formatted"`
+	}
+	UpdateAddressResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Remove Address
+	RemoveAddressRequest {
+		Address_id int64 `json:"address_id"`
+	}
+	RemoveAddressResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Detail Address
+	DetailAddressRequest {
+		Address_id int64 `json:"address_id"`
+	}
+	DetailAddressResponse {
+		Address_id int64   `json:"address_id"`
+		Street     string  `json:"street"`
+		Suburb     string  `json:"suburb"`
+		Postcode   string  `json:"postcode"`
+		City       string  `json:"city"`
+		State_code string  `json:"state_code"`
+		Country    string  `json:"country"`
+		Lat        float64 `json:"lat"`
+		Lng        float64 `json:"lng"`
+		Formatted  string  `json:"formatted"`
+	}
+
+	// List Address
+	ListAddressRequest {
+	}
+	ListAddressResponse {
+		Items []DetailAddressResponse `json:"items"`
+	}
+
+	// -------------------- Company -------------------------
+	//  Create Company
+	CreateCompanyRequest {
+		Company_name    string               `json:"company_name"`
+		Payment_info    CreatePaymentRequest `json:"payment_info"`
+		Director_name   string               `json:"director_name"`
+		Contact_details string               `json:"contact_details"`
+		Address_info    CreateAddressRequest `json:"address_info"`
+		Deposite_rate   int                  `json:"deposite_rate"`
+	}
+	CreateCompanyResponse {
+		Company_id int64 `json:"company_id"`
+	}
+
+	// Update Company
+	UpdateCompanyRequest {
+		Company_name    string `json:"company_name"`
+		Director_name   string `json:"director_name"`
+		Contact_details string `json:"contact_details"`
+	}
+	UpdateCompanyResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Remove Company
+	RemoveCompanyRequest {
+		Company_id int64 `json:"company_id"`
+	}
+	RemoveCompanyResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Detail Company
+	DetailCompanyRequest {
+		Company_id int64 `json:"company_id,optional"`
+	}
+	DetailCompanyResponse {
+		Company_id         int64  `json:"company_id"`
+		Company_name       string `json:"company_name"`
+		Payment_id         int64  `json:"payment_id"`
+		Director_name      string `json:"director_name"`
+		Contact_details    string `json:"contact_details"`
+		Registered_address int64  `json:"registered_address"`
+		Deposite_rate      int    `json:"deposite_rate"`
+	}
+
+	// List Company
+	ListCompanyRequest {
+	}
+	ListCompanyResponse {
+		Items []DetailCompanyResponse `json:"items"`
+	}
+
+	// -------------------- Customer -------------------------
+	//  Create Customer
+	CreateCustomerRequest {
+		Customer_name   string `json:"customer_name"`
+		Country_code    string `json:"country_code"`
+		Contact_details string `json:"contact_details"`
+	}
+	CreateCustomerResponse {
+		Customer_id int64 `json:"customer_id"`
+	}
+
+	// Update Customer
+	UpdateCustomerRequest {
+		Customer_id     int64  `json:"customer_id"`
+		Customer_name   string `json:"customer_name"`
+		Country_code    string `json:"country_code"`
+		Contact_details string `json:"contact_details"`
+	}
+	UpdateCustomerResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Remove Customer
+	RemoveCustomerRequest {
+		Customer_id int64 `json:"customer_id"`
+	}
+	RemoveCustomerResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Detail Customer
+	DetailCustomerRequest {
+		Customer_id int64 `json:"customer_id"`
+	}
+	DetailCustomerResponse {
+		Customer_id     int64  `json:"customer_id"`
+		Customer_name   string `json:"customer_name"`
+		Country_code    string `json:"country_code"`
+		Contact_details string `json:"contact_details"`
+	}
+
+	// -------------------- Contractor -------------------------
+	//  Create Constractor
+	CreateContractorRequest {
+		Contractor_photo string `json:"contractor_photo"`
+		Contractor_name  string `json:"contractor_name"`
+		Contact_details  string `json:"contact_details"`
+	}
+	CreateContractorResponse {
+		Contractor_id int64 `json:"contractor_id"`
+	}
+
+	// Update Contractor
+	UpdateContractorRequest {
+		Contractor_id    int64                `json:"contractor_id"`
+		Contractor_photo string               `json:"contractor_photo"`
+		Contractor_name  string               `json:"contractor_name"`
+		Contractor_type  string               `json:"contractor_type"`
+		Contact_details  string               `json:"contact_details"`
+		Address_info     UpdateAddressRequest `json:"address_info,optional"`
+		Link_code        string               `json:"link_code,optional"`
+		Work_status      int                  `json:"work_status"`
+	}
+	UpdateContractorResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Remove Contractor
+	RemoveContractorRequest {
+		Contractor_id int64 `json:"contractor_id,optional"`
+	}
+	RemoveContractorResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Detail Contractor
+	DetailContractorRequest {
+		Contractor_id int64 `json:"contractor_id,optional"`
+	}
+	DetailContractorResponse {
+		Contractor_id    int64                 `json:"contractor_id"`
+		Contractor_photo string                `json:"contractor_photo"`
+		Contractor_name  string                `json:"contractor_name"`
+		Contractor_type  string                `json:"contractor_type"`
+		Contact_details  string                `json:"contact_details"`
+		Address_info     DetailAddressResponse `json:"address_info"`
+		Finance_id       int64                 `json:"finance_id"`
+		Link_code        string                `json:"link_code"`
+		Work_status      int                   `json:"work_status"`
+		Order_id         int64                 `json:"order_id"`
+		Category_list    []int64               `json:"category_list"`
+	}
+
+	// List Contractor
+	ListContractorRequest {
+	}
+	ListContractorResponse {
+		Items []DetailContractorResponse `json:"items"`
+	}
+
+	// -------------------- Order -------------------------
+	//  Create Order
+	CreateOrderRequest {
+		Customer_info     CreateCustomerRequest  `json:"customer_info"`
+		Address_info      CreateAddressRequest   `json:"address_info"`
+		Category_id       int64                  `json:"category_id"`
+		Service_list      []SelectServiceRequest `json:"service_list"`
+		Deposite_info     CreatePaymentRequest   `json:"deposite_info"`
+		Order_description string                 `json:"order_description,optional"`
+		Reserve_date      string                 `json:"reserve_date"`
+	}
+	CreateOrderResponse {
+		Order_id int64 `json:"order_id"`
+	}
+
+	// Update Order
+	UpdateOrderRequest {
+		Order_id          int64                 `json:"order_id"`
+		Customer_info     UpdateCustomerRequest `json:"customer_info"`
+		Address_info      UpdateAddressRequest  `json:"address_info"`
+		Order_description string                `json:"order_description"`
+		Reserve_date      string                `json:"reserve_date"`
+	}
+	UpdateOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Cancel Order
+	CancelOrderRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	CancelOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Start Order
+	StartOrderRequest {
+		Order_id int64   `json:"order_id"`
+		Lat      float64 `json:"lat"`
+		Lng      float64 `json:"lng"`
+	}
+	StartOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Finish Order
+	FinishOrderRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	FinishOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Pay Order
+	PayOrderRequest {
+		Order_id   int64                `json:"order_id"`
+		Final_info CreatePaymentRequest `json:"final_info"`
+	}
+	PayOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Remove Order
+	RemoveOrderRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	RemoveOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Detail Order
+	DetailOrderRequest {
+		Order_id        int64  `json:"order_id"`
+		Contact_details string `json:"contact_details"`
+	}
+	DetailOrderResponse {
+		Order_id              int64                    `json:"order_id"`
+		Customer_info         DetailCustomerResponse   `json:"customer_info"`
+		Address_info          DetailAddressResponse    `json:"address_info"`
+		Contractor_info       DetailContractorResponse `json:"contractor_info"`
+		Finance_id            int64                    `json:"finance_id"`
+		Category              DetailCategoryResponse   `json:"category"`
+		Service_list          string                   `json:"service_list"`
+		Deposite_payment      int64                    `json:"deposite_payment"`
+		Deposite_amount       float64                  `json:"deposite_amount"`
+		Deposite_date         string                   `json:"deposite_date"`
+		Final_payment         int64                    `json:"final_payment"`
+		Final_amount          float64                  `json:"final_amount"`
+		Final_payment_date    string                   `json:"final_payment_date"`
+		Current_deposite_rate int                      `json:"current_deposite_rate"`
+		Gst_amount            float64                  `json:"gst_amount"`
+		Total_fee             float64                  `json:"total_fee"`
+		Order_description     string                   `json:"order_description"`
+		Post_date             string                   `json:"post_date"`
+		Reserve_date          string                   `json:"reserve_date"`
+		Finish_date           string                   `json:"finish_date"`
+		Status                int                      `json:"status"`
+		Urgent_flag           int                      `json:"urgent_flag"`
+	}
+
+	// Get Order details by contractor
+	GetOrderDetailsRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	GetOrderDetailsResponse {
+		Order_id              int64                    `json:"order_id"`
+		Customer_info         DetailCustomerResponse   `json:"customer_info"`
+		Address_info          DetailAddressResponse    `json:"address_info"`
+		Contractor_info       DetailContractorResponse `json:"contractor_info"`
+		Finance_id            int64                    `json:"finance_id"`
+		Category              DetailCategoryResponse   `json:"category"`
+		Service_list          string                   `json:"service_list"`
+		Deposite_payment      int64                    `json:"deposite_payment"`
+		Deposite_amount       float64                  `json:"deposite_amount"`
+		Deposite_date         string                   `json:"deposite_date"`
+		Final_payment         int64                    `json:"final_payment"`
+		Final_amount          float64                  `json:"final_amount"`
+		Final_payment_date    string                   `json:"final_payment_date"`
+		Current_deposite_rate int                      `json:"current_deposite_rate"`
+		Gst_amount            float64                  `json:"gst_amount"`
+		Total_fee             float64                  `json:"total_fee"`
+		Order_description     string                   `json:"order_description"`
+		Post_date             string                   `json:"post_date"`
+		Reserve_date          string                   `json:"reserve_date"`
+		Finish_date           string                   `json:"finish_date"`
+		Status                int                      `json:"status"`
+		Urgent_flag           int                      `json:"urgent_flag"`
+	}
+
+	// List Order
+	ListOrderRequest {
+	}
+	ListOrderResponse {
+		Items []DetailOrderResponse `json:"items"`
+	}
+
+	// Confirm Order
+	ConfirmOrderRequest {
+		Order_list []int64 `json:"order_list"`
+	}
+	ConfirmOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// -------------------- Get Contractor Order Recommend -------------------------
+	// Get Contractor Order Recommend
+	RecommendOrderRequest {
+	}
+	RecommendOrderResponse {
+		Items []DetailOrderResponse `json:"items"`
+	}
+
+	// -------------------- Service -------------------------
+	// Select Service
+	SelectServiceRequest {
+		Service_id       int64 `json:"service_id"`
+		Service_quantity int   `json:"service_quantity"`
+	}
+	SelectServiceResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Detail Service
+	DetailServiceRequest {
+		Service_id int64 `json:"service_id"`
+	}
+	DetailServiceResponse {
+		Service_id          int64                  `json:"service_id"`
+		Service_type        DetailCategoryResponse `json:"service_type"`
+		Service_scope       string                 `json:"service_scope"`
+		Service_name        string                 `json:"service_name"`
+		Service_photo       string                 `json:"service_photo"`
+		Service_description string                 `json:"service_description"`
+		Service_price       float64                `json:"service_price"`
+	}
+
+	// List Service
+	ListServiceRequest {
+	}
+	ListServiceResponse {
+		Items []DetailServiceResponse `json:"items"`
+	}
+
+	// -------------------- Payment -------------------------
+	//  Create Payment
+	CreatePaymentRequest {
+		Card_number   string `json:"card_number"`
+		Holder_name   string `json:"holder_name"`
+		Expiry_time   string `json:"expiry_time"`
+		Security_code string `json:"security_code"`
+	}
+	CreatePaymentResponse {
+		Payment_id int64 `json:"payment_id"`
+	}
+
+	// Update Payment
+	UpdatePaymentRequest {
+		Payment_id    int64  `json:"payment_id"`
+		Card_number   string `json:"card_number"`
+		Holder_name   string `json:"holder_name"`
+		Expiry_time   string `json:"expiry_time"`
+		Security_code string `json:"security_code"`
+	}
+	UpdatePaymentResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Remove Payment
+	RemovePaymentRequest {
+		Payment_id int64 `json:"payment_id"`
+	}
+	RemovePaymentResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Detail Payment
+	DetailPaymentRequest {
+		Payment_id int64 `json:"payment_id"`
+	}
+	DetailPaymentResponse {
+		Payment_id    int64  `json:"payment_id"`
+		Card_number   string `json:"card_number"`
+		Holder_name   string `json:"holder_name"`
+		Expiry_time   string `json:"expiry_time"`
+		Security_code string `json:"security_code"`
+	}
+
+	// List Payment
+	ListPaymentRequest {
+	}
+	ListPaymentResponse {
+		Items []DetailPaymentResponse `json:"items"`
+	}
+
+	// -------------------- Operation -------------------------
+	// Accept Order Operation
+	AcceptOperationRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	AcceptOperationResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Accept Order Operation
+	DeclineOperationRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	DeclineOperationResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Transfer Order Operation
+	TransferOperationRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	TransferOperationResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Detail Operation
+	DetailOperationRequest {
+		Operation_id int64 `json:"operation_id"`
+	}
+	DetailOperationResponse {
+		Operation_id  int64  `json:"operation_id"`
+		Contractor_id int64  `json:"contractor_id"`
+		Order_id      int64  `json:"order_id"`
+		Operation     int64  `json:"operation"`
+		Issue_date    string `json:"issue_date"`
+	}
+
+	// List Operation
+	ListOperationRequest {
+		Contractor_id int64 `json:"contractor_id"`
+	}
+	ListOperationResponse {
+		Items []DetailOperationResponse `json:"items"`
+	}
+
+	// -------------------- Contractor Photo -------------------------
+	// Upload Contractor Photo
+	UploadContractorPhotoRequest {
+		Contractor_id    int64  `json:"contractor_id,optional"`
+		Contractor_photo string `json:"contractor_photo"`
+	}
+	UploadContractorPhotoResponse {
+		Contractor_photo string `json:"contractor_photo"`
+	}
+
+	// -------------------- Get Contractor Schedule -------------------------
+	// Get Contractor Schedule
+	GetContractorScheduleRequest {
+	}
+	GetContractorScheduleResponse {
+		Items []DetailOrderResponse `json:"items"`
+	}
+
+	// -------------------- Category -------------------------
+	// Detail Category
+	DetailCategoryRequest {
+		Category_id int64 `json:"category_id"`
+	}
+	DetailCategoryResponse {
+		Category_id          int64   `json:"category_id"`
+		Category_addr        string  `json:"category_addr"`
+		Category_name        string  `json:"category_name"`
+		Category_description string  `json:"category_description"`
+	}
+
+	// List Category
+	ListCategoryRequest {
+	}
+	ListCategoryResponse {
+		Items []DetailCategoryResponse `json:"items"`
+	}
+
+	// -------------------- Subscription -------------------------
+	// Join Subscribe Group
+	JoinSubscribeGroupRequest {
+		Category_list []int64 `json:"category_list"`
+		Location      string  `json:"location,optional"`
+	}
+	JoinSubscribeGroupResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Leave Subscribe Group
+	LeaveSubscribeGroupRequest {
+		Category_list []int64 `json:"category_list"`
+		Location      string  `json:"location,optional"`
+	}
+	LeaveSubscribeGroupResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+)
+
+// no jwt validate apis
+service Server {
+	// -------------------- Login -------------------------
+	@handler VerifyCode
+	post /api/user/verify_code(VerifyCodeRequest) returns (VerifyCodeResponse)
+	
+	@handler LoginContractor
+	post /api/user/login_contractor(LoginContractorRequest) returns (LoginContractorResponse)
+	
+	@handler LoginCompany
+	post /api/user/login_company(LoginCompanyRequest) returns (LoginCompanyResponse)
+	
+	@handler LoginCustomer
+	post /api/user/login_customer(LoginCustomerRequest) returns (LoginCustomerResponse)
+	
+	// --------------------- Order -----------------------------
+	@handler CreateOrder
+	post /api/order/create(CreateOrderRequest) returns (CreateOrderResponse)
+	
+	@handler UpdateOrder
+	post /api/order/update(UpdateOrderRequest) returns (UpdateOrderResponse)
+	
+	@handler CancelOrder
+	post /api/order/cancel(CancelOrderRequest) returns (CancelOrderResponse)
+	
+	@handler PayOrder
+	post /api/order/pay(PayOrderRequest) returns (PayOrderResponse)
+	
+	@handler DetailOrder
+	post /api/order/detail(DetailOrderRequest) returns (DetailOrderResponse)
+	
+	// -------------------------- service ---------------------------
+	@handler DetailService
+	post /api/service/detail(DetailServiceRequest) returns (DetailServiceResponse)
+	
+	@handler ListService
+	post /api/service/list(ListServiceRequest) returns (ListServiceResponse)
+	
+	// -------------------------- category ---------------------------
+	@handler DetailCategory
+	post /api/category/detail(DetailCategoryRequest) returns (DetailCategoryResponse)
+	
+	@handler ListCategory
+	post /api/category/list(ListCategoryRequest) returns (ListCategoryResponse)
+}
+
+// jwt validate apis
+@server(
+	jwt: Auth
+)
+service Server {
+	// refresh token apis
+	@handler RefreshToken
+	post /api/user/refresh_token(RefreshTokenRequest) returns (RefreshTokenResponse)
+	
+	// init system apis
+	@handler InitSystem
+	post /api/system/init(InitSystemRequest) returns (InitSystemResponse)
+	
+	// address apis
+	@handler CreateAddress
+	post /api/address/create(CreateAddressRequest) returns (CreateAddressResponse)
+	
+	@handler UpdateAddress
+	post /api/address/update(UpdateAddressRequest) returns (UpdateAddressResponse)
+	
+	@handler RemoveAddress
+	post /api/address/remove(RemoveAddressRequest) returns (RemoveAddressResponse)
+	
+	@handler DetailAddress
+	post /api/address/detail(DetailAddressRequest) returns (DetailAddressResponse)
+	
+	@handler ListAddress
+	post /api/address/list(ListAddressRequest) returns (ListAddressResponse)
+	
+	// company apis
+	@handler CreateCompany
+	post /api/company/create(CreateCompanyRequest) returns (CreateCompanyResponse)
+	
+	@handler UpdateCompany
+	post /api/company/update(UpdateCompanyRequest) returns (UpdateCompanyResponse)
+	
+	@handler RemoveCompany
+	post /api/company/remove(RemoveCompanyRequest) returns (RemoveCompanyResponse)
+	
+	@handler DetailCompany
+	post /api/company/detail(DetailCompanyRequest) returns (DetailCompanyResponse)
+	
+	@handler ListCompany
+	post /api/company/list(ListCompanyRequest) returns (ListCompanyResponse)
+	
+	// customer apis
+	@handler CreateCustomer
+	post /api/customer/create(CreateCustomerRequest) returns (CreateCustomerResponse)
+	
+	@handler UpdateCustomer
+	post /api/customer/update(UpdateCustomerRequest) returns (UpdateCustomerResponse)
+	
+	@handler RemoveCustomer
+	post /api/customer/remove(RemoveCustomerRequest) returns (RemoveCustomerResponse)
+	
+	@handler DetailCustomer
+	post /api/customer/detail(DetailCustomerRequest) returns (DetailCustomerResponse)
+	
+	// contractor apis
+	@handler CreateContractor
+	post /api/contractor/create(CreateContractorRequest) returns (CreateContractorResponse)
+	
+	@handler UpdateContractor
+	post /api/contractor/update(UpdateContractorRequest) returns (UpdateContractorResponse)
+	
+	@handler RemoveContractor
+	post /api/contractor/remove(RemoveContractorRequest) returns (RemoveContractorResponse)
+	
+	@handler DetailContractor
+	post /api/contractor/detail(DetailContractorRequest) returns (DetailContractorResponse)
+	
+	@handler ListContractor
+	post /api/contractor/list(ListContractorRequest) returns (ListContractorResponse)
+	
+	// contractor photo apis
+	@handler UploadContractPhoto
+	post /api/contractor/photo(UploadContractorPhotoRequest) returns (UploadContractorPhotoResponse)
+	
+	// get contractor schedule apis
+	@handler GetContractorSchedule
+	post /api/contractor/schedule(GetContractorScheduleRequest) returns (GetContractorScheduleResponse)
+	
+	// order apis
+	@handler StartOrder
+	post /api/order/start(StartOrderRequest) returns (StartOrderResponse)
+	
+	@handler FinishOrder
+	post /api/order/finish(FinishOrderRequest) returns (FinishOrderResponse)
+	
+	@handler RemoveOrder
+	post /api/order/remove(RemoveOrderRequest) returns (RemoveOrderResponse)
+	
+	@handler GetOrderDetails
+	post /api/order/getDetails(GetOrderDetailsRequest) returns (GetOrderDetailsResponse)
+	
+	@handler ListOrder
+	post /api/order/list(ListOrderRequest) returns (ListOrderResponse)
+	
+	@handler ConfirmOrder
+	post /api/order/confirm(ConfirmOrderRequest) returns (ConfirmOrderResponse)
+	
+	// get recommend order apis
+	@handler RecommendOrder
+	post /api/order/recommend(RecommendOrderRequest) returns (RecommendOrderResponse)
+	
+	// payment apis
+	@handler CreatePayment
+	post /api/payment/create(CreatePaymentRequest) returns (CreatePaymentResponse)
+	
+	@handler UpdatePayment
+	post /api/payment/update(UpdatePaymentRequest) returns (UpdatePaymentResponse)
+	
+	@handler RemovePayment
+	post /api/payment/remove(RemovePaymentRequest) returns (RemovePaymentResponse)
+	
+	@handler DetailPayment
+	post /api/payment/detail(DetailPaymentRequest) returns (DetailPaymentResponse)
+	
+	@handler ListPayment
+	post /api/payment/list(ListPaymentRequest) returns (ListPaymentResponse)
+	
+	// operation apis
+	@handler AcceptOperation
+	post /api/operation/accept(AcceptOperationRequest) returns (AcceptOperationResponse)
+	
+	@handler DeclineOperation
+	post /api/operation/decline(DeclineOperationRequest) returns (DeclineOperationResponse)
+	
+	@handler TransferOperation
+	post /api/operation/transfer(TransferOperationRequest) returns (TransferOperationResponse)
+	
+	@handler DetailOperation
+	post /api/operation/detail(DetailOperationRequest) returns (DetailOperationResponse)
+	
+	@handler ListOperation
+	post /api/operation/list(ListOperationRequest) returns (ListOperationResponse)
+	
+	// subscription apis
+	@handler JoinSubscribeGroup
+	post /api/subscribegroup/join(JoinSubscribeGroupRequest) returns (JoinSubscribeGroupResponse)
+	
+	@handler LeaveSubscribeGroup
+	post /api/subscribegroup/leave(LeaveSubscribeGroupRequest) returns (LeaveSubscribeGroupResponse)
+}
