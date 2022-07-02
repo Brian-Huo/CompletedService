@@ -48,9 +48,10 @@ func (l *DetailCustomerLogic) DetailCustomer(req *types.DetailCustomerRequest) (
 	}
 
 	return &types.DetailCustomerResponse{
-		Customer_id:     res.CustomerId,
-		Customer_name:   res.CustomerName,
-		Country_code:    res.CountryCode,
-		Contact_details: res.ContactDetails,
+		Customer_id:    res.CustomerId,
+		Customer_name:  res.CustomerName,
+		Country_code:   res.CountryCode,
+		Customer_phone: res.CustomerPhone,
+		Customer_email: res.CustomerEmail,
 	}, nil
 }

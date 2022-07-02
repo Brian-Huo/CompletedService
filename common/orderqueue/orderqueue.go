@@ -88,8 +88,8 @@ func OrderQueueStart() {
 	}
 }
 
-func OrderTransferStart(orderId int64, contact string) {
-	ordertransferqueue[orderId] = contact
+func OrderTransferStart(orderId int64, phone string) {
+	ordertransferqueue[orderId] = phone
 	SendQueue(TransferQueueToMsg())
 	logx.Info("Order %d transfer email send to QME Reception.", orderId)
 }

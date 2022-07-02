@@ -63,10 +63,11 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			return nil, status.Error(500, err.Error())
 		}
 		customer_response := types.DetailCustomerResponse{
-			Customer_id:     customer_item.CustomerId,
-			Customer_name:   customer_item.CustomerName,
-			Contact_details: customer_item.ContactDetails,
-			Country_code:    customer_item.CountryCode,
+			Customer_id:    customer_item.CustomerId,
+			Customer_name:  customer_item.CustomerName,
+			Customer_phone: customer_item.CustomerPhone,
+			Customer_email: customer_item.CustomerEmail,
+			Country_code:   customer_item.CountryCode,
 		}
 
 		// Get address details
@@ -138,15 +139,15 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Finance_id:            item.FinanceId.Int64,
 			Category:              category_response,
 			Service_list:          item.ServiceList,
-			Deposite_payment:      item.DepositePayment,
+			Deposite_payment:      item.DepositePayment.Int64,
 			Deposite_amount:       item.DepositeAmount,
 			Current_deposite_rate: int(item.CurrentDepositeRate),
-			Deposite_date:         item.DepositeDate.Format("2006-01-02 15:04:05"),
+			Deposite_date:         item.DepositeDate.Time.Format("2006-01-02 15:04:05"),
 			Final_payment:         item.FinalPayment.Int64,
 			Final_amount:          item.FinalAmount,
 			Final_payment_date:    item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
 			Gst_amount:            item.GstAmount,
-			Total_fee:             item.TotalFee,
+			Total_fee:             item.TotalAmount,
 			Order_description:     item.OrderDescription.String,
 			Post_date:             item.PostDate.Format("2006-01-02 15:04:05"),
 			Reserve_date:          item.ReserveDate.Format("2006-01-02 15:04:05"),

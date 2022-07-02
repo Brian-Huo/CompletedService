@@ -30,13 +30,14 @@ func NewLoginCustomerLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Log
 
 func (l *LoginCustomerLogic) LoginCustomer(req *types.LoginCustomerRequest) (resp *types.LoginCustomerResponse, err error) {
 	// find customer by contact_details
-	res, err := l.svcCtx.BCustomerModel.FindOneByContactDetails(l.ctx, req.Contact_details)
+	res, err := l.svcCtx.BCustomerModel.FindOneByCustomerPhone(l.ctx, req.Contact_details)
 	if err == customer.ErrNotFound {
 		// if customer not found, insert customer
 		customer_item, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &customer.BCustomer{
-			CustomerName:   req.Contact_details,
-			CountryCode:    "Astralia",
-			ContactDetails: req.Contact_details,
+			CustomerName:  req.Contact_details,
+			CountryCode:   "61",
+			CustomerPhone: req.Contact_details,
+			CustomerEmail: "",
 		})
 		if err != nil {
 			return nil, status.Error(500, err.Error())

@@ -21,15 +21,17 @@ var (
 	bCustomerRowsExpectAutoSet   = strings.Join(stringx.Remove(bCustomerFieldNames, "`customer_id`", "`create_time`", "`update_time`"), ",")
 	bCustomerRowsWithPlaceHolder = strings.Join(stringx.Remove(bCustomerFieldNames, "`customer_id`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
-	cacheBCustomerCustomerIdPrefix     = "cache:bCustomer:customerId:"
-	cacheBCustomerContactDetailsPrefix = "cache:bCustomer:contactDetails:"
+	cacheBCustomerCustomerIdPrefix    = "cache:bCustomer:customerId:"
+	cacheBCustomerCustomerEmailPrefix = "cache:bCustomer:customerEmail:"
+	cacheBCustomerCustomerPhonePrefix = "cache:bCustomer:customerPhone:"
 )
 
 type (
 	bCustomerModel interface {
 		Insert(ctx context.Context, data *BCustomer) (sql.Result, error)
 		FindOne(ctx context.Context, customerId int64) (*BCustomer, error)
-		FindOneByContactDetails(ctx context.Context, contactDetails string) (*BCustomer, error)
+		FindOneByCustomerEmail(ctx context.Context, customerEmail string) (*BCustomer, error)
+		FindOneByCustomerPhone(ctx context.Context, customerPhone string) (*BCustomer, error)
 		Update(ctx context.Context, data *BCustomer) error
 		Delete(ctx context.Context, customerId int64) error
 	}
@@ -40,11 +42,12 @@ type (
 	}
 
 	BCustomer struct {
-		CustomerId     int64  `db:"customer_id"`
-		CustomerName   string `db:"customer_name"`
-		CustomerType   int64  `db:"customer_type"`
-		CountryCode    string `db:"country_code"`
-		ContactDetails string `db:"contact_details"`
+		CustomerId    int64  `db:"customer_id"`
+		CustomerName  string `db:"customer_name"`
+		CustomerType  int64  `db:"customer_type"`
+		CountryCode   string `db:"country_code"`
+		CustomerPhone string `db:"customer_phone"`
+		CustomerEmail string `db:"customer_email"`
 	}
 )
 
@@ -57,11 +60,12 @@ func newBCustomerModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBCustomerMo
 
 func (m *defaultBCustomerModel) Insert(ctx context.Context, data *BCustomer) (sql.Result, error) {
 	bCustomerCustomerIdKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerIdPrefix, data.CustomerId)
-	bCustomerContactDetailsKey := fmt.Sprintf("%s%v", cacheBCustomerContactDetailsPrefix, data.ContactDetails)
+	bCustomerCustomerEmailKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerEmailPrefix, data.CustomerEmail)
+	bCustomerCustomerPhoneKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerPhonePrefix, data.CustomerPhone)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, bCustomerRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.CustomerName, data.CustomerType, data.CountryCode, data.ContactDetails)
-	}, bCustomerContactDetailsKey, bCustomerCustomerIdKey)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, bCustomerRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.CustomerName, data.CustomerType, data.CountryCode, data.CustomerPhone, data.CustomerEmail)
+	}, bCustomerCustomerPhoneKey, bCustomerCustomerIdKey, bCustomerCustomerEmailKey)
 	return ret, err
 }
 
@@ -82,16 +86,30 @@ func (m *defaultBCustomerModel) FindOne(ctx context.Context, customerId int64) (
 	}
 }
 
-func (m *defaultBCustomerModel) FindOneByContactDetails(ctx context.Context, contactDetails string) (*BCustomer, error) {
-	bCustomerContactDetailsKey := fmt.Sprintf("%s%v", cacheBCustomerContactDetailsPrefix, contactDetails)
+func (m *defaultBCustomerModel) FindOneByCustomerEmail(ctx context.Context, customerEmail string) (*BCustomer, error) {
+	bCustomerCustomerEmailKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerEmailPrefix, customerEmail)
 	var resp BCustomer
-	err := m.QueryRowIndexCtx(ctx, &resp, bCustomerContactDetailsKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
-		query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bCustomerRows, m.table)
-		if err := conn.QueryRowCtx(ctx, &resp, query, contactDetails); err != nil {
-			return nil, err
-		}
-		return resp.CustomerId, nil
-	}, m.queryPrimary)
+	err := m.QueryRowCtx(ctx, &resp, bCustomerCustomerEmailKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
+		query := fmt.Sprintf("select %s from %s where `customer_email` = ? limit 1", bCustomerRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, customerEmail)
+	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultBCustomerModel) FindOneByCustomerPhone(ctx context.Context, customerPhone string) (*BCustomer, error) {
+	bCustomerCustomerPhoneKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerPhonePrefix, customerPhone)
+	var resp BCustomer
+	err := m.QueryRowCtx(ctx, &resp, bCustomerCustomerPhoneKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
+		query := fmt.Sprintf("select %s from %s where `customer_phone` = ? limit 1", bCustomerRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, customerPhone)
+	})
 	switch err {
 	case nil:
 		return &resp, nil
@@ -104,11 +122,12 @@ func (m *defaultBCustomerModel) FindOneByContactDetails(ctx context.Context, con
 
 func (m *defaultBCustomerModel) Update(ctx context.Context, data *BCustomer) error {
 	bCustomerCustomerIdKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerIdPrefix, data.CustomerId)
-	bCustomerContactDetailsKey := fmt.Sprintf("%s%v", cacheBCustomerContactDetailsPrefix, data.ContactDetails)
+	bCustomerCustomerEmailKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerEmailPrefix, data.CustomerEmail)
+	bCustomerCustomerPhoneKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerPhonePrefix, data.CustomerPhone)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `customer_id` = ?", m.table, bCustomerRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.CustomerName, data.CustomerType, data.CountryCode, data.ContactDetails, data.CustomerId)
-	}, bCustomerCustomerIdKey, bCustomerContactDetailsKey)
+		return conn.ExecCtx(ctx, query, data.CustomerName, data.CustomerType, data.CountryCode, data.CustomerPhone, data.CustomerEmail, data.CustomerId)
+	}, bCustomerCustomerIdKey, bCustomerCustomerEmailKey, bCustomerCustomerPhoneKey)
 	return err
 }
 
@@ -119,11 +138,12 @@ func (m *defaultBCustomerModel) Delete(ctx context.Context, customerId int64) er
 	}
 
 	bCustomerCustomerIdKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerIdPrefix, customerId)
-	bCustomerContactDetailsKey := fmt.Sprintf("%s%v", cacheBCustomerContactDetailsPrefix, data.ContactDetails)
+	bCustomerCustomerEmailKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerEmailPrefix, data.CustomerEmail)
+	bCustomerCustomerPhoneKey := fmt.Sprintf("%s%v", cacheBCustomerCustomerPhonePrefix, data.CustomerPhone)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("delete from %s where `customer_id` = ?", m.table)
 		return conn.ExecCtx(ctx, query, customerId)
-	}, bCustomerCustomerIdKey, bCustomerContactDetailsKey)
+	}, bCustomerCustomerIdKey, bCustomerCustomerEmailKey, bCustomerCustomerPhoneKey)
 	return err
 }
 

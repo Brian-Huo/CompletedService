@@ -36,10 +36,11 @@ func (l *UpdateCustomerLogic) UpdateCustomer(req *types.UpdateCustomerRequest) (
 	}
 
 	err = l.svcCtx.BCustomerModel.Update(l.ctx, &customer.BCustomer{
-		CustomerId:     uid,
-		CustomerName:   req.Customer_name,
-		CountryCode:    req.Country_code,
-		ContactDetails: req.Contact_details,
+		CustomerId:    uid,
+		CustomerName:  req.Customer_name,
+		CountryCode:   req.Country_code,
+		CustomerPhone: req.Customer_phone,
+		CustomerEmail: req.Customer_email,
 	})
 
 	if err != nil {

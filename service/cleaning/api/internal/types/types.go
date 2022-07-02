@@ -183,9 +183,10 @@ type ListCompanyResponse struct {
 }
 
 type CreateCustomerRequest struct {
-	Customer_name   string `json:"customer_name"`
-	Country_code    string `json:"country_code"`
-	Contact_details string `json:"contact_details"`
+	Customer_name  string `json:"customer_name"`
+	Country_code   string `json:"country_code"`
+	Customer_phone string `json:"customer_phone"`
+	Customer_email string `json:"customer_email"`
 }
 
 type CreateCustomerResponse struct {
@@ -193,10 +194,11 @@ type CreateCustomerResponse struct {
 }
 
 type UpdateCustomerRequest struct {
-	Customer_id     int64  `json:"customer_id"`
-	Customer_name   string `json:"customer_name"`
-	Country_code    string `json:"country_code"`
-	Contact_details string `json:"contact_details"`
+	Customer_id    int64  `json:"customer_id"`
+	Customer_name  string `json:"customer_name"`
+	Country_code   string `json:"country_code"`
+	Customer_phone string `json:"customer_phone"`
+	Customer_email string `json:"customer_email"`
 }
 
 type UpdateCustomerResponse struct {
@@ -218,10 +220,11 @@ type DetailCustomerRequest struct {
 }
 
 type DetailCustomerResponse struct {
-	Customer_id     int64  `json:"customer_id"`
-	Customer_name   string `json:"customer_name"`
-	Country_code    string `json:"country_code"`
-	Contact_details string `json:"contact_details"`
+	Customer_id    int64  `json:"customer_id"`
+	Customer_name  string `json:"customer_name"`
+	Country_code   string `json:"country_code"`
+	Customer_phone string `json:"customer_phone"`
+	Customer_email string `json:"customer_email"`
 }
 
 type CreateContractorRequest struct {
@@ -379,6 +382,7 @@ type DetailOrderResponse struct {
 	Final_amount          float64                  `json:"final_amount"`
 	Final_payment_date    string                   `json:"final_payment_date"`
 	Current_deposite_rate int                      `json:"current_deposite_rate"`
+	Item_amount           float64                  `json:"item_amount"`
 	Gst_amount            float64                  `json:"gst_amount"`
 	Total_fee             float64                  `json:"total_fee"`
 	Order_description     string                   `json:"order_description"`
@@ -592,10 +596,10 @@ type DetailCategoryRequest struct {
 }
 
 type DetailCategoryResponse struct {
-	Category_id          int64   `json:"category_id"`
-	Category_addr        string  `json:"category_addr"`
-	Category_name        string  `json:"category_name"`
-	Category_description string  `json:"category_description"`
+	Category_id          int64  `json:"category_id"`
+	Category_addr        string `json:"category_addr"`
+	Category_name        string `json:"category_name"`
+	Category_description string `json:"category_description"`
 }
 
 type ListCategoryRequest struct {

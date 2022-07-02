@@ -97,10 +97,11 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 
 	// Modify customer details
 	err = l.svcCtx.BCustomerModel.Update(l.ctx, &customer.BCustomer{
-		CustomerId:     uid,
-		CustomerName:   req.Customer_info.Customer_name,
-		CountryCode:    req.Customer_info.Country_code,
-		ContactDetails: req.Customer_info.Contact_details,
+		CustomerId:    uid,
+		CustomerName:  req.Customer_info.Customer_name,
+		CountryCode:   req.Customer_info.Country_code,
+		CustomerPhone: req.Customer_info.Customer_phone,
+		CustomerEmail: req.Customer_info.Customer_email,
 	})
 	if err != nil {
 		if err == customer.ErrNotFound {

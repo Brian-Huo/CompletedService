@@ -56,10 +56,11 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 	}
 
 	customer_response := types.DetailCustomerResponse{
-		Customer_id:     customer_item.CustomerId,
-		Customer_name:   customer_item.CustomerName,
-		Contact_details: customer_item.ContactDetails,
-		Country_code:    customer_item.CountryCode,
+		Customer_id:    customer_item.CustomerId,
+		Customer_name:  customer_item.CustomerName,
+		Customer_phone: customer_item.CustomerPhone,
+		Customer_email: customer_item.CustomerEmail,
+		Country_code:   customer_item.CountryCode,
 	}
 
 	// Get address details
@@ -137,15 +138,15 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 		Finance_id:            order_item.FinanceId.Int64,
 		Category:              category_response,
 		Service_list:          order_item.ServiceList,
-		Deposite_payment:      order_item.DepositePayment,
+		Deposite_payment:      order_item.DepositePayment.Int64,
 		Deposite_amount:       order_item.DepositeAmount,
 		Current_deposite_rate: int(order_item.CurrentDepositeRate),
-		Deposite_date:         order_item.DepositeDate.Format("2006-01-02 15:04:05"),
+		Deposite_date:         order_item.DepositeDate.Time.Format("2006-01-02 15:04:05"),
 		Final_payment:         order_item.FinalPayment.Int64,
 		Final_amount:          order_item.FinalAmount,
 		Final_payment_date:    order_item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
 		Gst_amount:            order_item.GstAmount,
-		Total_fee:             order_item.TotalFee,
+		Total_fee:             order_item.TotalAmount,
 		Order_description:     order_item.OrderDescription.String,
 		Post_date:             order_item.PostDate.Format("2006-01-02 15:04:05"),
 		Reserve_date:          order_item.ReserveDate.Format("2006-01-02 15:04:05"),

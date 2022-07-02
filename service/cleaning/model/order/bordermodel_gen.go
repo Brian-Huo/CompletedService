@@ -29,14 +29,8 @@ type (
 	bOrderModel interface {
 		Insert(ctx context.Context, data *BOrder) (sql.Result, error)
 		FindOne(ctx context.Context, orderId int64) (*BOrder, error)
-		FindAllByAddress(ctx context.Context, addressId int64) ([]*BOrder, error)
-		FindAllByFinance(ctx context.Context, financeId int64) ([]*BOrder, error)
-		FindAllByCustomer(ctx context.Context, customerId int64) ([]*BOrder, error)
-		FindAllByContractor(ctx context.Context, contractorId int64) ([]*BOrder, error)
 		Update(ctx context.Context, data *BOrder) error
 		Delete(ctx context.Context, orderId int64) error
-		DeleteAllByCustomer(ctx context.Context, customerId int64) error
-		DeleteAllByContractor(ctx context.Context, contractorId int64) error
 	}
 
 	defaultBOrderModel struct {
@@ -52,15 +46,16 @@ type (
 		FinanceId           sql.NullInt64  `db:"finance_id"`
 		CategoryId          int64          `db:"category_id"`
 		ServiceList         string         `db:"service_list"`
-		DepositePayment     int64          `db:"deposite_payment"`
+		DepositePayment     sql.NullInt64  `db:"deposite_payment"`
 		DepositeAmount      float64        `db:"deposite_amount"`
-		DepositeDate        time.Time      `db:"deposite_date"`
+		DepositeDate        sql.NullTime   `db:"deposite_date"`
 		FinalPayment        sql.NullInt64  `db:"final_payment"`
 		FinalAmount         float64        `db:"final_amount"`
 		FinalPaymentDate    sql.NullTime   `db:"final_payment_date"`
 		CurrentDepositeRate int64          `db:"current_deposite_rate"`
+		ItemAmount          float64        `db:"item_amount"`
 		GstAmount           float64        `db:"gst_amount"`
-		TotalFee            float64        `db:"total_fee"`
+		TotalAmount         float64        `db:"total_amount"`
 		OrderDescription    sql.NullString `db:"order_description"`
 		PostDate            time.Time      `db:"post_date"`
 		ReserveDate         time.Time      `db:"reserve_date"`
@@ -80,8 +75,8 @@ func newBOrderModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBOrderModel {
 func (m *defaultBOrderModel) Insert(ctx context.Context, data *BOrder) (sql.Result, error) {
 	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, data.OrderId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bOrderRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.ServiceList, data.DepositePayment, data.DepositeAmount, data.DepositeDate, data.FinalPayment, data.FinalAmount, data.FinalPaymentDate, data.CurrentDepositeRate, data.GstAmount, data.TotalFee, data.OrderDescription, data.PostDate, data.ReserveDate, data.FinishDate, data.Status, data.UrgantFlag)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bOrderRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.ServiceList, data.DepositePayment, data.DepositeAmount, data.DepositeDate, data.FinalPayment, data.FinalAmount, data.FinalPaymentDate, data.CurrentDepositeRate, data.ItemAmount, data.GstAmount, data.TotalAmount, data.OrderDescription, data.PostDate, data.ReserveDate, data.FinishDate, data.Status, data.UrgantFlag)
 	}, bOrderOrderIdKey)
 	return ret, err
 }
@@ -103,67 +98,11 @@ func (m *defaultBOrderModel) FindOne(ctx context.Context, orderId int64) (*BOrde
 	}
 }
 
-func (m *defaultBOrderModel) FindAllByAddress(ctx context.Context, addressId int64) ([]*BOrder, error) {
-	var resp []*BOrder
-	query := fmt.Sprintf("select %s from %s where `address_id` = ?", bOrderRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, addressId)
-	switch err {
-	case nil:
-		return resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultBOrderModel) FindAllByFinance(ctx context.Context, financeId int64) ([]*BOrder, error) {
-	var resp []*BOrder
-	query := fmt.Sprintf("select %s from %s where `finance_id` = ?", bOrderRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, financeId)
-	switch err {
-	case nil:
-		return resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultBOrderModel) FindAllByCustomer(ctx context.Context, customerId int64) ([]*BOrder, error) {
-	var resp []*BOrder
-	query := fmt.Sprintf("select %s from %s where `customer_id` = ?", bOrderRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, customerId)
-	switch err {
-	case nil:
-		return resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultBOrderModel) FindAllByContractor(ctx context.Context, contractorId int64) ([]*BOrder, error) {
-	var resp []*BOrder
-	query := fmt.Sprintf("select %s from %s where `contractor_id` = ?", bOrderRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, contractorId)
-	switch err {
-	case nil:
-		return resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
 func (m *defaultBOrderModel) Update(ctx context.Context, data *BOrder) error {
 	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, data.OrderId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `order_id` = ?", m.table, bOrderRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.ServiceList, data.DepositePayment, data.DepositeAmount, data.DepositeDate, data.FinalPayment, data.FinalAmount, data.FinalPaymentDate, data.CurrentDepositeRate, data.GstAmount, data.TotalFee, data.OrderDescription, data.PostDate, data.ReserveDate, data.FinishDate, data.Status, data.UrgantFlag, data.OrderId)
+		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.ServiceList, data.DepositePayment, data.DepositeAmount, data.DepositeDate, data.FinalPayment, data.FinalAmount, data.FinalPaymentDate, data.CurrentDepositeRate, data.ItemAmount, data.GstAmount, data.TotalAmount, data.OrderDescription, data.PostDate, data.ReserveDate, data.FinishDate, data.Status, data.UrgantFlag, data.OrderId)
 	}, bOrderOrderIdKey)
 	return err
 }
@@ -174,24 +113,6 @@ func (m *defaultBOrderModel) Delete(ctx context.Context, orderId int64) error {
 		query := fmt.Sprintf("delete from %s where `order_id` = ?", m.table)
 		return conn.ExecCtx(ctx, query, orderId)
 	}, bOrderOrderIdKey)
-	return err
-}
-
-func (m *defaultBOrderModel) DeleteAllByAddress(ctx context.Context, addressId int64) error {
-	query := fmt.Sprintf("delete from %s where `address_id` = ?", m.table)
-	_,  err := m.ExecNoCacheCtx(ctx, query, addressId)
-	return err
-}
-
-func (m *defaultBOrderModel) DeleteAllByCustomer(ctx context.Context, customerId int64) error {
-	query := fmt.Sprintf("delete from %s where `customer_id` = ?", m.table)
-	_,  err := m.ExecNoCacheCtx(ctx, query, customerId)
-	return err
-}
-
-func (m *defaultBOrderModel) DeleteAllByContractor(ctx context.Context, contractorId int64) error {
-	query := fmt.Sprintf("delete from %s where `contractor_id` = ?", m.table)
-	_,  err := m.ExecNoCacheCtx(ctx, query, contractorId)
 	return err
 }
 

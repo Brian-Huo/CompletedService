@@ -77,21 +77,22 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 
 	// Customer
 	// Check if contact details valid
-	if !validation.CheckCustomerPhone(req.Customer_info.Contact_details) {
+	if !validation.CheckCustomerPhone(req.Customer_info.Customer_phone) {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
-	if !validation.CheckCustomerEmail(req.Customer_info.Contact_details) {
+	if !validation.CheckCustomerEmail(req.Customer_info.Customer_phone) {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	var customerId int64
-	customer_item, err := l.svcCtx.BCustomerModel.FindOneByContactDetails(l.ctx, req.Customer_info.Contact_details)
+	customer_item, err := l.svcCtx.BCustomerModel.FindOneByCustomerPhone(l.ctx, req.Customer_info.Customer_phone)
 	if err == customer.ErrNotFound {
 		customer_struct := customer.BCustomer{
-			CustomerName:   req.Customer_info.Customer_name,
-			CustomerType:   customer.Individual,
-			CountryCode:    req.Customer_info.Country_code,
-			ContactDetails: req.Customer_info.Contact_details,
+			CustomerName:  req.Customer_info.Customer_name,
+			CustomerType:  customer.Individual,
+			CountryCode:   req.Customer_info.Country_code,
+			CustomerPhone: req.Customer_info.Customer_phone,
+			CustomerEmail: req.Customer_info.Customer_email,
 		}
 
 		customer_item, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &customer_struct)
@@ -173,15 +174,15 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		FinanceId:           sql.NullInt64{0, false},
 		CategoryId:          req.Category_id,
 		ServiceList:         service_list,
-		DepositePayment:     paymentId,
+		DepositePayment:     sql.NullInt64{paymentId, paymentId != 0},
 		DepositeAmount:      deposite_amount,
 		CurrentDepositeRate: int64(variables.Deposite_rate),
-		DepositeDate:        time.Now(),
+		DepositeDate:        sql.NullTime{time.Now(), paymentId != 0},
 		FinalPayment:        sql.NullInt64{0, false},
 		FinalAmount:         final_amount,
 		FinalPaymentDate:    sql.NullTime{time.Now(), false},
 		GstAmount:           gst_amount,
-		TotalFee:            total_amount,
+		TotalAmount:         total_amount,
 		OrderDescription:    sql.NullString{req.Order_description, true},
 		PostDate:            time.Now(),
 		ReserveDate:         reserve_date,

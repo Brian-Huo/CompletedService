@@ -36,10 +36,11 @@ func (l *CreateCustomerLogic) CreateCustomer(req *types.CreateCustomerRequest) (
 	}
 
 	newItem := customer.BCustomer{
-		CustomerName:   req.Customer_name,
-		CustomerType:   customer.Individual,
-		CountryCode:    req.Country_code,
-		ContactDetails: req.Contact_details,
+		CustomerName:  req.Customer_name,
+		CustomerType:  customer.Individual,
+		CountryCode:   req.Country_code,
+		CustomerPhone: req.Customer_phone,
+		CustomerEmail: req.Customer_email,
 	}
 
 	res, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &newItem)

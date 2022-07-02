@@ -84,7 +84,7 @@ func (l *TransferOperationLogic) TransferOperation(req *types.TransferOperationR
 	}
 
 	// TODO: Signal tranfer order
-	orderqueue.OrderTransferStart(order_item.OrderId, customer_item.ContactDetails)
+	orderqueue.OrderTransferStart(order_item.OrderId, customer_item.CustomerPhone)
 
 	return &types.TransferOperationResponse{
 		Code: 200,
