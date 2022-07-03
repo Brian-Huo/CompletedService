@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -20,6 +21,7 @@ type (
 		FindAllByFinance(ctx context.Context, financeId int64) ([]*BOrder, error)
 		FindAllByCustomer(ctx context.Context, customerId int64) ([]*BOrder, error)
 		FindAllByContractor(ctx context.Context, contractorId int64) ([]*BOrder, error)
+		FinishStatus(ctx context.Context, orderId int64) error
 	}
 
 	customBOrderModel struct {
@@ -88,4 +90,13 @@ func (m *defaultBOrderModel) FindAllByContractor(ctx context.Context, contractor
 	default:
 		return nil, err
 	}
+}
+
+func (m *defaultBOrderModel) FinishStatus(ctx context.Context, orderId int64) error {
+	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, orderId)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set `status` = ? where `order_id` = ? limit 1", m.table)
+		return conn.ExecCtx(ctx, query, Completed, orderId)
+	}, bOrderOrderIdKey)
+	return err
 }
