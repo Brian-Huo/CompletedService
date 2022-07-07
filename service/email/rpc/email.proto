@@ -61,13 +61,24 @@ message AnnouncementResponse {
     string Data = 3;
 }
 
+// Order queue reminder email
+message OrderQueueEmailRequest {
+    optional string target = 1
+    required string content = 2
+}
+message OrderQueueEmailResponse {
+    int Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
 // Send invoice email
 message InvoiceEmailRequest {
     required AddressMsg  AddressInfo = 1;
     required CategoryMsg CategoryInfo = 2;
     required CustomerMsg CustomerInfo = 3;
-    required OrderMsg    OrderInfo = 4;
-    repeated ServiceMsg ServiceInfo = 5;
+    repeated ServiceMsg  ServiceInfo = 4;
+    required OrderMsg    OrderInfo = 5;
 }
 message InvoiceEmailResponse {
     int Code = 1;
