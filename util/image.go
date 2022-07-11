@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const imageFolder string = "./static/images/"
+const imageFolder string = "../../../static/images/"
 const imageURI string = "http://13.238.142.238:5099/images/"
 
 func SaveImage(photoBase64 string, table string, filename string) (string, error) {

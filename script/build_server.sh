@@ -5,6 +5,7 @@ cd ./service
 # excute goctl for api
 echo "excute api goctl ..."
 goctl api go -api ./api/*.api -dir ./api -style gozero
+goctl rpc protoc ./rpc/*.proto --go_out=./types --go-grpc_out=./types --zrpc_out=.
 
 # excute goctl for models
 # for model_dir in `ls ./model`

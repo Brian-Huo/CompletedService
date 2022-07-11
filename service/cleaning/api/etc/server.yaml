@@ -20,3 +20,9 @@ Auth:
   AccessExpire: 86400
 
 Salt: 7qAAZfmgbMkqEsLxeKRvym6i28sc9UxF
+
+EmailRpc:
+ Etcd:
+    Hosts:
+    - 127.0.0.1:2379
+    Key: email.rpc

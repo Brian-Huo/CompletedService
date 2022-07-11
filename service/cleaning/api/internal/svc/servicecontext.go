@@ -15,8 +15,10 @@ import (
 	"cleaningservice/service/cleaning/model/service"
 	"cleaningservice/service/cleaning/model/subscriberecord"
 	"cleaningservice/service/cleaning/model/subscription"
+	"cleaningservice/service/email/rpc/email"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
@@ -36,12 +38,17 @@ type ServiceContext struct {
 	BServiceModel         service.BServiceModel
 	RSubscribeRecordModel subscriberecord.RSubscribeRecordModel
 	BSubscriptionModel    subscription.BSubscriptionModel
+
+	// rpc api
+	EmailRpc email.Email
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.Mysql.DataSource)
 	return &ServiceContext{
-		Config:                c,
+		Config: c,
+
+		// models dao
 		BAddressModel:         address.NewBAddressModel(conn, c.CacheRedis),
 		BBroadcastModel:       broadcast.NewBBroadcastModel(c.RedisConf),
 		BCategoryModel:        category.NewBCategoryModel(conn, c.CacheRedis),
@@ -55,5 +62,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		BServiceModel:         service.NewBServiceModel(conn, c.CacheRedis),
 		RSubscribeRecordModel: subscriberecord.NewRSubscribeRecordModel(conn),
 		BSubscriptionModel:    subscription.NewBSubscriptionModel(c.RedisConf),
+
+		// rpc api
+		EmailRpc: email.NewEmail(zrpc.MustNewClient(c.EmailRpc)),
 	}
 }

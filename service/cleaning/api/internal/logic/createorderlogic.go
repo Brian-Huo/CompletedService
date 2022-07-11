@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -20,6 +19,7 @@ import (
 	"cleaningservice/service/cleaning/model/payment"
 	"cleaningservice/service/cleaning/model/service"
 	"cleaningservice/service/cleaning/validation"
+	"cleaningservice/service/email/rpc/types/email"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -109,6 +109,16 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
+	// Get customer info for emailing
+	customer_email := email.CustomerMsg{
+		CustomerId:    customer_item.CustomerId,
+		CustomerName:  customer_item.CustomerName,
+		CustomerType:  customer_item.CustomerType,
+		CountryCode:   customer_item.CountryCode,
+		CustomerPhone: customer_item.CustomerPhone,
+		CustomerEmail: customer_item.CustomerEmail,
+	}
+
 	// Address
 	address_struct := address.BAddress{
 		Street:    req.Address_info.Street,
@@ -135,11 +145,27 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
+	// Get address info for emailing
+	address_email := email.AddressMsg{
+		AddressId: address_struct.AddressId,
+		Street:    address_struct.Street,
+		Suburb:    address_struct.Suburb,
+		Postcode:  address_struct.Postcode,
+		City:      address_struct.City,
+		StateCode: address_struct.StateCode,
+		Country:   address_struct.Country,
+		Formatted: address_struct.Formatted,
+	}
+
 	// Get time variables
 	reserve_date, err := time.Parse("2006-01-02 15:04:05", req.Reserve_date)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
+
+	// Service
+	// Get services info for emailing
+	service_email := []*email.ServiceMsg{}
 
 	// Calculate fees and get full service strings
 	var service_fee float64 = 0
@@ -155,17 +181,27 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		}
 		service_fee += service_item.ServicePrice * float64(order_service.Service_quantity)
 		service_list += service_item.ServiceName + ":x" + strconv.Itoa(order_service.Service_quantity)
-	}
-	fmt.Println(service_list)
-	service_list = strings.Replace(service_list, variables.Separator, "", 1)
-	fmt.Println(service_list)
 
+		// Get service info for emailing
+		service_email = append(service_email, &email.ServiceMsg{
+			ServiceId:          service_item.ServiceId,
+			ServiceScope:       service_item.ServiceScope,
+			ServiceName:        service_item.ServiceName,
+			ServiceDescription: service_item.ServiceDescription,
+			ServiceQuantity:    int32(order_service.Service_quantity),
+			ServicePrice:       service_item.ServicePrice,
+		})
+	}
+	service_list = strings.Replace(service_list, variables.Separator, "", 1)
+
+	// Calculate fees
 	item_amount := service_fee
 	gst_amount := service_fee / variables.GST
 	total_amount := item_amount + gst_amount
 	deposite_amount := total_amount / variables.Deposite_rate
 	final_amount := total_amount - deposite_amount
 
+	// Order
 	// Create order
 	newItem := order.BOrder{
 		CustomerId:          customerId,
@@ -197,6 +233,45 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 	newId, err := order_res.LastInsertId()
 	if err != nil {
+		return nil, errorx.NewCodeError(500, err.Error())
+	}
+
+	// Get category info for emailing
+	category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, req.Category_id)
+	if err != nil {
+		if err == service.ErrNotFound {
+			return nil, errorx.NewCodeError(404, "Invalid, Category not found.")
+		}
+		return nil, errorx.NewCodeError(500, err.Error())
+	}
+
+	category_email := email.CategoryMsg{
+		CategoryId:          category_item.CategoryId,
+		CategoryAbbr:        category_item.CategoryAddr,
+		CategoryName:        category_item.CategoryName,
+		CategoryDescription: category_item.CategoryDescription,
+	}
+
+	// Get order info for emailing
+	order_email := email.OrderMsg{
+		OrderId:        newItem.OrderId,
+		DepositeAmount: newItem.DepositeAmount,
+		FinalAmount:    newItem.FinalAmount,
+		DepositeRate:   int32(newItem.CurrentDepositeRate),
+		GstAmount:      newItem.GstAmount,
+		TotalAmount:    newItem.TotalAmount,
+		ReserveDate:    newItem.ReserveDate.Format("02/01/2006 15:04:05"),
+	}
+
+	// Send order Invoice
+	rpc_res, err := l.svcCtx.EmailRpc.InvoiceEmail(l.ctx, &email.InvoiceEmailRequest{
+		AddressInfo:  &address_email,
+		CategoryInfo: &category_email,
+		CustomerInfo: &customer_email,
+		ServiceInfo:  service_email,
+		OrderInfo:    &order_email,
+	})
+	if err != nil && rpc_res.Code != 200 {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 

@@ -319,7 +319,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	
 	// Images files
 	patern = "/images/"
-	dirpath = "./static/images/"
+	dirpath = "../../../static/images/"
 	for i := 1; i < 3; i++ {
 		path := patern + strings.Join(dirlevel[:i], "/")
 		server.AddRoute(

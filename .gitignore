@@ -16,6 +16,10 @@
 
 # Vscode
 .vscode/
+# Default ETCD
+default.etcd/
 
 # Ignore images
 **/static/images/
+# Ignore invoice pdf
+**/static/invoices/

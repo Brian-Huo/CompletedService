@@ -33,13 +33,13 @@ message CustomerMsg {
 }
 
 message OrderMsg {
-    int64    OrderId = 1;
-    float64  DepositeAmount = 2;
-    float64  FinalAmount = 3;
-    int      DepositeRate = 4;
-    float64  GstAmount = 5;
-    float64  TotalAmount = 6;
-    string   ReserveDate = 7;
+    int64   OrderId = 1;
+    double  DepositeAmount = 2;
+    double  FinalAmount = 3;
+    int32   DepositeRate = 4;
+    double  GstAmount = 5;
+    double  TotalAmount = 6;
+    string  ReserveDate = 7;
 }
 
 message ServiceMsg {
@@ -47,8 +47,8 @@ message ServiceMsg {
     string  ServiceScope = 2;
     string  ServiceName = 3;
     string  ServiceDescription = 4;
-    int     ServiceQuantity = 5;
-    float64 ServicePrice = 6;
+    int32   ServiceQuantity = 5;
+    double  ServicePrice = 6;
 }
 
 // Announcement email
@@ -56,32 +56,33 @@ message AnnouncementRequest {
 
 }
 message AnnouncementResponse {
-    int Code = 1;
+    int32  Code = 1;
     string Msg = 2;
     string Data = 3;
 }
 
-// Order queue reminder email
-message OrderQueueEmailRequest {
-    optional string target = 1
-    required string content = 2
+// General reminder email
+message GeneralEmailRequest {
+    string target = 1;
+    string subject = 2;
+    string content = 3;
 }
-message OrderQueueEmailResponse {
-    int Code = 1;
+message GeneralEmailResponse {
+    int32 Code = 1;
     string Msg = 2;
     string Data = 3;
 }
 
 // Send invoice email
 message InvoiceEmailRequest {
-    required AddressMsg  AddressInfo = 1;
-    required CategoryMsg CategoryInfo = 2;
-    required CustomerMsg CustomerInfo = 3;
+    AddressMsg           AddressInfo = 1;
+    CategoryMsg          CategoryInfo = 2;
+    CustomerMsg          CustomerInfo = 3;
     repeated ServiceMsg  ServiceInfo = 4;
-    required OrderMsg    OrderInfo = 5;
+    OrderMsg             OrderInfo = 5;
 }
 message InvoiceEmailResponse {
-    int Code = 1;
+    int32 Code = 1;
     string Msg = 2;
     string Data = 3;
 }
@@ -89,4 +90,5 @@ message InvoiceEmailResponse {
 service Email {
     rpc Announcement(AnnouncementRequest) returns(AnnouncementResponse);
     rpc InvoiceEmail(InvoiceEmailRequest) returns(InvoiceEmailResponse);
+    rpc GeneralEmail(GeneralEmailRequest) returns(GeneralEmailResponse);
 }
