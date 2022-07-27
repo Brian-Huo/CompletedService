@@ -39,39 +39,25 @@ func NewCreateOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Creat
 }
 
 func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *types.CreateOrderResponse, err error) {
+	logx.Info("function entrance here\n")
 	// Exist detail check and create if new details
+
 	// Payment
-	var paymentId int64
-	payment_item, err := l.svcCtx.BPaymentModel.FindOneByCardNumber(l.ctx, req.Deposite_info.Card_number)
-	if err == payment.ErrNotFound {
-		// expiry time convert
-		exp_time, err := time.Parse("2006-01-02 15:04:05", req.Deposite_info.Expiry_time)
-		if err != nil {
-			return nil, errorx.NewCodeError(500, err.Error())
-		}
-		payment_struct := payment.BPayment{
-			CardNumber:   req.Deposite_info.Card_number,
-			HolderName:   req.Deposite_info.Holder_name,
-			ExpiryTime:   exp_time,
-			SecurityCode: req.Deposite_info.Security_code,
-		}
+	// expiry time convert
+	exp_time, err := time.Parse("2006-01-02 15:04:05", req.Deposite_info.Expiry_time)
+	if err != nil {
+		return nil, errorx.NewCodeError(500, err.Error())
+	}
+	// payment structure
+	payment_item := &payment.BPayment{
+		CardNumber:   req.Deposite_info.Card_number,
+		HolderName:   req.Deposite_info.Holder_name,
+		ExpiryTime:   exp_time,
+		SecurityCode: req.Deposite_info.Security_code,
+	}
 
-		// Check if payment detail valid
-		if !validation.CheckPaymentDetails(&payment_struct) {
-			return nil, errorx.NewCodeError(500, "Invalid payment details")
-		}
-
-		payment_res, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment_struct)
-		if err != nil {
-			return nil, errorx.NewCodeError(500, err.Error())
-		}
-		paymentId, err = payment_res.LastInsertId()
-		if err != nil {
-			return nil, errorx.NewCodeError(500, err.Error())
-		}
-	} else if err == nil {
-		paymentId = payment_item.PaymentId
-	} else {
+	payment_item, err = l.svcCtx.BPaymentModel.Enquire(l.ctx, payment_item)
+	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
@@ -80,32 +66,20 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	if !validation.CheckCustomerPhone(req.Customer_info.Customer_phone) {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
-	if !validation.CheckCustomerEmail(req.Customer_info.Customer_phone) {
+	if !validation.CheckCustomerEmail(req.Customer_info.Customer_email) {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	var customerId int64
-	customer_item, err := l.svcCtx.BCustomerModel.FindOneByCustomerPhone(l.ctx, req.Customer_info.Customer_phone)
-	if err == customer.ErrNotFound {
-		customer_struct := customer.BCustomer{
-			CustomerName:  req.Customer_info.Customer_name,
-			CustomerType:  customer.Individual,
-			CountryCode:   req.Customer_info.Country_code,
-			CustomerPhone: req.Customer_info.Customer_phone,
-			CustomerEmail: req.Customer_info.Customer_email,
-		}
+	// customer structure
+	customer_item := &customer.BCustomer{
+		CustomerName:  req.Customer_info.Customer_name,
+		CountryCode:   "61",
+		CustomerPhone: req.Customer_info.Customer_phone,
+		CustomerEmail: req.Customer_info.Customer_email,
+	}
 
-		customer_item, err := l.svcCtx.BCustomerModel.Insert(l.ctx, &customer_struct)
-		if err != nil {
-			return nil, errorx.NewCodeError(500, err.Error())
-		}
-		customerId, err = customer_item.LastInsertId()
-		if err != nil {
-			return nil, errorx.NewCodeError(500, err.Error())
-		}
-	} else if err == nil {
-		customerId = customer_item.CustomerId
-	} else {
+	customer_item, err = l.svcCtx.BCustomerModel.Enquire(l.ctx, customer_item)
+	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
@@ -120,7 +94,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Address
-	address_struct := address.BAddress{
+	address_item := address.BAddress{
 		Street:    req.Address_info.Street,
 		Suburb:    req.Address_info.Suburb,
 		Postcode:  req.Address_info.Postcode,
@@ -133,39 +107,50 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Check if data valid
-	if ret, err := validation.CheckAddressDetails(&address_struct); !ret {
+	if ret, err := validation.CheckAddressDetails(&address_item); !ret {
 		return nil, errorx.NewCodeError(500, "Invalid address details"+err.Error())
 	}
-	address_res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
+	address_res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_item)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
-	addressId, err := address_res.LastInsertId()
+	address_item.AddressId, err = address_res.LastInsertId()
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Get address info for emailing
 	address_email := email.AddressMsg{
-		AddressId: address_struct.AddressId,
-		Street:    address_struct.Street,
-		Suburb:    address_struct.Suburb,
-		Postcode:  address_struct.Postcode,
-		City:      address_struct.City,
-		StateCode: address_struct.StateCode,
-		Country:   address_struct.Country,
-		Formatted: address_struct.Formatted,
+		AddressId: address_item.AddressId,
+		Street:    address_item.Street,
+		Suburb:    address_item.Suburb,
+		Postcode:  address_item.Postcode,
+		City:      address_item.City,
+		StateCode: address_item.StateCode,
+		Country:   address_item.Country,
+		Formatted: address_item.Formatted,
 	}
 
-	// Get time variables
-	reserve_date, err := time.Parse("2006-01-02 15:04:05", req.Reserve_date)
+	// Get category info for emailing
+	category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, req.Category_id)
 	if err != nil {
+		if err == service.ErrNotFound {
+			return nil, errorx.NewCodeError(404, "Invalid, Category not found.")
+		}
 		return nil, errorx.NewCodeError(500, err.Error())
+	}
+
+	// Get category info for emailing
+	category_email := email.CategoryMsg{
+		CategoryId:          category_item.CategoryId,
+		CategoryAbbr:        category_item.CategoryAddr,
+		CategoryName:        category_item.CategoryName,
+		CategoryDescription: category_item.CategoryDescription,
 	}
 
 	// Service
 	// Get services info for emailing
-	service_email := []*email.ServiceMsg{}
+	var service_email []*email.ServiceMsg
 
 	// Calculate fees and get full service strings
 	var service_fee float64 = 0
@@ -202,21 +187,28 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	final_amount := total_amount - deposite_amount
 
 	// Order
+	// Convert reserve date time
+	reserve_date, err := time.Parse("2006-01-02 15:04:05", req.Reserve_date)
+	if err != nil {
+		return nil, errorx.NewCodeError(500, err.Error())
+	}
+
 	// Create order
-	newItem := order.BOrder{
-		CustomerId:          customerId,
-		AddressId:           addressId,
+	order_item := order.BOrder{
+		CustomerId:          customer_item.CustomerId,
+		AddressId:           address_item.AddressId,
 		ContractorId:        sql.NullInt64{0, false},
 		FinanceId:           sql.NullInt64{0, false},
 		CategoryId:          req.Category_id,
 		ServiceList:         service_list,
-		DepositePayment:     sql.NullInt64{paymentId, paymentId != 0},
+		DepositePayment:     sql.NullInt64{payment_item.PaymentId, payment_item.PaymentId != 0},
 		DepositeAmount:      deposite_amount,
-		CurrentDepositeRate: int64(variables.Deposite_rate),
-		DepositeDate:        sql.NullTime{time.Now(), paymentId != 0},
+		DepositeDate:        sql.NullTime{time.Now(), payment_item.PaymentId != 0},
 		FinalPayment:        sql.NullInt64{0, false},
 		FinalAmount:         final_amount,
-		FinalPaymentDate:    sql.NullTime{time.Now(), false},
+		FinalPaymentDate:    sql.NullTime{time.Now().Add(time.Hour * 168), false},
+		CurrentDepositeRate: int64(variables.Deposite_rate),
+		ItemAmount:          item_amount,
 		GstAmount:           gst_amount,
 		TotalAmount:         total_amount,
 		OrderDescription:    sql.NullString{req.Order_description, true},
@@ -227,7 +219,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		UrgantFlag:          0,
 	}
 
-	order_res, err := l.svcCtx.BOrderModel.Insert(l.ctx, &newItem)
+	order_res, err := l.svcCtx.BOrderModel.Insert(l.ctx, &order_item)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
@@ -236,31 +228,15 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	// Get category info for emailing
-	category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, req.Category_id)
-	if err != nil {
-		if err == service.ErrNotFound {
-			return nil, errorx.NewCodeError(404, "Invalid, Category not found.")
-		}
-		return nil, errorx.NewCodeError(500, err.Error())
-	}
-
-	category_email := email.CategoryMsg{
-		CategoryId:          category_item.CategoryId,
-		CategoryAbbr:        category_item.CategoryAddr,
-		CategoryName:        category_item.CategoryName,
-		CategoryDescription: category_item.CategoryDescription,
-	}
-
 	// Get order info for emailing
 	order_email := email.OrderMsg{
-		OrderId:        newItem.OrderId,
-		DepositeAmount: newItem.DepositeAmount,
-		FinalAmount:    newItem.FinalAmount,
-		DepositeRate:   int32(newItem.CurrentDepositeRate),
-		GstAmount:      newItem.GstAmount,
-		TotalAmount:    newItem.TotalAmount,
-		ReserveDate:    newItem.ReserveDate.Format("02/01/2006 15:04:05"),
+		OrderId:        order_item.OrderId,
+		DepositeAmount: order_item.DepositeAmount,
+		FinalAmount:    order_item.FinalAmount,
+		DepositeRate:   int32(order_item.CurrentDepositeRate),
+		GstAmount:      order_item.GstAmount,
+		TotalAmount:    order_item.TotalAmount,
+		ReserveDate:    order_item.ReserveDate.Format("02/01/2006 15:04:05"),
 	}
 
 	// Send order Invoice

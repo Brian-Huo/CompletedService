@@ -22,12 +22,3 @@ const (
 
 // Checking Timer in
 const Check_time int64 = 86400
-
-// Reception Email
-const Reception_email string = "akknowall@gmail.com"
-
-// QME Offical Email
-const QME_email string = "qmetechnology@gmail.com"
-
-// QME Offical Password
-const QME_password string = "kwguicxjpjrabrbo"

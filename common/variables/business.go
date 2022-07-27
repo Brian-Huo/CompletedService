@@ -12,3 +12,12 @@ const Street = "6 Dalgety Street"
 const PostalCode = "3166"
 const City = "Oakleigh VIC"
 const Country = "AU"
+
+// CleaningService Reception Email
+const Reception_email string = "akknowall@gmail.com"
+
+// QME Offical Email
+const QME_email string = "qmetechnology@gmail.com"
+
+// QME CleaningService Offical Password
+const QME_password string = "kwguicxjpjrabrbo"
