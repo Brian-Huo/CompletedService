@@ -45,7 +45,7 @@ func (l *LoginContractorLogic) LoginContractor(req *types.LoginContractorRequest
 	if res.WorkStatus == contractor.Await {
 		if req.VerifyCode == "" {
 			return nil, errorx.NewCodeError(1002, "Invalid, Verify code required.")
-		} else if false {
+		} else if req.VerifyCode == "556" {
 			return nil, errorx.NewCodeError(401, "Invalid, Verfiy code incorrect.")
 		}
 

@@ -53,21 +53,11 @@ message ServiceMsg {
 
 // Announcement email
 message AnnouncementRequest {
-
+    repeated Target = 1;
+    string Subject = 2;
+    string Content = 3;
 }
 message AnnouncementResponse {
-    int32  Code = 1;
-    string Msg = 2;
-    string Data = 3;
-}
-
-// General reminder email
-message GeneralEmailRequest {
-    string target = 1;
-    string subject = 2;
-    string content = 3;
-}
-message GeneralEmailResponse {
     int32 Code = 1;
     string Msg = 2;
     string Data = 3;
@@ -87,8 +77,44 @@ message InvoiceEmailResponse {
     string Data = 3;
 }
 
+// General reminder email
+message GeneralEmailRequest {
+    string Target = 1;
+    string Subject = 2;
+    string Content = 3;
+}
+message GeneralEmailResponse {
+    int32 Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
+// Awaiting Order Queue Daily Reminder email
+message OrderAwaitQueueEmailRequest {
+    repeated int64 OrderId = 1;
+    repeated int32 Vacancy = 2;
+}
+message OrderAwaitQueueEmailResponse {
+    int32 Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
+// Transfering Order Queue Urgent Reminder email
+message OrderTransferQueueEmailRequest {
+    repeated int64  OrderId = 1;
+    repeated string Contact = 2;
+}
+message OrderTransferQueueEmailResponse {
+    int32 Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
 service Email {
     rpc Announcement(AnnouncementRequest) returns(AnnouncementResponse);
-    rpc InvoiceEmail(InvoiceEmailRequest) returns(InvoiceEmailResponse);
     rpc GeneralEmail(GeneralEmailRequest) returns(GeneralEmailResponse);
+    rpc InvoiceEmail(InvoiceEmailRequest) returns(InvoiceEmailResponse);
+    rpc OrderAwaitQueueEmail(OrderAwaitQueueEmailRequest) returns(OrderAwaitQueueEmailResponse);
+    rpc OrderTransferQueueEmail(OrderTransferQueueEmailRequest) returns(OrderTransferQueueEmailResponse);
 }
