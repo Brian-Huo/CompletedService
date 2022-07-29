@@ -1,4 +1,4 @@
-ALTER DATABASE cleaningservice_test CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER DATABASE cleaningservice CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 /*Drop table commands*/
 Drop table b_operation;

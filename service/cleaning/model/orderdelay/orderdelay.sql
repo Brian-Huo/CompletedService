@@ -1,4 +1,4 @@
--- Base data table: schedule (order message) --
+-- Raletion data table: order-delay (order message) --
 CREATE TABLE `r_order_delay` (
     contractor_id int unsigned NOT NULL,
     order_id int unsigned NOT NUll,

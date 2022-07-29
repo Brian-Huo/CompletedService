@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package orderqueue;
+
+option go_package = "./orderqueue";
+
+// Awaiting Order Queue Insert Request
+message AwaitQueueInsertRequest {
+    int64 OrderId = 1;
+    int32 Vacancy = 2;
+}
+message AwaitQueueInsertResponse {
+    int32 Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
+// Awaiting Order Queue Delete Request
+message AwaitQueueDeleteRequest {
+    int64 OrderId = 1;
+    int32 Vacancy = 2;
+}
+message AwaitQueueDeleteResponse {
+    int32 Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
+// Transfering Order Queue Insert Request
+message TransferQueueInsertRequest {
+    int64  OrderId = 1;
+    string Contact = 2;
+}
+message TransferQueueInsertResponse {
+    int32 Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
+// Transfering Order Queue Delete Request
+message TransferQueueDeleteRequest {
+    int64  OrderId = 1;
+}
+message TransferQueueDeleteResponse {
+    int32 Code = 1;
+    string Msg = 2;
+    string Data = 3;
+}
+
+service OrderQueue {
+    rpc OrderAwaitQueueInsert(AwaitQueueInsertRequest) returns(AwaitQueueInsertResponse);
+    rpc OrderAwaitQueueDelete(AwaitQueueDeleteRequest) returns(AwaitQueueDeleteResponse);
+    rpc OrderTransferQueueInsert(TransferQueueInsertRequest) returns(TransferQueueInsertResponse);
+    rpc OrderTransferQueueDelete(TransferQueueDeleteRequest) returns(TransferQueueDeleteResponse);
+}
