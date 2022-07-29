@@ -7,11 +7,16 @@ const Business_logo string = "../../../static/images/logos/symbol.png"
 const Business_name string = "CleaningService"
 
 // CleaningService working address
-const Unit = "Unit 11"
-const Street = "6 Dalgety Street"
-const PostalCode = "3166"
-const City = "Oakleigh VIC"
-const Country = "AU"
+const Unit string = "Unit 11"
+const Street string = "6 Dalgety Street"
+const PostalCode string = "3166"
+const City string = "Oakleigh VIC"
+const Country string = "AU"
+
+// CleaningService business bank account
+const BSB string = "193-879"
+const Account_name string = "QME Technology"
+const Account_number string = "459722111"
 
 // CleaningService Reception Email
 const Reception_email string = "akknowall@gmail.com"
