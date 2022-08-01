@@ -4,16 +4,15 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"time"
 
 	"cleaningservice/common/variables"
 	"cleaningservice/service/email/rpc/internal/svc"
 	"cleaningservice/service/email/rpc/types/email"
+	"cleaningservice/util"
 
 	generator "github.com/angelodlfrtr/go-invoice-generator"
 	"github.com/zeromicro/go-zero/core/logx"
-	"gopkg.in/gomail.v2"
 )
 
 type InvoiceEmailLogic struct {
@@ -21,8 +20,6 @@ type InvoiceEmailLogic struct {
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
-
-const invoiceEmailMsg = ""
 
 func NewInvoiceEmailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *InvoiceEmailLogic {
 	return &InvoiceEmailLogic{
@@ -37,23 +34,23 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 	doc, _ := generator.New(generator.Invoice, &generator.Options{
 		TextTypeInvoice: "QUETO",
 		AutoPrint:       true,
+		CurrencySymbol:  "$",
 	})
 
+	// Set constant variables for invoice
 	doc.SetHeader(&generator.HeaderFooter{
 		Text:       "<center>CleaningService</center>",
 		Pagination: true,
 	})
 
 	doc.SetFooter(&generator.HeaderFooter{
-		Text:       "<center>Important notice: <br> Powered By QME Technology Ptd. Lty.</center>",
+		Text:       "<center>Important notice:</center><br><center>Powered By QME Technology Ptd. Lty.</center>",
 		Pagination: true,
 	})
 
-	doc.SetRef(fmt.Sprintf("Invoice_%d", in.OrderInfo.OrderId))
 	doc.SetVersion("version 0.1")
-
 	doc.SetDescription("Invoice of Items")
-	doc.SetNotes("Suppose to be payment details here! ")
+	doc.SetNotes(fmt.Sprintf("<b>BSB: %s </b><br><b>Account No: %s</b><br><b> Account Name: %s</b>", variables.BSB, variables.Account_number, variables.Account_name))
 
 	doc.SetDate(time.Now().Format("02/01/2006"))
 	doc.SetPaymentTerm(time.Now().Add(time.Hour * 168).Format("02/01/2006"))
@@ -71,6 +68,20 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 			Country:    variables.Country,
 		},
 	})
+
+	doc.SetDefaultTax(&generator.Tax{
+		Percent: "10",
+	})
+
+	// doc.SetDiscount(&generator.Discount{
+	// Percent: "90",
+	// })
+	// doc.SetDiscount(&generator.Discount{
+	// 	Amount: "1340",
+	// })
+
+	// Set invoice variables
+	doc.SetRef(fmt.Sprintf("Invoice_%d", in.OrderInfo.OrderId))
 
 	doc.SetCustomer(&generator.Contact{
 		Name: in.CustomerInfo.CustomerName,
@@ -97,31 +108,8 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 		})
 	}
 
-	doc.SetDefaultTax(&generator.Tax{
-		Percent: "10",
-	})
-
-	// doc.SetDiscount(&generator.Discount{
-	// Percent: "90",
-	// })
-	// doc.SetDiscount(&generator.Discount{
-	// 	Amount: "1340",
-	// })
-
-	pdf, err := doc.Build()
+	invoiceLocation, err := util.SaveInvoice(doc, in.OrderInfo.OrderId)
 	if err != nil {
-		log.Fatal(err)
-		return &email.InvoiceEmailResponse{
-			Code: 500,
-			Msg:  "Create invoice PDF failed",
-		}, err
-	}
-
-	invoicePath := l.svcCtx.Config.InvoiceLocation + "/Invoice_" + fmt.Sprintf("%d", in.OrderInfo.OrderId) + ".pdf"
-	err = pdf.OutputFileAndClose(invoicePath)
-
-	if err != nil {
-		log.Fatal(err)
 		return &email.InvoiceEmailResponse{
 			Code: 500,
 			Msg:  "Save invoice PDF failed",
@@ -130,30 +118,15 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 
 	// Send Invoice email
 	// Set attributes
+	target := in.GetCustomerInfo().CustomerEmail
 	subject := fmt.Sprintf("Invoice [%d] for [%s] due [%s]", in.GetOrderInfo().OrderId, in.GetCategoryInfo().CategoryName, doc.PaymentTerm)
 	emailHi := fmt.Sprintf("<p>Hi %s,</p><br>", in.GetCustomerInfo().CustomerName)
 	emailGreetings := fmt.Sprintf("<p>Thanks for choosing %s.</p><br>", variables.Business_name)
 	emailMain := fmt.Sprintf("<p>Attached is your %s at address %s at %s. Please be awared of your reservation time.</p><br>", subject, in.GetAddressInfo().Formatted, in.GetOrderInfo().ReserveDate)
 	emailPayment := fmt.Sprintf("<p>When making payment, you must include your Reference number <em>%s</em> stated in your invoice.</p><br>", doc.Ref)
-	emailEnd := fmt.Sprintf("<p>If you have any questions and concerns, you can kindly reply to this email</p><br><p>Kind regards,</p><br>")
-	emailSign := fmt.Sprintf("%s Support Team", variables.Business_name)
 
 	// Send email
-	m := gomail.NewMessage()
-	m.SetHeader("From", variables.QME_email)
-	m.SetHeader("To", in.GetCustomerInfo().CustomerEmail)
-	m.SetHeader("Subject", subject)
-	m.SetBody("text/html", emailHi+emailGreetings+emailMain+emailPayment+emailEnd+emailSign)
-
-	// Send the email
-	d := gomail.NewDialer("smtp.gmail.com", 587, variables.QME_email, variables.QME_password)
-	if err := d.DialAndSend(m); err != nil {
-		log.Fatal(err)
-		return &email.InvoiceEmailResponse{
-			Code: 500,
-			Msg:  "Send invoice email failed",
-		}, err
-	}
+	go util.Send(target, subject, emailHi+emailGreetings+emailMain+emailPayment, invoiceLocation)
 
 	return &email.InvoiceEmailResponse{
 		Code: 200,

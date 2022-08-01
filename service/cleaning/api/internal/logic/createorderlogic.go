@@ -230,7 +230,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 
 	// Get order info for emailing
 	order_email := email.OrderMsg{
-		OrderId:        order_item.OrderId,
+		OrderId:        newId,
 		DepositeAmount: order_item.DepositeAmount,
 		FinalAmount:    order_item.FinalAmount,
 		DepositeRate:   int32(order_item.CurrentDepositeRate),
@@ -240,16 +240,13 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Send order Invoice
-	rpc_res, err := l.svcCtx.EmailRpc.InvoiceEmail(l.ctx, &email.InvoiceEmailRequest{
+	l.svcCtx.EmailRpc.InvoiceEmail(l.ctx, &email.InvoiceEmailRequest{
 		AddressInfo:  &address_email,
 		CategoryInfo: &category_email,
 		CustomerInfo: &customer_email,
 		ServiceInfo:  service_email,
 		OrderInfo:    &order_email,
 	})
-	if err != nil && rpc_res.Code != 200 {
-		return nil, errorx.NewCodeError(500, err.Error())
-	}
 
 	// Timing to broadcast the order
 	l.broadcastOrder(newId, req.Category_id)
