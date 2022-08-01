@@ -70,6 +70,8 @@ func IntArrayToString(arr []int64) string {
 }
 
 // Disjoint elements from two int64 array
+// arr1 is the array containing elements wanted to be delete
+// arr2 is the origin array
 func DisjointIntArray(arr1 []int64, arr2 []int64) []int64 {
 	result := []int64{}
 	checkMap := make(map[int64]int)

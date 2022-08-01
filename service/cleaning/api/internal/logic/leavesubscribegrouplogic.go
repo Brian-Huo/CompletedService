@@ -48,8 +48,8 @@ func (l *LeaveSubscribeGroupLogic) LeaveSubscribeGroup(req *types.LeaveSubscribe
 
 	// Update category list in contractor
 	previous_category := util.StringToIntArray(contractor_item.CategoryList.String)
-	new_category := util.IntArrayToString(util.DisjointIntArray(previous_category, req.Category_list))
-	contractor_item.CategoryList = sql.NullString{new_category, new_category != ""}
+	new_category := util.IntArrayToString(util.DisjointIntArray(req.Category_list, previous_category))
+	contractor_item.CategoryList = sql.NullString{new_category, true}
 
 	// Unsubscribe all category group
 	for _, category_id := range req.Category_list {
