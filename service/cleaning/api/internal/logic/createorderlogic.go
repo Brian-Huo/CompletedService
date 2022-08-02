@@ -94,7 +94,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Address
-	address_item := address.BAddress{
+	address_item := &address.BAddress{
 		Street:    req.Address_info.Street,
 		Suburb:    req.Address_info.Suburb,
 		Postcode:  req.Address_info.Postcode,
@@ -107,14 +107,12 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Check if data valid
-	if ret, err := validation.CheckAddressDetails(&address_item); !ret {
+	if ret, err := validation.CheckAddressDetails(address_item); !ret {
 		return nil, errorx.NewCodeError(500, "Invalid address details"+err.Error())
 	}
-	address_res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_item)
-	if err != nil {
-		return nil, errorx.NewCodeError(500, err.Error())
-	}
-	address_item.AddressId, err = address_res.LastInsertId()
+
+	// Enquire address
+	err = l.svcCtx.BAddressModel.Enquire(l.ctx, address_item)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}

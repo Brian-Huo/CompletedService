@@ -1,19 +1,22 @@
 ALTER DATABASE cleaningservice_test CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 /*Drop table commands*/
-Drop table b_operation;
-Drop table b_order;
+DROP TABLE b_operation;
 
-Drop table r_subscribe_record;
-Drop table b_contractor;
+Drop INDEX IDX_Finance ON b_order;
+Drop INDEX IDX_Contractor ON b_order;
+DROP TABLE b_order;
 
-Drop table b_service;
-Drop table b_category;
+DROP TABLE r_subscribe_record;
+DROP TABLE b_contractor;
 
-Drop table b_company;
-Drop table b_customer;
-Drop table b_payment;
-Drop table b_address;
+DROP TABLE b_service;
+DROP TABLE b_category;
+
+DROP TABLE b_company;
+DROP TABLE b_customer;
+DROP TABLE b_payment;
+DROP TABLE b_address;
 
 /*Create table command*/
 -- Base data table: address --
@@ -28,7 +31,8 @@ CREATE TABLE `b_address` (
     lat DECIMAL(10, 8) NOT NULL,
     lng DECIMAL(11, 8) NOT NULL,
     formatted varchar(255) NOT NULL,
-    PRIMARY KEY(address_id)
+    PRIMARY KEY(address_id),
+    CONSTRAINT UK_Geolocate UNIQUE (lat, lng)
 );
 
 -- Base data table: payment --
@@ -151,6 +155,9 @@ ALTER TABLE `b_order` ADD FOREIGN KEY (category_id) REFERENCES b_category(catego
 ALTER TABLE `b_order` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (deposite_payment) REFERENCES b_payment(payment_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (final_payment) REFERENCES b_payment(payment_id); 
+-- Base data table indexes order-finance & order-contractor --
+CREATE INDEX IDX_Finance ON `b_order` (finance_id);
+CREATE INDEX IDX_Contractor ON `b_order` (contractor_id);
 
 -- Base data table: operation (contractor-order) --
 CREATE TABLE `b_operation` (

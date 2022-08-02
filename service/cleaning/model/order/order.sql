@@ -32,3 +32,6 @@ ALTER TABLE `b_order` ADD FOREIGN KEY (category_id) REFERENCES b_category(catego
 ALTER TABLE `b_order` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (deposite_payment) REFERENCES b_payment(payment_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (final_payment) REFERENCES b_payment(payment_id); 
+-- Base data table indexes order-finance & order-contractor --
+CREATE INDEX IDX_Finance ON `b_order` (finance_id);
+CREATE INDEX IDX_Contractor ON `b_order` (contractor_id);

@@ -71,10 +71,36 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 	}
 
 	// Update address details
-	if req.Address_info.Street != "No Address" && req.Address_info.Address_id != -1 {
-		if !contractor_item.AddressId.Valid {
-			// Create new address
-			address_struct := address.BAddress{
+	if !contractor_item.AddressId.Valid {
+		// Create new address
+		address_struct := address.BAddress{
+			Street:    req.Address_info.Street,
+			Suburb:    req.Address_info.Suburb,
+			Postcode:  req.Address_info.Postcode,
+			City:      req.Address_info.City,
+			StateCode: req.Address_info.State_code,
+			Country:   req.Address_info.Country,
+			Lat:       req.Address_info.Lat,
+			Lng:       req.Address_info.Lng,
+			Formatted: req.Address_info.Formatted,
+		}
+
+		res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
+		if err != nil {
+			return nil, errorx.NewCodeError(500, err.Error())
+		}
+
+		newId, err := res.LastInsertId()
+		if err != nil {
+			return nil, errorx.NewCodeError(500, err.Error())
+		}
+
+		contractor_item.AddressId = sql.NullInt64{newId, true}
+	} else {
+		// Update address
+		if err == nil {
+			err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
+				AddressId: contractor_item.AddressId.Int64,
 				Street:    req.Address_info.Street,
 				Suburb:    req.Address_info.Suburb,
 				Postcode:  req.Address_info.Postcode,
@@ -84,38 +110,10 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 				Lat:       req.Address_info.Lat,
 				Lng:       req.Address_info.Lng,
 				Formatted: req.Address_info.Formatted,
-			}
+			})
 
-			res, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
 			if err != nil {
 				return nil, errorx.NewCodeError(500, err.Error())
-			}
-
-			newId, err := res.LastInsertId()
-			if err != nil {
-				return nil, errorx.NewCodeError(500, err.Error())
-			}
-
-			contractor_item.AddressId = sql.NullInt64{newId, true}
-		} else {
-			// Update address
-			if err == nil {
-				err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
-					AddressId: contractor_item.AddressId.Int64,
-					Street:    req.Address_info.Street,
-					Suburb:    req.Address_info.Suburb,
-					Postcode:  req.Address_info.Postcode,
-					City:      req.Address_info.City,
-					StateCode: req.Address_info.State_code,
-					Country:   req.Address_info.Country,
-					Lat:       req.Address_info.Lat,
-					Lng:       req.Address_info.Lng,
-					Formatted: req.Address_info.Formatted,
-				})
-
-				if err != nil {
-					return nil, errorx.NewCodeError(500, err.Error())
-				}
 			}
 		}
 	}
