@@ -105,5 +105,8 @@ func (l *StartOrderLogic) StartOrder(req *types.StartOrderRequest) (resp *types.
 		return nil, status.Error(500, err.Error())
 	}
 
-	return &types.StartOrderResponse{}, nil
+	return &types.StartOrderResponse{
+		Code: 200,
+		Msg:  "success",
+	}, nil
 }
