@@ -3,11 +3,11 @@ ALTER DATABASE cleaningservice_test CHARACTER SET utf8mb4 COLLATE utf8mb4_genera
 /*Drop table commands*/
 DROP TABLE b_operation;
 
-Drop INDEX IDX_Finance ON b_order;
-Drop INDEX IDX_Contractor ON b_order;
+DROP INDEX IDX_Finance_order ON b_order;
+DROP INDEX IDX_Contractor_order ON b_order;
 DROP TABLE b_order;
 
-DROP TABLE r_subscribe_record;
+DROP TABLE r_subscription;
 DROP TABLE b_contractor;
 
 DROP TABLE b_service;
@@ -31,8 +31,7 @@ CREATE TABLE `b_address` (
     lat DECIMAL(10, 8) NOT NULL,
     lng DECIMAL(11, 8) NOT NULL,
     formatted varchar(255) NOT NULL,
-    PRIMARY KEY(address_id),
-    CONSTRAINT UK_Geolocate UNIQUE (lat, lng)
+    PRIMARY KEY(address_id)
 );
 
 -- Base data table: payment --
@@ -106,20 +105,21 @@ CREATE TABLE `b_contractor` (
     link_code char(64) NOT NULL,
     work_status tinyint(3) NOT NULL,
     order_id int unsigned,
-    category_list varchar(255),
     PRIMARY KEY(contractor_id)
 );
 ALTER TABLE `b_contractor` ADD FOREIGN KEY (finance_id) REFERENCES b_company(company_id);
 ALTER TABLE `b_contractor` ADD FOREIGN KEY (address_id) REFERENCES b_address(address_id);
 
 -- Relation data table: subscribe record --
-CREATE TABLE `r_subscribe_record` (
+CREATE TABLE `r_subscription` (
     category_id int unsigned NOT NULL,
     contractor_id int unsigned NOT NULL,
     PRIMARY KEY(category_id, contractor_id)
 );
-ALTER TABLE `r_subscribe_record` ADD FOREIGN KEY (category_id) REFERENCES b_category(category_id);
-ALTER TABLE `r_subscribe_record` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id);
+ALTER TABLE `r_subscription` ADD FOREIGN KEY (category_id) REFERENCES b_category(category_id);
+ALTER TABLE `r_subscription` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id);
+-- Relation data table indexes subscription-contractor --
+CREATE INDEX IDX_Contractor_sub ON `r_subscription` (contractor_id);
 
 -- Base data table: order --
 CREATE TABLE `b_order` (
@@ -129,7 +129,8 @@ CREATE TABLE `b_order` (
     contractor_id int unsigned,
     finance_id int unsigned,
     category_id int unsigned NOT NULL,
-    service_list mediumtext NOT NULL,
+    basic_items longtext NOT NULL,
+    additional_items longtext,
     deposite_payment int unsigned,
     deposite_amount float unsigned NOT NULL,
     deposite_date datetime,
@@ -139,6 +140,8 @@ CREATE TABLE `b_order` (
     current_deposite_rate int(2) unsigned NOT NULL,
     item_amount float unsigned NOT NULL,
     gst_amount float unsigned NOT NULL,
+    surcharge_item int unsigned NOT NULL DEFAULT 0,
+    surcharge_amount int unsigned NOT NULL DEFAULT 0,
     total_amount float unsigned NOT NULL,
     order_description longtext,
     post_date datetime NOT NULL,
@@ -146,7 +149,11 @@ CREATE TABLE `b_order` (
     finish_date datetime,
     status int(3) unsigned NOT NULL,
     urgant_flag tinyint(1) unsigned NOT NULL,
+    create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(order_id)
+    -- CHECK (JSON_VALID(basic_items))
+    -- CHECK (JSON_VALID(additional_items))
 );
 ALTER TABLE `b_order` ADD FOREIGN KEY (customer_id) REFERENCES b_customer(customer_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (address_id) REFERENCES b_address(address_id);
