@@ -2,12 +2,8 @@ ALTER DATABASE cleaningservice CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 /*Drop table commands*/
 DROP TABLE b_operation;
-
-Drop INDEX IDX_Finance_order ON b_order;
-Drop INDEX IDX_Contractor_order ON b_order;
 DROP TABLE b_order;
 
-DROP INDEX IDX_Contractor_sub ON r_subscription
 DROP TABLE r_subscription;
 DROP TABLE b_contractor;
 
@@ -16,8 +12,9 @@ DROP TABLE b_category;
 
 DROP TABLE b_company;
 DROP TABLE b_customer;
-DROP TABLE b_payment;
 DROP TABLE b_address;
+
+DROP TABLE b_payment;
 
 /*Create table command*/
 -- Base data table: address --
@@ -88,7 +85,7 @@ CREATE TABLE `b_service` (
     service_scope varchar(255) NOT NULL,
     service_name varchar(255) NOT NULL,
     service_photo varchar(255),
-    service_description longtext NOT NULL,
+    service_description mediumtext NOT NULL,
     service_price float unsigned NOT NULL,
     PRIMARY KEY(service_id)
 );
@@ -110,17 +107,19 @@ CREATE TABLE `b_contractor` (
 );
 ALTER TABLE `b_contractor` ADD FOREIGN KEY (finance_id) REFERENCES b_company(company_id);
 ALTER TABLE `b_contractor` ADD FOREIGN KEY (address_id) REFERENCES b_address(address_id);
+-- Base data table indexes finance-contractor --
+CREATE INDEX IDX_Finance_con ON `b_contractor` (finance_id);
 
--- Relation data table: subscribe record --
+-- Relation data table: subscription --
 CREATE TABLE `r_subscription` (
+    subscription_id int unsigned NOT NULL AUTO_INCREMENT,
     category_id int unsigned NOT NULL,
     contractor_id int unsigned NOT NULL,
-    PRIMARY KEY(category_id, contractor_id)
+    UNIQUE UNI_subscribe (category_id, contractor_id),
+    PRIMARY KEY(subscription_id)
 );
 ALTER TABLE `r_subscription` ADD FOREIGN KEY (category_id) REFERENCES b_category(category_id);
 ALTER TABLE `r_subscription` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id);
--- Relation data table indexes subscription-contractor --
-CREATE INDEX IDX_Contractor_sub ON `r_subscription` (contractor_id);
 
 -- Base data table: order --
 CREATE TABLE `b_order` (
@@ -130,8 +129,8 @@ CREATE TABLE `b_order` (
     contractor_id int unsigned,
     finance_id int unsigned,
     category_id int unsigned NOT NULL,
-    basic_items json NOT NULL,
-    additional_items json DEFAULT '{}',
+    basic_items JSON NOT NULL,
+    additional_items JSON,
     deposite_payment int unsigned,
     deposite_amount float unsigned NOT NULL,
     deposite_date datetime,
@@ -141,8 +140,11 @@ CREATE TABLE `b_order` (
     current_deposite_rate int(2) unsigned NOT NULL,
     item_amount float unsigned NOT NULL,
     gst_amount float unsigned NOT NULL,
+    surcharge_item int unsigned NOT NULL DEFAULT 0,
+    surcharge_amount int unsigned NOT NULL DEFAULT 0,
     total_amount float unsigned NOT NULL,
-    order_description longtext,
+    order_description mediumtext,
+    order_comments mediumtext,
     post_date datetime NOT NULL,
     reserve_date datetime NOT NULL,
     finish_date datetime,
@@ -150,9 +152,9 @@ CREATE TABLE `b_order` (
     urgant_flag tinyint(1) unsigned NOT NULL,
     create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+    CHECK (JSON_VALID(basic_items)),
+    CHECK (JSON_VALID(additional_items)),
     PRIMARY KEY(order_id)
-    CHECK (JSON_VALID(basic_items))
-    CHECK (JSON_VALID(additional_items))
 );
 ALTER TABLE `b_order` ADD FOREIGN KEY (customer_id) REFERENCES b_customer(customer_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (address_id) REFERENCES b_address(address_id);
@@ -162,8 +164,8 @@ ALTER TABLE `b_order` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(co
 ALTER TABLE `b_order` ADD FOREIGN KEY (deposite_payment) REFERENCES b_payment(payment_id); 
 ALTER TABLE `b_order` ADD FOREIGN KEY (final_payment) REFERENCES b_payment(payment_id); 
 -- Base data table indexes order-finance & order-contractor --
-CREATE INDEX IDX_Finance ON `b_order` (finance_id);
-CREATE INDEX IDX_Contractor ON `b_order` (contractor_id);
+CREATE INDEX IDX_Finance_order ON `b_order` (finance_id);
+CREATE INDEX IDX_Contractor_order ON `b_order` (contractor_id);
 
 -- Base data table: operation (contractor-order) --
 CREATE TABLE `b_operation` (
@@ -171,7 +173,7 @@ CREATE TABLE `b_operation` (
     contractor_id int unsigned NOT NULL,
     order_id int unsigned NOT NULL,
     operation tinyint(3) NOT NULL,
-    issue_date datetime NOT NULL,
+    create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(operation_id)
 );
 ALTER TABLE `b_operation` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id); 
