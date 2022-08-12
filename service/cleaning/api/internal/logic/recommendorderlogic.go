@@ -60,13 +60,26 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 	}
 
 	orderList := []types.DetailOrderResponse{}
-	category_list := util.StringToIntArray(contractor_item.CategoryList.String)
-	for _, group_id := range category_list {
+	category_list, err := l.svcCtx.RSubscriptionModel.ListSubscribeGroup(l.ctx, uid)
+	if err != nil {
+		return nil, status.Error(500, "Find Category: "+err.Error())
+	}
+
+	for _, group_id := range *category_list {
 		// Get all broadcasting orders from group
-		order_list, err := l.svcCtx.BBroadcastModel.List(group_id)
+		order_list, err := l.svcCtx.BBroadcastModel.FindAllByGroup(group_id)
 		if err != nil {
 			logx.Error("get broadcasting orders from group failed")
 			continue
+		}
+
+		// Get category details
+		category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, group_id)
+		if err != nil {
+			if err == category.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Category not found.")
+			}
+			return nil, status.Error(500, "Find Category: "+err.Error())
 		}
 
 		// Get order details
@@ -80,15 +93,6 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 			order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, order_id)
 			if err != nil {
 				go l.svcCtx.BBroadcastModel.Delete(group_id, order_id)
-			}
-
-			// Get category details
-			category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, order_item.CategoryId)
-			if err != nil {
-				if err == category.ErrNotFound {
-					return nil, status.Error(404, "Invalid, Category not found.")
-				}
-				return nil, status.Error(500, "Find Category: "+err.Error())
 			}
 
 			// Get address details

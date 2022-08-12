@@ -66,7 +66,7 @@ func (l *ListOperationLogic) ListOperation(req *types.ListOperationRequest) (res
 			Contractor_id: item.ContractorId,
 			Order_id:      item.OrderId,
 			Operation:     item.Operation,
-			Issue_date:    item.IssueDate.String(),
+			Issue_date:    item.CreateTime.Format("2006-01-02 15:04:05"),
 		}
 
 		allItems = append(allItems, operation_response)

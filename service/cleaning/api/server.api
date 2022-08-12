@@ -1,12 +1,5 @@
 type (
 	// -------------------- System -------------------------
-	// Initialize system
-	InitSystemRequest {
-	}
-	InitSystemResponse {
-		Code int    `json:"code"`
-		Msg  string `json:"msg"`
-	}
 
 	// -------------------- Login -------------------------
 	VerifyCodeRequest {
@@ -692,10 +685,6 @@ service Server {
 	// refresh token apis
 	@handler RefreshToken
 	post /api/user/refresh_token(RefreshTokenRequest) returns (RefreshTokenResponse)
-	
-	// init system apis
-	@handler InitSystem
-	post /api/system/init(InitSystemRequest) returns (InitSystemResponse)
 	
 	// address apis
 	@handler CreateAddress

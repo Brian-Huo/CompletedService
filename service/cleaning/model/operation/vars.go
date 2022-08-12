@@ -6,7 +6,7 @@ var ErrNotFound = sqlx.ErrNotFound
 
 // operation enum
 const (
-	Decline int64 = iota
-	Accept
+	Accept int64 = iota
+	Decline
 	Transfer
 )

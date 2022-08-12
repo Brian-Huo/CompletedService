@@ -30,13 +30,8 @@ type (
 		Insert(ctx context.Context, data *BContractor) (sql.Result, error)
 		FindOne(ctx context.Context, contractorId int64) (*BContractor, error)
 		FindOneByContactDetails(ctx context.Context, contactDetails string) (*BContractor, error)
-		FindAllByFinance(ctx context.Context, financeId int64) ([]*BContractor, error)
-		ListVacant(ctx context.Context) ([]int64, error)
 		Update(ctx context.Context, data *BContractor) error
-		Resign(ctx context.Context, contractorId int64) error
-		ResignByFinance(ctx context.Context, financeId int64) error
 		Delete(ctx context.Context, contractorId int64) error
-		DeleteAllByFinance(ctx context.Context, financeId int64) error
 	}
 
 	defaultBContractorModel struct {
@@ -55,7 +50,6 @@ type (
 		LinkCode        string         `db:"link_code"`
 		WorkStatus      int64          `db:"work_status"`
 		OrderId         sql.NullInt64  `db:"order_id"`
-		CategoryList    sql.NullString `db:"category_list"`
 	}
 )
 
@@ -70,9 +64,9 @@ func (m *defaultBContractorModel) Insert(ctx context.Context, data *BContractor)
 	bContractorContractorIdKey := fmt.Sprintf("%s%v", cacheBContractorContractorIdPrefix, data.ContractorId)
 	bContractorContactDetailsKey := fmt.Sprintf("%s%v", cacheBContractorContactDetailsPrefix, data.ContactDetails)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bContractorRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus, data.OrderId, data.CategoryList)
-	}, bContractorContactDetailsKey, bContractorContractorIdKey)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bContractorRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus, data.OrderId)
+	}, bContractorContractorIdKey, bContractorContactDetailsKey)
 	return ret, err
 }
 
@@ -96,43 +90,16 @@ func (m *defaultBContractorModel) FindOne(ctx context.Context, contractorId int6
 func (m *defaultBContractorModel) FindOneByContactDetails(ctx context.Context, contactDetails string) (*BContractor, error) {
 	bContractorContactDetailsKey := fmt.Sprintf("%s%v", cacheBContractorContactDetailsPrefix, contactDetails)
 	var resp BContractor
-	err := m.QueryRowCtx(ctx, &resp, bContractorContactDetailsKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
+	err := m.QueryRowIndexCtx(ctx, &resp, bContractorContactDetailsKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
 		query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bContractorRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, contactDetails)
-	})
+		if err := conn.QueryRowCtx(ctx, &resp, query, contactDetails); err != nil {
+			return nil, err
+		}
+		return resp.ContractorId, nil
+	}, m.queryPrimary)
 	switch err {
 	case nil:
 		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultBContractorModel) FindAllByFinance(ctx context.Context, financeId int64) ([]*BContractor, error) {
-	var resp []*BContractor
-	query := fmt.Sprintf("select %s from %s where `finance_id` = ?", bContractorRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, financeId)
-
-	switch err {
-	case nil:
-		return resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultBContractorModel) ListVacant(ctx context.Context) ([]int64, error) {
-	var resp []int64
-	query := fmt.Sprintf("select %s from %s where `work_status` = ?", "contractor_id", m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, Vacant)
-
-	switch err {
-	case nil:
-		return resp, nil
 	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
 	default:
@@ -145,30 +112,8 @@ func (m *defaultBContractorModel) Update(ctx context.Context, data *BContractor)
 	bContractorContactDetailsKey := fmt.Sprintf("%s%v", cacheBContractorContactDetailsPrefix, data.ContactDetails)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `contractor_id` = ?", m.table, bContractorRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus, data.OrderId, data.CategoryList, data.ContractorId)
-	}, bContractorContractorIdKey, bContractorContactDetailsKey)
-	return err
-}
-
-func (m *defaultBContractorModel) Resign(ctx context.Context, contractorId int64) error {
-	data, err := m.FindOne(ctx, contractorId)
-	if err != nil {
-		return err
-	}
-
-	data.WorkStatus = Resigned
-	bContractorContactDetailsKey := fmt.Sprintf("%s%v", cacheBContractorContactDetailsPrefix, data.ContactDetails)
-	bContractorContractorIdKey := fmt.Sprintf("%s%v", cacheBContractorContractorIdPrefix, data.ContractorId)
-	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `contractor_id` = ?", m.table, bContractorRowsWithPlaceHolder)
 		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus, data.OrderId, data.ContractorId)
 	}, bContractorContractorIdKey, bContractorContactDetailsKey)
-	return err
-}
-
-func (m *defaultBContractorModel) ResignByFinance(ctx context.Context, financeId int64) error {
-	query := fmt.Sprintf("update %s set %s where `finance_id` = ?", m.table, "work_status=?")
-	_,  err := m.ExecNoCacheCtx(ctx, query, Resigned, financeId)
 	return err
 }
 
@@ -183,13 +128,7 @@ func (m *defaultBContractorModel) Delete(ctx context.Context, contractorId int64
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("delete from %s where `contractor_id` = ?", m.table)
 		return conn.ExecCtx(ctx, query, contractorId)
-	}, bContractorContactDetailsKey, bContractorContractorIdKey)
-	return err
-}
-
-func (m *defaultBContractorModel) DeleteAllByFinance(ctx context.Context, financeId int64) error {
-	query := fmt.Sprintf("delete from %s where `finance_id` = ?", m.table)
-	_,  err := m.ExecNoCacheCtx(ctx, query, financeId)
+	}, bContractorContractorIdKey, bContractorContactDetailsKey)
 	return err
 }
 

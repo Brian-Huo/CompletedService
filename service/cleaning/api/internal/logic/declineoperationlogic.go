@@ -2,14 +2,12 @@ package logic
 
 import (
 	"context"
-	"time"
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
-	"cleaningservice/service/cleaning/model/operation"
 	"cleaningservice/service/cleaning/model/order"
 	"cleaningservice/service/cleaning/model/orderdelay"
 
@@ -45,7 +43,10 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 		return nil, status.Error(404, "Invalid, Contractor not found.")
 	}
 
-	l.receiveOrder(uid, req.Order_id)
+	go l.svcCtx.ROrderDelayModel.Insert(&orderdelay.ROrderDelay{
+		ContractorId: uid,
+		OrderId:      req.Order_id,
+	})
 
 	// Validate order details
 	order_item, err := l.svcCtx.BOrderModel.FindOne(l.ctx, req.Order_id)
@@ -57,14 +58,8 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 		return nil, errorx.NewCodeError(401, "Order is currently unavailable.")
 	}
 
-	newItem := operation.BOperation{
-		ContractorId: uid,
-		OrderId:      req.Order_id,
-		Operation:    operation.Decline,
-		IssueDate:    time.Now(),
-	}
-
-	_, err = l.svcCtx.BOperationModel.Insert(l.ctx, &newItem)
+	// Create operation record
+	_, err = l.svcCtx.BOperationModel.RecordDecline(l.ctx, uid, req.Order_id)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -73,11 +68,4 @@ func (l *DeclineOperationLogic) DeclineOperation(req *types.DeclineOperationRequ
 		Code: 200,
 		Msg:  "success",
 	}, nil
-}
-
-func (l *DeclineOperationLogic) receiveOrder(contractorId int64, order_itemerId int64) {
-	go l.svcCtx.ROrderDelayModel.Insert(&orderdelay.ROrderDelay{
-		ContractorId: contractorId,
-		OrderId:      order_itemerId,
-	})
 }

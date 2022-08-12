@@ -2,8 +2,6 @@ package logic
 
 import (
 	"context"
-	"database/sql"
-	"time"
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
@@ -11,7 +9,6 @@ import (
 	"cleaningservice/common/variables"
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
-	"cleaningservice/service/cleaning/model/operation"
 	"cleaningservice/service/cleaning/model/order"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -60,26 +57,14 @@ func (l *TransferOperationLogic) TransferOperation(req *types.TransferOperationR
 	}
 
 	// Create operation record
-	operation_item := operation.BOperation{
-		ContractorId: uid,
-		OrderId:      req.Order_id,
-		Operation:    operation.Transfer,
-		IssueDate:    time.Now(),
-	}
-
-	_, err = l.svcCtx.BOperationModel.Insert(l.ctx, &operation_item)
+	_, err = l.svcCtx.BOperationModel.RecordTransfer(l.ctx, uid, req.Order_id)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Transfer
-	order_item.ContractorId = sql.NullInt64{0, false}
-	order_item.FinanceId = sql.NullInt64{0, false}
-	order_item.UrgantFlag = 1
-	order_item.Status = order.Transfering
-	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
+	err = l.svcCtx.BOrderModel.Transfer(l.ctx, order_item.OrderId)
 	if err != nil {
-		logx.Info("test here")
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 

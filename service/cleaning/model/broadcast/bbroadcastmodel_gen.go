@@ -17,7 +17,7 @@ type (
 	bBroadcastModel interface {
 		Insert(data *BBroadcast) (int, error)
 		FindOne(groupId int64, orderId int64) (int, error)
-		List(groupId int64) (*[]int64, error)
+		FindAllByGroup(groupId int64) (*[]int64, error)
 		Delete(groupId int64, orderId int64) (int, error)
 		DeleteAll(groupId int64) (int, error)
 	}
@@ -49,7 +49,6 @@ func (m *defaultBBroadcastModel) Insert(data *BBroadcast) (int, error) {
 func (m *defaultBBroadcastModel) FindOne(groupId int64, orderId int64) (int, error) {
 	bBroadcastGroupIdKey := fmt.Sprintf("%s%v", cacheBBroadcastGroupIdPrefix, groupId)
 	ret, _, err := m.conn.Sscan(bBroadcastGroupIdKey, 0, strconv.FormatInt(orderId, 10), 1)
-	
 	if err != nil {
 		return 0, err
 	} else if len(ret) == 0 {
@@ -58,10 +57,9 @@ func (m *defaultBBroadcastModel) FindOne(groupId int64, orderId int64) (int, err
 	return 1, nil
 }
 
-func (m *defaultBBroadcastModel) List(groupId int64) (*[]int64, error) {
+func (m *defaultBBroadcastModel) FindAllByGroup(groupId int64) (*[]int64, error) {
 	bBroadcastGroupIdKey := fmt.Sprintf("%s%v", cacheBBroadcastGroupIdPrefix, groupId)
 	ret, err := m.conn.Smembers(bBroadcastGroupIdKey)
-
 	switch err {
 	case nil:
 		var resp []int64

@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"database/sql"
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
@@ -10,9 +9,6 @@ import (
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/contractor"
-	"cleaningservice/service/cleaning/model/subscriberecord"
-	"cleaningservice/service/cleaning/model/subscription"
-	"cleaningservice/util"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -40,7 +36,7 @@ func (l *JoinSubscribeGroupLogic) JoinSubscribeGroup(req *types.JoinSubscribeGro
 	}
 
 	// Get contractor detail
-	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
+	_, err = l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
 	if err != nil {
 		if err == contractor.ErrNotFound {
 			return nil, errorx.NewCodeError(404, "Invalid, Contractor not found.")
@@ -48,36 +44,8 @@ func (l *JoinSubscribeGroupLogic) JoinSubscribeGroup(req *types.JoinSubscribeGro
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	// Update category list in contractor
-	previous_category := util.StringToIntArray(contractor_item.CategoryList.String)
-	new_category := util.IntArrayToString(util.UnionIntArray(previous_category, req.Category_list))
-	contractor_item.CategoryList = sql.NullString{new_category, new_category != ""}
-
-	// Subscribe all category groups
-	for _, category_id := range req.Category_list {
-		_, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, category_id)
-		if err != nil {
-			continue
-		}
-
-		_, err = l.svcCtx.RSubscribeRecordModel.Insert(l.ctx, &subscriberecord.RSubscribeRecord{
-			CategoryId:   category_id,
-			ContractorId: uid,
-		})
-		if err != nil {
-			return nil, errorx.NewCodeError(500, err.Error())
-		}
-
-		_, err = l.svcCtx.BSubscriptionModel.Insert(&subscription.BSubscription{
-			GroupId:      category_id,
-			ContractorId: uid,
-		})
-		if err != nil {
-			return nil, errorx.NewCodeError(500, err.Error())
-		}
-	}
-
-	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
+	// Join subscription group
+	err = l.svcCtx.RSubscriptionModel.JoinSubscribeGroup(l.ctx, &req.Category_list, uid)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}

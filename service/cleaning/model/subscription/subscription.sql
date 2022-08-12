@@ -1,8 +1,10 @@
--- Relation data table: subscribe record --
-CREATE TABLE `b_subscription` (
-    group_id int unsigned NOT NULL,
+-- Relation data table: subscription --
+CREATE TABLE `r_subscription` (
+    subscription_id int unsigned NOT NULL AUTO_INCREMENT,
+    category_id int unsigned NOT NULL,
     contractor_id int unsigned NOT NULL,
-    PRIMARY KEY(group_id, contractor_id)
+    UNIQUE UNI_subscribe (category_id, contractor_id),
+    PRIMARY KEY(subscription_id)
 );
-ALTER TABLE `b_subscription` ADD FOREIGN KEY (group_id) REFERENCES b_subscribe_group(group_id);
-ALTER TABLE `b_subscription` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id);
+ALTER TABLE `r_subscription` ADD FOREIGN KEY (category_id) REFERENCES b_category(category_id);
+ALTER TABLE `r_subscription` ADD FOREIGN KEY (contractor_id) REFERENCES b_contractor(contractor_id);

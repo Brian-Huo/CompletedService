@@ -37,7 +37,7 @@ func (l *ConfirmOrderLogic) ConfirmOrder(req *types.ConfirmOrderRequest) (resp *
 	}
 
 	for _, order_id := range req.Order_list {
-		err = l.svcCtx.BOrderModel.FinishStatus(l.ctx, order_id)
+		err = l.svcCtx.BOrderModel.Finish(l.ctx, order_id)
 		if err != nil {
 			logx.Info("Confirm order", order_id, "failed by finance", uid)
 		}

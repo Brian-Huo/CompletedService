@@ -21,7 +21,10 @@ type (
 		FindAllByFinance(ctx context.Context, financeId int64) ([]*BOrder, error)
 		FindAllByCustomer(ctx context.Context, customerId int64) ([]*BOrder, error)
 		FindAllByContractor(ctx context.Context, contractorId int64) ([]*BOrder, error)
-		FinishStatus(ctx context.Context, orderId int64) error
+		Accept(ctx context.Context, orderId int64, contractorId int64, financeId int64) error
+		Transfer(ctx context.Context, orderId int64) error
+		Cancel(ctx context.Context, orderId int64) error
+		Finish(ctx context.Context, orderId int64) error
 	}
 
 	customBOrderModel struct {
@@ -92,7 +95,34 @@ func (m *defaultBOrderModel) FindAllByContractor(ctx context.Context, contractor
 	}
 }
 
-func (m *defaultBOrderModel) FinishStatus(ctx context.Context, orderId int64) error {
+func (m *defaultBOrderModel) Accept(ctx context.Context, orderId int64, contractorId int64, financeId int64) error {
+	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, orderId)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set `contractor_id` = ?, `finance_id` = ?, `status` = ? where `order_id` = ? limit 1", m.table)
+		return conn.ExecCtx(ctx, query, sql.NullInt64{Int64: contractorId, Valid: true}, sql.NullInt64{Int64: financeId, Valid: true}, Pending, orderId)
+	}, bOrderOrderIdKey)
+	return err
+}
+
+func (m *defaultBOrderModel) Transfer(ctx context.Context, orderId int64) error {
+	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, orderId)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set `contractor_id` = ?, `finance_id` = ?, `status` = ?, `urgant_flag` = ? where `order_id` = ? limit 1", m.table)
+		return conn.ExecCtx(ctx, query, sql.NullInt64{Int64: 0, Valid: false}, sql.NullInt64{Int64: 0, Valid: false}, Transfering, 1, orderId)
+	}, bOrderOrderIdKey)
+	return err
+}
+
+func (m *defaultBOrderModel) Cancel(ctx context.Context, orderId int64) error {
+	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, orderId)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set `contractor_id` = ?, `finance_id` = ?, `status` = ? where `order_id` = ? limit 1", m.table)
+		return conn.ExecCtx(ctx, query, sql.NullInt64{Int64: 0, Valid: false}, sql.NullInt64{Int64: 0, Valid: false}, Cancelled, orderId)
+	}, bOrderOrderIdKey)
+	return err
+}
+
+func (m *defaultBOrderModel) Finish(ctx context.Context, orderId int64) error {
 	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, orderId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set `status` = ? where `order_id` = ? limit 1", m.table)

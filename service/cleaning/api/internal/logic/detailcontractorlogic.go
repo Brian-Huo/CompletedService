@@ -2,8 +2,6 @@ package logic
 
 import (
 	"context"
-	"strconv"
-	"strings"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -86,15 +84,9 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 	}
 
 	// Get category details
-	var category_list []int64
-	category_items := strings.Split(contractor_item.CategoryList.String, variables.Separator)
-	for _, item := range category_items {
-		category_id, err := strconv.ParseInt(item, 10, 64)
-		if err != nil {
-			continue
-		}
-
-		category_list = append(category_list, category_id)
+	category_list, err := l.svcCtx.RSubscriptionModel.ListSubscribeGroup(l.ctx, uid)
+	if err != nil {
+		return nil, status.Error(404, "Invalid, Category list not found.")
 	}
 
 	return &types.DetailContractorResponse{
@@ -108,6 +100,6 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 		Link_code:        contractor_item.LinkCode,
 		Work_status:      int(contractor_item.WorkStatus),
 		Order_id:         contractor_item.OrderId.Int64,
-		Category_list:    category_list,
+		Category_list:    *category_list,
 	}, nil
 }

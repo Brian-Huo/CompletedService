@@ -31,7 +31,6 @@ func NewUpdateContractorLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequest) (resp *types.UpdateContractorResponse, err error) {
-	logx.Info("function entrance")
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, "Invalid, JWT format error")
@@ -111,7 +110,6 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 				Lng:       req.Address_info.Lng,
 				Formatted: req.Address_info.Formatted,
 			})
-
 			if err != nil {
 				return nil, errorx.NewCodeError(500, err.Error())
 			}
@@ -130,7 +128,6 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 		LinkCode:        contractor_item.LinkCode,
 		WorkStatus:      contractor_item.WorkStatus,
 		OrderId:         contractor_item.OrderId,
-		CategoryList:    contractor_item.CategoryList,
 	})
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())

@@ -2,8 +2,6 @@ package logic
 
 import (
 	"context"
-	"database/sql"
-	"time"
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
@@ -12,7 +10,6 @@ import (
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/contractor"
-	"cleaningservice/service/cleaning/model/operation"
 	"cleaningservice/service/cleaning/model/order"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -67,23 +64,13 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 	}
 
 	// Create operaction records
-	newItem := operation.BOperation{
-		ContractorId: uid,
-		OrderId:      req.Order_id,
-		Operation:    operation.Accept,
-		IssueDate:    time.Now(),
-	}
-
-	_, err = l.svcCtx.BOperationModel.Insert(l.ctx, &newItem)
+	_, err = l.svcCtx.BOperationModel.RecordAccept(l.ctx, uid, req.Order_id)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	// Update order details
-	order_item.ContractorId = sql.NullInt64{uid, true}
-	order_item.FinanceId = sql.NullInt64{contractor_item.FinanceId, true}
-	order_item.Status = order.Pending
-	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
+	err = l.svcCtx.BOrderModel.Accept(l.ctx, req.Order_id, uid, contractor_item.FinanceId)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
