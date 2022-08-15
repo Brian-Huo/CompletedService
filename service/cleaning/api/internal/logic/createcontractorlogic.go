@@ -46,15 +46,15 @@ func (l *CreateContractorLogic) CreateContractor(req *types.CreateContractorRequ
 	}
 
 	newItem := contractor.BContractor{
-		ContractorPhoto: sql.NullString{req.Contractor_photo, req.Contractor_photo != ""},
+		ContractorPhoto: sql.NullString{String: req.Contractor_photo, Valid: req.Contractor_photo != ""},
 		ContractorName:  req.Contractor_name,
 		ContactDetails:  req.Contact_details,
 		ContractorType:  contractor.Employee,
 		FinanceId:       uid,
-		AddressId:       sql.NullInt64{0, false},
+		AddressId:       sql.NullInt64{Int64: 0, Valid: false},
 		LinkCode:        util.RandStringBytesMaskImprSrcUnsafe(8),
 		WorkStatus:      contractor.Await,
-		OrderId:         sql.NullInt64{0, false},
+		OrderId:         sql.NullInt64{Int64: 0, Valid: false},
 	}
 
 	res, err := l.svcCtx.BContractorModel.Insert(l.ctx, &newItem)

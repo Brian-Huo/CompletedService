@@ -45,7 +45,7 @@ func (l *UpdateCompanyLogic) UpdateCompany(req *types.UpdateCompanyRequest) (res
 	}
 
 	company_item.CompanyName = req.Company_name
-	company_item.DirectorName = sql.NullString{req.Director_name, req.Director_name != ""}
+	company_item.DirectorName = sql.NullString{String: req.Director_name, Valid: req.Director_name != ""}
 	company_item.ContactDetails = req.Contact_details
 
 	err = l.svcCtx.BCompanyModel.Update(l.ctx, company_item)

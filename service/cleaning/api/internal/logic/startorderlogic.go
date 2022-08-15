@@ -70,7 +70,7 @@ func (l *StartOrderLogic) StartOrder(req *types.StartOrderRequest) (resp *types.
 	// Validate contractor status
 	if contractor_item.WorkStatus == contractor.Vacant {
 		contractor_item.WorkStatus = contractor.InWork
-		contractor_item.OrderId = sql.NullInt64{req.Order_id, true}
+		contractor_item.OrderId = sql.NullInt64{Int64: req.Order_id, Valid: true}
 	} else {
 		return nil, errorx.NewCodeError(401, "Contractor is not vacant.")
 	}

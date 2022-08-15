@@ -93,7 +93,7 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 			return nil, errorx.NewCodeError(500, err.Error())
 		}
 	}
-	order_item.OrderDescription = sql.NullString{req.Order_description, req.Order_description != ""}
+	order_item.OrderDescription = sql.NullString{String: req.Order_description, Valid: req.Order_description != ""}
 
 	// Modify customer details
 	err = l.svcCtx.BCustomerModel.Update(l.ctx, &customer.BCustomer{

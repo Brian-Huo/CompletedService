@@ -66,7 +66,7 @@ func (l *UploadContractPhotoLogic) UploadContractPhoto(req *types.UploadContract
 	}
 
 	// Update contractor details
-	contractor_item.ContractorPhoto = sql.NullString{photoPath, photoPath != strconv.FormatInt(contractorId, 10)}
+	contractor_item.ContractorPhoto = sql.NullString{String: photoPath, Valid: photoPath != strconv.FormatInt(contractorId, 10)}
 	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())

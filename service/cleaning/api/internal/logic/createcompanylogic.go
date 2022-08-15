@@ -89,10 +89,10 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 	// Create company details
 	company_struct := company.BCompany{
 		CompanyName:       req.Company_name,
-		PaymentId:         sql.NullInt64{paymentId, true},
-		DirectorName:      sql.NullString{req.Director_name, req.Director_name != ""},
+		PaymentId:         sql.NullInt64{Int64: paymentId, Valid: true},
+		DirectorName:      sql.NullString{String: req.Director_name, Valid: req.Director_name != ""},
 		ContactDetails:    req.Contact_details,
-		RegisteredAddress: sql.NullInt64{addressId, true},
+		RegisteredAddress: sql.NullInt64{Int64: addressId, Valid: true},
 		DepositeRate:      int64(req.Deposite_rate),
 		FinanceStatus:     company.Active,
 	}

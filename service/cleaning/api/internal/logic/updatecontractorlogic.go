@@ -94,7 +94,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 			return nil, errorx.NewCodeError(500, err.Error())
 		}
 
-		contractor_item.AddressId = sql.NullInt64{newId, true}
+		contractor_item.AddressId = sql.NullInt64{Int64: newId, Valid: true}
 	} else {
 		// Update address
 		if err == nil {
@@ -119,7 +119,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 	// Update contractor details
 	err = l.svcCtx.BContractorModel.Update(l.ctx, &contractor.BContractor{
 		ContractorId:    contractorId,
-		ContractorPhoto: sql.NullString{req.Contractor_photo, req.Contractor_photo != ""},
+		ContractorPhoto: sql.NullString{String: req.Contractor_photo, Valid: req.Contractor_photo != ""},
 		ContractorName:  req.Contractor_name,
 		ContractorType:  contractor_item.ContractorType,
 		ContactDetails:  req.Contact_details,

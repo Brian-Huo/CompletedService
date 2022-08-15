@@ -43,7 +43,7 @@ func (l *DetailCompanyLogic) DetailCompany(req *types.DetailCompanyRequest) (res
 	}
 
 	if role != variables.Company || uid != req.Company_id {
-		res.PaymentId = sql.NullInt64{0, false}
+		res.PaymentId = sql.NullInt64{Int64: 0, Valid: false}
 		res.DepositeRate = -1
 	}
 

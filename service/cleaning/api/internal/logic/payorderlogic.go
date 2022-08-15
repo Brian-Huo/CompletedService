@@ -75,7 +75,7 @@ func (l *PayOrderLogic) PayOrder(req *types.PayOrderRequest) (resp *types.PayOrd
 	}
 
 	// Update order details
-	order_item.FinalPayment = sql.NullInt64{paymentId, true}
+	order_item.FinalPayment = sql.NullInt64{Int64: paymentId, Valid: true}
 	order_item.Status = order.Completed
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)

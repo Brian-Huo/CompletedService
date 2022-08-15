@@ -57,7 +57,7 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 	}
 
 	contractor_item.WorkStatus = contractor.Vacant
-	contractor_item.OrderId = sql.NullInt64{0, false}
+	contractor_item.OrderId = sql.NullInt64{Int64: 0, Valid: false}
 
 	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {

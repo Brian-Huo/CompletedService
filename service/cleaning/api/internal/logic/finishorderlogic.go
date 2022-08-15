@@ -72,7 +72,7 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	// Validate contractor status
 	if contractor_item.WorkStatus == contractor.InWork {
 		contractor_item.WorkStatus = contractor.Vacant
-		contractor_item.OrderId = sql.NullInt64{0, false}
+		contractor_item.OrderId = sql.NullInt64{Int64: 0, Valid: false}
 	} else {
 		return nil, errorx.NewCodeError(401, "Contractor is not in work.")
 	}

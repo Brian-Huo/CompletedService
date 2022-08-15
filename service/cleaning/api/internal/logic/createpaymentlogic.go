@@ -59,7 +59,7 @@ func (l *CreatePaymentLogic) CreatePayment(req *types.CreatePaymentRequest) (res
 			return nil, status.Error(500, err.Error())
 		}
 
-		company.PaymentId = sql.NullInt64{newId, true}
+		company.PaymentId = sql.NullInt64{Int64: newId, Valid: true}
 
 		err = l.svcCtx.BCompanyModel.Update(l.ctx, company)
 		if err != nil {

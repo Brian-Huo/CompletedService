@@ -37,10 +37,10 @@ func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *
 		// if company not found, insert company
 		company_item, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &company.BCompany{
 			CompanyName:       req.Contact_details,
-			PaymentId:         sql.NullInt64{0, false},
-			DirectorName:      sql.NullString{"", false},
+			PaymentId:         sql.NullInt64{Int64: 0, Valid: false},
+			DirectorName:      sql.NullString{String: "", Valid: false},
 			ContactDetails:    req.Contact_details,
-			RegisteredAddress: sql.NullInt64{0, false},
+			RegisteredAddress: sql.NullInt64{Int64: 0, Valid: false},
 			DepositeRate:      10,
 			FinanceStatus:     company.Active,
 		})
