@@ -282,13 +282,13 @@ type (
 	// -------------------- Order -------------------------
 	//  Create Order
 	CreateOrderRequest {
-		Customer_info     CreateCustomerRequest  `json:"customer_info"`
-		Address_info      CreateAddressRequest   `json:"address_info"`
-		Category_id       int64                  `json:"category_id"`
-		Service_list      []SelectServiceRequest `json:"service_list"`
-		Deposite_info     CreatePaymentRequest   `json:"deposite_info"`
-		Order_description string                 `json:"order_description,optional"`
-		Reserve_date      string                 `json:"reserve_date"`
+		Customer_info     CreateCustomerRequest    `json:"customer_info"`
+		Address_info      CreateAddressRequest     `json:"address_info"`
+		Category_id       int64                    `json:"category_id"`
+		Service_list      []SelectServiceStructure `json:"service_list"`
+		Deposite_info     CreatePaymentRequest     `json:"deposite_info,optional"`
+		Order_description string                   `json:"order_description,optional"`
+		Reserve_date      string                   `json:"reserve_date"`
 	}
 	CreateOrderResponse {
 		Order_id int64 `json:"order_id"`
@@ -355,6 +355,34 @@ type (
 		Msg  string `json:"msg"`
 	}
 
+	// Surcharge Order
+	SurchargeOrderRequest {
+		Order_id         int64   `json:"order_id"`
+		Surcharge_item   string  `json:"surcharge_item"`
+		Surcharge_rate   int     `json:"surcharge_rate"`
+		Surcharge_amount float64 `json:"surcharge_amount"`
+	}
+	SurchargeOrderResponse {
+		Code int                 `json:"code"`
+		Msg  string              `json:"msg"`
+		Data DetailOrderResponse `json:"data"`
+	}
+
+	// Add additional Services to order
+	AddOrderServiceRequest {
+		Order_id int64                    `json:"order_id"`
+		Items    []SelectServiceStructure `json:"items"`
+	}
+	AddOrderServiceResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// Get Order details by contractor
+	GetOrderDetailsRequest {
+		Order_id int64 `json:"order_id"`
+	}
+
 	// Detail Order
 	DetailOrderRequest {
 		Order_id        int64  `json:"order_id"`
@@ -367,7 +395,8 @@ type (
 		Contractor_info       DetailContractorResponse `json:"contractor_info"`
 		Finance_id            int64                    `json:"finance_id"`
 		Category              DetailCategoryResponse   `json:"category"`
-		Service_list          string                   `json:"service_list"`
+		Basic_items           SelectServiceStructure   `json:"basic_items"`
+		Additional_items      []SelectServiceStructure `json:"additional_items"`
 		Deposite_payment      int64                    `json:"deposite_payment"`
 		Deposite_amount       float64                  `json:"deposite_amount"`
 		Deposite_date         string                   `json:"deposite_date"`
@@ -377,37 +406,12 @@ type (
 		Current_deposite_rate int                      `json:"current_deposite_rate"`
 		Item_amount           float64                  `json:"item_amount"`
 		Gst_amount            float64                  `json:"gst_amount"`
+		Surcharge_item        string                   `json:"surcharge_item"`
+		Surcharge_rate        int                      `json:"surcharge_rate"`
+		Surcharge_amount      float64                  `json:"surcharge_amount"`
 		Total_fee             float64                  `json:"total_fee"`
 		Order_description     string                   `json:"order_description"`
-		Post_date             string                   `json:"post_date"`
-		Reserve_date          string                   `json:"reserve_date"`
-		Finish_date           string                   `json:"finish_date"`
-		Status                int                      `json:"status"`
-		Urgent_flag           int                      `json:"urgent_flag"`
-	}
-
-	// Get Order details by contractor
-	GetOrderDetailsRequest {
-		Order_id int64 `json:"order_id"`
-	}
-	GetOrderDetailsResponse {
-		Order_id              int64                    `json:"order_id"`
-		Customer_info         DetailCustomerResponse   `json:"customer_info"`
-		Address_info          DetailAddressResponse    `json:"address_info"`
-		Contractor_info       DetailContractorResponse `json:"contractor_info"`
-		Finance_id            int64                    `json:"finance_id"`
-		Category              DetailCategoryResponse   `json:"category"`
-		Service_list          string                   `json:"service_list"`
-		Deposite_payment      int64                    `json:"deposite_payment"`
-		Deposite_amount       float64                  `json:"deposite_amount"`
-		Deposite_date         string                   `json:"deposite_date"`
-		Final_payment         int64                    `json:"final_payment"`
-		Final_amount          float64                  `json:"final_amount"`
-		Final_payment_date    string                   `json:"final_payment_date"`
-		Current_deposite_rate int                      `json:"current_deposite_rate"`
-		Gst_amount            float64                  `json:"gst_amount"`
-		Total_fee             float64                  `json:"total_fee"`
-		Order_description     string                   `json:"order_description"`
+		Order_comments        string                   `json:"order_comments"`
 		Post_date             string                   `json:"post_date"`
 		Reserve_date          string                   `json:"reserve_date"`
 		Finish_date           string                   `json:"finish_date"`
@@ -441,13 +445,12 @@ type (
 
 	// -------------------- Service -------------------------
 	// Select Service
-	SelectServiceRequest {
-		Service_id       int64 `json:"service_id"`
-		Service_quantity int   `json:"service_quantity"`
-	}
-	SelectServiceResponse {
-		Code int    `json:"code"`
-		Msg  string `json:"msg"`
+	SelectServiceStructure {
+		Service_id       int64   `json:"service_id"`
+		Service_scope    string  `json:"service_scope,optional"`
+		Service_name     string  `json:"service_name,optional"`
+		Service_price    float64 `json:"service_price,optional"`
+		Service_quantity int     `json:"service_quantity"`
 	}
 
 	// Detail Service
@@ -582,11 +585,18 @@ type (
 		Contractor_photo string `json:"contractor_photo"`
 	}
 
-	// -------------------- Get Contractor Schedule -------------------------
+	// -------------------- Get Contractor Orders -------------------------
 	// Get Contractor Schedule
 	GetContractorScheduleRequest {
 	}
 	GetContractorScheduleResponse {
+		Items []DetailOrderResponse `json:"items"`
+	}
+
+	// Get Contractor History
+	GetContractorHistoryRequest {
+	}
+	GetContractorHistoryResponse {
 		Items []DetailOrderResponse `json:"items"`
 	}
 
@@ -755,6 +765,10 @@ service Server {
 	@handler GetContractorSchedule
 	post /api/contractor/schedule(GetContractorScheduleRequest) returns (GetContractorScheduleResponse)
 	
+	// get contractor history apis
+	@handler GetContractorHistory
+	post /api/contractor/history(GetContractorHistoryRequest) returns (GetContractorHistoryResponse)
+	
 	// order apis
 	@handler StartOrder
 	post /api/order/start(StartOrderRequest) returns (StartOrderResponse)
@@ -765,8 +779,14 @@ service Server {
 	@handler RemoveOrder
 	post /api/order/remove(RemoveOrderRequest) returns (RemoveOrderResponse)
 	
+	@handler SurchargeOrder
+	post /api/order/surcharge(SurchargeOrderRequest) returns (SurchargeOrderResponse)
+	
 	@handler GetOrderDetails
-	post /api/order/getDetails(GetOrderDetailsRequest) returns (GetOrderDetailsResponse)
+	post /api/order/getDetails(GetOrderDetailsRequest) returns (DetailOrderResponse)
+	
+	@handler AddOrderService
+	post /api/order/addService(AddOrderServiceRequest) returns (AddOrderServiceResponse)
 	
 	@handler ListOrder
 	post /api/order/list(ListOrderRequest) returns (ListOrderResponse)

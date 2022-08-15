@@ -196,6 +196,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/api/contractor/history",
+				Handler: GetContractorHistoryHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/api/order/start",
 				Handler: StartOrderHandler(serverCtx),
 			},
@@ -211,8 +216,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/api/order/surcharge",
+				Handler: SurchargeOrderHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/api/order/getDetails",
 				Handler: GetOrderDetailsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/order/addService",
+				Handler: AddOrderServiceHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,

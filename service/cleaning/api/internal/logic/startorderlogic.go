@@ -87,14 +87,12 @@ func (l *StartOrderLogic) StartOrder(req *types.StartOrderRequest) (resp *types.
 	}
 
 	// Validate contractor is available for this order
-	if util.CheckPointsDistance(req.Lat, req.Lng, address_item.Lat, address_item.Lng, variables.Inwork_distance) {
-		order_item.Status = order.Working
-	} else {
+	if !util.CheckPointsDistance(req.Lat, req.Lng, address_item.Lat, address_item.Lng, variables.Inwork_distance) {
 		return nil, errorx.NewCodeError(401, "Contractor is not available for this order.")
 	}
 
 	// Update order status
-	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
+	err = l.svcCtx.BOrderModel.Start(l.ctx, req.Order_id)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
