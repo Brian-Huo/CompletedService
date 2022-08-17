@@ -285,7 +285,8 @@ type (
 		Customer_info     CreateCustomerRequest    `json:"customer_info"`
 		Address_info      CreateAddressRequest     `json:"address_info"`
 		Category_id       int64                    `json:"category_id"`
-		Service_list      []SelectServiceStructure `json:"service_list"`
+		Base_items        SelectedServiceStructure `json:"base_items"`
+		Additional_items  SelectedServiceList      `json:"additional_items"`
 		Deposite_info     CreatePaymentRequest     `json:"deposite_info,optional"`
 		Order_description string                   `json:"order_description,optional"`
 		Reserve_date      string                   `json:"reserve_date"`
@@ -359,8 +360,8 @@ type (
 	SurchargeOrderRequest {
 		Order_id         int64   `json:"order_id"`
 		Surcharge_item   string  `json:"surcharge_item"`
-		Surcharge_rate   int     `json:"surcharge_rate"`
-		Surcharge_amount float64 `json:"surcharge_amount"`
+		Surcharge_rate   int     `json:"surcharge_rate,range=[1,3]"`
+		Surcharge_amount float64 `json:"surcharge_amount,optional"`
 	}
 	SurchargeOrderResponse {
 		Code int                 `json:"code"`
@@ -370,12 +371,13 @@ type (
 
 	// Add additional Services to order
 	AddOrderServiceRequest {
-		Order_id int64                    `json:"order_id"`
-		Items    []SelectServiceStructure `json:"items"`
+		Order_id         int64               `json:"order_id"`
+		Additional_items SelectedServiceList `json:"additional_items"`
 	}
 	AddOrderServiceResponse {
-		Code int    `json:"code"`
-		Msg  string `json:"msg"`
+		Code int                 `json:"code"`
+		Msg  string              `json:"msg"`
+		Data DetailOrderResponse `json:"data"`
 	}
 
 	// Get Order details by contractor
@@ -395,8 +397,8 @@ type (
 		Contractor_info       DetailContractorResponse `json:"contractor_info"`
 		Finance_id            int64                    `json:"finance_id"`
 		Category              DetailCategoryResponse   `json:"category"`
-		Basic_items           SelectServiceStructure   `json:"basic_items"`
-		Additional_items      []SelectServiceStructure `json:"additional_items"`
+		Basic_items           SelectedServiceStructure `json:"basic_items"`
+		Additional_items      SelectedServiceList      `json:"additional_items"`
 		Deposite_payment      int64                    `json:"deposite_payment"`
 		Deposite_amount       float64                  `json:"deposite_amount"`
 		Deposite_date         string                   `json:"deposite_date"`
@@ -445,12 +447,17 @@ type (
 
 	// -------------------- Service -------------------------
 	// Select Service
-	SelectServiceStructure {
+	SelectedServiceStructure {
 		Service_id       int64   `json:"service_id"`
 		Service_scope    string  `json:"service_scope,optional"`
 		Service_name     string  `json:"service_name,optional"`
 		Service_price    float64 `json:"service_price,optional"`
 		Service_quantity int     `json:"service_quantity"`
+	}
+
+	// Selected Service List
+	SelectedServiceList {
+		Items []SelectedServiceStructure `json:"items"`
 	}
 
 	// Detail Service

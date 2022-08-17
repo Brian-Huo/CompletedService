@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -29,7 +30,7 @@ func NewGetOrderDetailsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 	}
 }
 
-func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest) (resp *types.GetOrderDetailsResponse, err error) {
+func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest) (resp *types.DetailOrderResponse, err error) {
 	_, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
 		return nil, status.Error(500, "Invalid, JWT format error")
@@ -109,9 +110,6 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 		contractor_response.Contractor_name = contractor_item.ContractorName
 		contractor_response.Contractor_type = contractorType
 		contractor_response.Contact_details = contractor_item.ContactDetails
-		contractor_response.Finance_id = -1
-		contractor_response.Work_status = -1
-		contractor_response.Order_id = -1
 	} else if err != contractor.ErrNotFound {
 		return nil, status.Error(500, err.Error())
 	}
@@ -130,14 +128,30 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 		Category_description: category_item.CategoryDescription,
 	}
 
-	order_response := types.GetOrderDetailsResponse{
+	// Get Basic Service Details
+	var basic_items types.SelectedServiceStructure
+	err = json.Unmarshal([]byte(order_item.BasicItems), &basic_items)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	// Get Additional Service Details
+	var additional_items types.SelectedServiceList
+	err = json.Unmarshal([]byte(order_item.AdditionalItems.String), &additional_items)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	// Create order response
+	order_response := types.DetailOrderResponse{
 		Order_id:              order_item.OrderId,
 		Customer_info:         customer_response,
 		Contractor_info:       contractor_response,
 		Address_info:          address_response,
 		Finance_id:            order_item.FinanceId.Int64,
 		Category:              category_response,
-		Service_list:          order_item.ServiceList,
+		Basic_items:           basic_items,
+		Additional_items:      additional_items,
 		Deposite_payment:      order_item.DepositePayment.Int64,
 		Deposite_amount:       order_item.DepositeAmount,
 		Current_deposite_rate: int(order_item.CurrentDepositeRate),
@@ -146,6 +160,9 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 		Final_amount:          order_item.FinalAmount,
 		Final_payment_date:    order_item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
 		Gst_amount:            order_item.GstAmount,
+		Surcharge_item:        order_item.SurchargeItem,
+		Surcharge_rate:        int(order_item.SurchargeRate),
+		Surcharge_amount:      order_item.ItemAmount,
 		Total_fee:             order_item.TotalAmount,
 		Order_description:     order_item.OrderDescription.String,
 		Post_date:             order_item.PostDate.Format("2006-01-02 15:04:05"),
@@ -153,15 +170,6 @@ func (l *GetOrderDetailsLogic) GetOrderDetails(req *types.GetOrderDetailsRequest
 		Finish_date:           order_item.FinishDate.Time.Format("2006-01-02 15:04:05"),
 		Status:                int(order_item.Status),
 		Urgent_flag:           int(order_item.UrgantFlag),
-	}
-
-	// Replace blank info
-	if !order_item.FinalPayment.Valid {
-		order_response.Final_payment = -1
-		order_response.Final_payment_date = ""
-	}
-	if !order_item.FinishDate.Valid {
-		order_response.Finish_date = ""
 	}
 
 	return &order_response, nil

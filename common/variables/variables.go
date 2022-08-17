@@ -9,6 +9,9 @@ const Deposite_rate float64 = 10.0
 // GST for cleaning services
 const GST float64 = 10.0
 
+// Factor of order surcharge
+const Surcharge_factor int = 20
+
 // Inwork distance
 const Inwork_distance float64 = 1
 

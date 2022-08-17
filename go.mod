@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/angelodlfrtr/go-invoice-generator v0.5.0
-	github.com/gogo/protobuf v1.3.2
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/zeromicro/go-zero v1.3.3
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d

@@ -3,8 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
-	"strconv"
-	"strings"
+	"encoding/json"
 	"time"
 
 	"cleaningservice/common/errorx"
@@ -150,22 +149,55 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	// Get services info for emailing
 	var service_email []*email.ServiceMsg
 
-	// Calculate fees and get full service strings
-	var service_fee float64 = 0
-	var service_list string = ""
-	for _, order_service := range req.Service_list {
-		service_list += variables.Separator
-		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, order_service.Service_id)
+	// Calculate fees and get full service items
+	// Basic Services
+	var item_amount float64 = 0
+	service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, req.Base_items.Service_id)
+	if err != nil {
+		if err == service.ErrNotFound {
+			return nil, errorx.NewCodeError(404, "Invalid, Basic service(s) not found.")
+		}
+		return nil, errorx.NewCodeError(500, err.Error())
+	}
+	item_amount += service_item.ServicePrice * float64(req.Base_items.Service_quantity)
+
+	// Get basic items details
+	req.Base_items.Service_name = service_item.ServiceName
+	req.Base_items.Service_scope = service_item.ServiceScope
+	req.Base_items.Service_price = service_item.ServicePrice
+
+	// Get basic service info for emailing
+	service_email = append(service_email, &email.ServiceMsg{
+		ServiceId:          service_item.ServiceId,
+		ServiceScope:       service_item.ServiceScope,
+		ServiceName:        service_item.ServiceName,
+		ServiceDescription: service_item.ServiceDescription,
+		ServiceQuantity:    int32(req.Base_items.Service_quantity),
+		ServicePrice:       service_item.ServicePrice,
+	})
+
+	base_items, err := json.Marshal(req.Base_items)
+	if err != nil {
+		return nil, errorx.NewCodeError(404, "Invalid, Basic service(s) marshal failed.")
+	}
+
+	// Additional Services
+	for _, order_service := range req.Additional_items.Items {
+		service_item, err = l.svcCtx.BServiceModel.FindOne(l.ctx, order_service.Service_id)
 		if err != nil {
 			if err == service.ErrNotFound {
-				return nil, errorx.NewCodeError(404, "Invalid, Service(s) not found.")
+				return nil, errorx.NewCodeError(404, "Invalid, Additional service(s) not found.")
 			}
 			return nil, errorx.NewCodeError(500, err.Error())
 		}
-		service_fee += service_item.ServicePrice * float64(order_service.Service_quantity)
-		service_list += service_item.ServiceName + ":x" + strconv.Itoa(order_service.Service_quantity)
+		item_amount += service_item.ServicePrice * float64(order_service.Service_quantity)
 
-		// Get service info for emailing
+		// Get additional items details
+		order_service.Service_name = service_item.ServiceName
+		order_service.Service_price = service_item.ServicePrice
+		order_service.Service_scope = service_item.ServiceScope
+
+		// Get additional service info for emailing
 		service_email = append(service_email, &email.ServiceMsg{
 			ServiceId:          service_item.ServiceId,
 			ServiceScope:       service_item.ServiceScope,
@@ -175,11 +207,14 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			ServicePrice:       service_item.ServicePrice,
 		})
 	}
-	service_list = strings.Replace(service_list, variables.Separator, "", 1)
+
+	additional_items, err := json.Marshal(req.Additional_items)
+	if err != nil {
+		return nil, errorx.NewCodeError(404, "Invalid, Additional service(s) marshal failed.")
+	}
 
 	// Calculate fees
-	item_amount := service_fee
-	gst_amount := service_fee / variables.GST
+	gst_amount := item_amount / variables.GST
 	total_amount := item_amount + gst_amount
 	deposite_amount := total_amount / variables.Deposite_rate
 	final_amount := total_amount - deposite_amount
@@ -198,7 +233,8 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		ContractorId:        sql.NullInt64{Int64: 0, Valid: false},
 		FinanceId:           sql.NullInt64{Int64: 0, Valid: false},
 		CategoryId:          req.Category_id,
-		ServiceList:         service_list,
+		BasicItems:          string(base_items),
+		AdditionalItems:     sql.NullString{String: string(additional_items), Valid: len(req.Additional_items.Items) > 0},
 		DepositePayment:     sql.NullInt64{Int64: payment_item.PaymentId, Valid: payment_item.PaymentId != 0},
 		DepositeAmount:      deposite_amount,
 		DepositeDate:        sql.NullTime{Time: time.Now(), Valid: payment_item.PaymentId != 0},

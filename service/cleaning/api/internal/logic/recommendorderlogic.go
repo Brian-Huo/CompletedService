@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -120,6 +121,20 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 				return nil, status.Error(500, "Find Customer: "+err.Error())
 			}
 
+			// Get Basic Service Details
+			var basic_items types.SelectedServiceStructure
+			err = json.Unmarshal([]byte(order_item.BasicItems), &basic_items)
+			if err != nil {
+				return nil, status.Error(500, err.Error())
+			}
+
+			// Get Additional Service Details
+			var additional_items types.SelectedServiceList
+			err = json.Unmarshal([]byte(order_item.AdditionalItems.String), &additional_items)
+			if err != nil {
+				return nil, status.Error(500, err.Error())
+			}
+
 			// Construct order response
 			order_response := types.DetailOrderResponse{
 				Order_id: order_item.OrderId,
@@ -148,7 +163,8 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 					Category_name:        category_item.CategoryName,
 					Category_description: category_item.CategoryDescription,
 				},
-				Service_list:          order_item.ServiceList,
+				Basic_items:           basic_items,
+				Additional_items:      additional_items,
 				Deposite_payment:      order_item.DepositePayment.Int64,
 				Deposite_amount:       order_item.DepositeAmount,
 				Current_deposite_rate: int(order_item.CurrentDepositeRate),
@@ -157,6 +173,9 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 				Final_amount:          order_item.FinalAmount,
 				Final_payment_date:    order_item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
 				Gst_amount:            order_item.GstAmount,
+				Surcharge_item:        order_item.SurchargeItem,
+				Surcharge_rate:        int(order_item.SurchargeRate),
+				Surcharge_amount:      order_item.ItemAmount,
 				Total_fee:             order_item.TotalAmount,
 				Order_description:     order_item.OrderDescription.String,
 				Post_date:             order_item.PostDate.Format("2006-01-02 15:04:05"),

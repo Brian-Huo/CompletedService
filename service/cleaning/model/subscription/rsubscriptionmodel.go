@@ -120,7 +120,7 @@ func (m *defaultRSubscriptionModel) ListSubscribeGroup(ctx context.Context, cont
 		if err != nil {
 			return nil, err
 		}
-		go m.JoinSubscribeGroup(ctx, ret, contractorId)
+		go m.Sadd(rSubscriptionContractorIdKey, ret)
 		return ret, nil
 	}
 

@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -130,7 +131,21 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Category_description: category_item.CategoryDescription,
 		}
 
-		// Create order detail response
+		// Get Basic Service Details
+		var basic_items types.SelectedServiceStructure
+		err = json.Unmarshal([]byte(item.BasicItems), &basic_items)
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+
+		// Get Additional Service Details
+		var additional_items types.SelectedServiceList
+		err = json.Unmarshal([]byte(item.AdditionalItems.String), &additional_items)
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+
+		// Create order response
 		order_response := types.DetailOrderResponse{
 			Order_id:              item.OrderId,
 			Customer_info:         customer_response,
@@ -138,7 +153,8 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Address_info:          address_response,
 			Finance_id:            item.FinanceId.Int64,
 			Category:              category_response,
-			Service_list:          item.ServiceList,
+			Basic_items:           basic_items,
+			Additional_items:      additional_items,
 			Deposite_payment:      item.DepositePayment.Int64,
 			Deposite_amount:       item.DepositeAmount,
 			Current_deposite_rate: int(item.CurrentDepositeRate),
@@ -147,6 +163,9 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			Final_amount:          item.FinalAmount,
 			Final_payment_date:    item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
 			Gst_amount:            item.GstAmount,
+			Surcharge_item:        item.SurchargeItem,
+			Surcharge_rate:        int(item.SurchargeRate),
+			Surcharge_amount:      item.ItemAmount,
 			Total_fee:             item.TotalAmount,
 			Order_description:     item.OrderDescription.String,
 			Post_date:             item.PostDate.Format("2006-01-02 15:04:05"),

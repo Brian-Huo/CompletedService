@@ -38,9 +38,7 @@ func (l *CancelOrderLogic) CancelOrder(req *types.CancelOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	order_item.Status = order.Cancelled
-
-	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
+	err = l.svcCtx.BOrderModel.Cancel(l.ctx, order_item.OrderId)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}

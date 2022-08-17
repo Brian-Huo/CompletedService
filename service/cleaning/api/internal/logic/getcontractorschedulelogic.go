@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 
 	"cleaningservice/common/jwtx"
 	"cleaningservice/common/variables"
@@ -39,7 +40,7 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 	}
 
 	orderList := []types.DetailOrderResponse{}
-	items, err := l.svcCtx.BOrderModel.FindAllByContractor(l.ctx, uid)
+	items, err := l.svcCtx.BOrderModel.ListContractorSchduled(l.ctx, uid)
 	if err != nil {
 		if err == order.ErrNotFound {
 			return &types.GetContractorScheduleResponse{
@@ -49,12 +50,29 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 		return nil, status.Error(500, err.Error())
 	}
 
-	for _, item := range items {
-		// Get future order only
-		if item.Status != order.Pending {
-			continue
-		}
+	// Get contractor details
+	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, uid)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
 
+	// Contractor type
+	var contractorType string
+	if contractor_item.ContractorType == contractor.Employee {
+		contractorType = "Employee"
+	} else if contractor_item.ContractorType == contractor.Individual {
+		contractorType = "Individual"
+	}
+
+	contractor_response := types.DetailContractorResponse{
+		Contractor_id:    contractor_item.ContractorId,
+		Contractor_photo: contractor_item.ContractorPhoto.String,
+		Contractor_name:  contractor_item.ContractorName,
+		Contractor_type:  contractorType,
+		Contact_details:  contractor_item.ContactDetails,
+	}
+
+	for _, item := range items {
 		// Get customer details
 		customer_item, err := l.svcCtx.BCustomerModel.FindOne(l.ctx, item.CustomerId)
 		if err != nil {
@@ -63,7 +81,6 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 			}
 			return nil, status.Error(500, err.Error())
 		}
-
 		customer_response := types.DetailCustomerResponse{
 			Customer_id:    customer_item.CustomerId,
 			Customer_name:  customer_item.CustomerName,
@@ -93,29 +110,6 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 			Formatted:  address_item.Formatted,
 		}
 
-		// Get contractor details
-		contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, item.ContractorId.Int64)
-		if err != nil {
-			return nil, status.Error(500, err.Error())
-		}
-
-		// Contractor type
-		var contractorType string
-		if contractor_item.ContractorType == contractor.Employee {
-			contractorType = "Employee"
-		} else if contractor_item.ContractorType == contractor.Individual {
-			contractorType = "Individual"
-		}
-
-		contractor_response := types.DetailContractorResponse{
-			Contractor_id:    contractor_item.ContractorId,
-			Contractor_photo: contractor_item.ContractorPhoto.String,
-			Contractor_name:  contractor_item.ContractorName,
-			Contractor_type:  contractorType,
-			Contact_details:  contractor_item.ContactDetails,
-			Category_list:    []int64{},
-		}
-
 		// Get Category Details
 		category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, item.CategoryId)
 		if err != nil {
@@ -130,6 +124,21 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 			Category_description: category_item.CategoryDescription,
 		}
 
+		// Get Basic Service Details
+		var basic_items types.SelectedServiceStructure
+		err = json.Unmarshal([]byte(item.BasicItems), &basic_items)
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+
+		// Get Additional Service Details
+		var additional_items types.SelectedServiceList
+		err = json.Unmarshal([]byte(item.AdditionalItems.String), &additional_items)
+		if err != nil {
+			return nil, status.Error(500, err.Error())
+		}
+
+		// Create order response
 		order_response := types.DetailOrderResponse{
 			Order_id:              item.OrderId,
 			Customer_info:         customer_response,
@@ -137,7 +146,8 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 			Address_info:          address_response,
 			Finance_id:            item.FinanceId.Int64,
 			Category:              category_response,
-			Service_list:          item.ServiceList,
+			Basic_items:           basic_items,
+			Additional_items:      additional_items,
 			Deposite_payment:      item.DepositePayment.Int64,
 			Deposite_amount:       item.DepositeAmount,
 			Current_deposite_rate: int(item.CurrentDepositeRate),
@@ -146,6 +156,9 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 			Final_amount:          item.FinalAmount,
 			Final_payment_date:    item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
 			Gst_amount:            item.GstAmount,
+			Surcharge_item:        item.SurchargeItem,
+			Surcharge_rate:        int(item.SurchargeRate),
+			Surcharge_amount:      item.ItemAmount,
 			Total_fee:             item.TotalAmount,
 			Order_description:     item.OrderDescription.String,
 			Post_date:             item.PostDate.Format("2006-01-02 15:04:05"),

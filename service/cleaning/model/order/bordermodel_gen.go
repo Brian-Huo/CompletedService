@@ -56,7 +56,7 @@ type (
 		CurrentDepositeRate int64          `db:"current_deposite_rate"`
 		ItemAmount          float64        `db:"item_amount"`
 		GstAmount           float64        `db:"gst_amount"`
-		SurchargeItem       int64          `db:"surcharge_item"`
+		SurchargeItem       string         `db:"surcharge_item"`
 		SurchargeRate       int64          `db:"surcharge_rate"`
 		SurchargeAmount     float64        `db:"surcharge_amount"`
 		TotalAmount         float64        `db:"total_amount"`

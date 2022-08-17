@@ -17,7 +17,7 @@ CREATE TABLE `b_order` (
     current_deposite_rate int(2) unsigned NOT NULL,
     item_amount float unsigned NOT NULL,
     gst_amount float unsigned NOT NULL,
-    surcharge_item int unsigned NOT NULL DEFAULT 0,
+    surcharge_item varchar(255) NOT NULL DEFAULT 'None',
     surcharge_rate int unsigned NOT NULL DEFAULT 0,
     surcharge_amount float unsigned NOT NULL DEFAULT 0,
     total_amount float unsigned NOT NULL,
