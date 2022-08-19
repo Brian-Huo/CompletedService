@@ -184,6 +184,29 @@ func (l *SurchargeOrderLogic) SurchargeOrder(req *types.SurchargeOrderRequest) (
 		return nil, status.Error(500, err.Error())
 	}
 
+	// Get services info for emailing
+	var service_email []*email.ServiceMsg
+	// Get basic service info for emailing
+	service_email = append(service_email, &email.ServiceMsg{
+		ServiceId:          basic_items.Service_id,
+		ServiceScope:       basic_items.Service_scope,
+		ServiceName:        basic_items.Service_name,
+		ServiceDescription: "TODO",
+		ServiceQuantity:    int32(basic_items.Service_quantity),
+		ServicePrice:       basic_items.Service_price,
+	})
+	for _, service_item := range additional_items.Items {
+		// Get additional service info for emailing
+		service_email = append(service_email, &email.ServiceMsg{
+			ServiceId:          service_item.Service_id,
+			ServiceScope:       service_item.Service_scope,
+			ServiceName:        service_item.Service_name,
+			ServiceDescription: "tmp",
+			ServiceQuantity:    int32(service_item.Service_quantity),
+			ServicePrice:       service_item.Service_price,
+		})
+	}
+
 	// Create order response
 	order_response := types.DetailOrderResponse{
 		Order_id:              order_item.OrderId,
@@ -230,6 +253,7 @@ func (l *SurchargeOrderLogic) SurchargeOrder(req *types.SurchargeOrderRequest) (
 		AddressInfo:  &address_email,
 		CategoryInfo: &category_email,
 		CustomerInfo: &customer_email,
+		ServiceInfo:  service_email,
 		OrderInfo:    &order_email,
 	})
 
