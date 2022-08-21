@@ -14,14 +14,34 @@ INSERT INTO b_category (category_addr, category_name, category_description) valu
 
 -- Service Initialize --
 --  Departure Cleaning Standards --
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Bedroom", "Departure cleaning - Bedroom", 45);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Livingroom", "Departure cleaning - Livingroom", 45);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Bathroom", "Departure cleaning - Bathroom", 55);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Toilet", "Departure cleaning - Toilet", 30);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Balcony", "Departure cleaning - Balcony", 30);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Garage", "Departure cleaning - Garage", 55);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Garden", "Departure cleaning - Garden", 50);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Studio", "Departure cleaning - Studio", 187);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Studio (with carpet)", "Departure cleaning - Studio with carpet", 242);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "1b1h1b", "Departure cleaning - 1b1h1b", 220);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "1b1h1b (with carpet)", "Departure cleaning - 1b1h1b with carpet", 308);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "2b1h1b", "Departure cleaning - 2b1h1b", 264);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "2b1h1b (with carpet)", "Departure cleaning - 2b1h1b with carpet", 396);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "2b1h2b", "Departure cleaning - 2b1h2b", 308);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "2b1h2b (with carpet)", "Departure cleaning - 2b1h2b with carpet", 440);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "3b1h1b", "Departure cleaning - 3b1h1b", 352);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "3b1h1b (with carpet)", "Departure cleaning - 3b1h1b with carpet", 495);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "3b1h2b", "Departure cleaning - 3b1h2b", 396);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "3b1h2b (with carpet)", "Departure cleaning - 3b1h2b with carpet", 539);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "4b1h1b", "Departure cleaning - 4b1h1b", 418);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "4b1h1b (with carpet)", "Departure cleaning - 4b1h1b with carpet", 583);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "4b1h2b", "Departure cleaning - 4b1h2b", 440);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "4b1h2b (with carpet)", "Departure cleaning - 4b1h2b with carpet", 605);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "4b2h3b", "Departure cleaning - 4b2h3b", 495);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "4b2h3b (with carpet)", "Departure cleaning - 4b2h3b with carpet", 660);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "5b2h3b", "Departure cleaning - 5b2h3b", 550);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "5b2h3b (with carpet)", "Departure cleaning - 5b2h3b with carpet", 715);
 -- Departure Cleaning Additions --
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Bedroom", "Departure cleaning - Bedroom", 45);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Livingroom", "Departure cleaning - Livingroom", 45);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Bathroom", "Departure cleaning - Bathroom", 55);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Toilet", "Departure cleaning - Toilet", 30);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Balcony", "Departure cleaning - Balcony", 30);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Garage", "Departure cleaning - Garage", 55);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Garden", "Departure cleaning - Garden", 50);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Microwave", "Departure cleaning - Microwave", 20);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Refrigerator", "Departure cleaning - Refrigerator", 25);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Dishwasher", "Departure cleaning - Dishwasher", 40);
@@ -38,14 +58,15 @@ INSERT INTO b_service (service_type, service_scope, service_name, service_descri
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Glass Glue Replacement", "Departure cleaning - Glass Glue Replacement", 110);
 
 -- General House Cleaning Standards --
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Base Options", "Bedroom", "General house cleaning - Bedroom", 40);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Base Options", "Livingroom", "General house cleaning  - Livingroom", 40);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Base Options", "Bathroom", "General house cleaning  - Bathroom", 50);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Base Options", "Toilet", "General house cleaning  - Toilet", 25);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Base Options", "Balcony", "General house cleaning  - Balcony", 25);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Base Options", "Garage", "General house cleaning  - Garage", 50);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Base Options", "Garden", "General house cleaning  - Garden", 45);
+
 -- General House Cleaning Additions --
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Bedroom", "General house cleaning - Bedroom", 40);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Livingroom", "General house cleaning  - Livingroom", 40);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Bathroom", "General house cleaning  - Bathroom", 50);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Toilet", "General house cleaning  - Toilet", 25);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Balcony", "General house cleaning  - Balcony", 25);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Garage", "General house cleaning  - Garage", 50);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Garden", "General house cleaning  - Garden", 45);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Microwave", "General House cleaning - Microwave", 20);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Refrigerator", "General House cleaning - Refrigerator", 25);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Dishwasher", "General House cleaning - Dishwasher", 40);

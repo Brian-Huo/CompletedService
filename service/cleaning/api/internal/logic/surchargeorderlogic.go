@@ -34,6 +34,7 @@ func NewSurchargeOrderLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Su
 }
 
 func (l *SurchargeOrderLogic) SurchargeOrder(req *types.SurchargeOrderRequest) (resp *types.SurchargeOrderResponse, err error) {
+	logx.Info("function entrance\n")
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, "Invalid, JWT format error")

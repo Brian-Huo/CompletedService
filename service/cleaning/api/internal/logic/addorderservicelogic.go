@@ -64,7 +64,7 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 		return nil, status.Error(500, err.Error())
 	}
 
-	for _, order_service := range req.Additional_items.Items {
+	for index, order_service := range req.Additional_items.Items {
 		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, order_service.Service_id)
 		if err != nil {
 			if err == service.ErrNotFound {
@@ -75,9 +75,9 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 		order_item.ItemAmount += service_item.ServicePrice * float64(order_service.Service_quantity)
 
 		// Get additional items details
-		order_service.Service_name = service_item.ServiceName
-		order_service.Service_price = service_item.ServicePrice
-		order_service.Service_scope = service_item.ServiceScope
+		req.Additional_items.Items[index].Service_name = service_item.ServiceName
+		req.Additional_items.Items[index].Service_price = service_item.ServicePrice
+		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 
 	// Get All Additional Service Details
@@ -140,8 +140,10 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 
 	// Get contractor details
 	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, order_item.ContractorId.Int64)
-	if err != contractor.ErrNotFound {
-		return nil, status.Error(500, err.Error())
+	if err != nil {
+		if err != contractor.ErrNotFound {
+			return nil, status.Error(500, err.Error())
+		}
 	}
 	// Contractor type
 	var contractorType string

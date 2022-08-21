@@ -360,7 +360,7 @@ type (
 	SurchargeOrderRequest {
 		Order_id         int64   `json:"order_id"`
 		Surcharge_item   string  `json:"surcharge_item"`
-		Surcharge_rate   int     `json:"surcharge_rate,range=[1,3]"`
+		Surcharge_rate   int     `json:"surcharge_rate,range=[1:3]"`
 		Surcharge_amount float64 `json:"surcharge_amount,optional"`
 	}
 	SurchargeOrderResponse {

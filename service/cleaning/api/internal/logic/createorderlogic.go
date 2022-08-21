@@ -182,7 +182,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	}
 
 	// Additional Services
-	for _, order_service := range req.Additional_items.Items {
+	for index, order_service := range req.Additional_items.Items {
 		service_item, err = l.svcCtx.BServiceModel.FindOne(l.ctx, order_service.Service_id)
 		if err != nil {
 			if err == service.ErrNotFound {
@@ -193,9 +193,9 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		item_amount += service_item.ServicePrice * float64(order_service.Service_quantity)
 
 		// Get additional items details
-		order_service.Service_name = service_item.ServiceName
-		order_service.Service_price = service_item.ServicePrice
-		order_service.Service_scope = service_item.ServiceScope
+		req.Additional_items.Items[index].Service_name = service_item.ServiceName
+		req.Additional_items.Items[index].Service_price = service_item.ServicePrice
+		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 
 		// Get additional service info for emailing
 		service_email = append(service_email, &email.ServiceMsg{
