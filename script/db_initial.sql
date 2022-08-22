@@ -58,7 +58,7 @@ INSERT INTO b_service (service_type, service_scope, service_name, service_descri
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Glass Glue Replacement", "Departure cleaning - Glass Glue Replacement", 110);
 
 -- General House Cleaning Standards --
-
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Base Options", "Standard Plan(2hr)", "General house cleaning- Standard Plan(2hr)", 121);
 -- General House Cleaning Additions --
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Bedroom", "General house cleaning - Bedroom", 40);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Livingroom", "General house cleaning  - Livingroom", 40);

@@ -125,6 +125,7 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 			var basic_items types.SelectedServiceStructure
 			err = json.Unmarshal([]byte(order_item.BasicItems), &basic_items)
 			if err != nil {
+				logx.Error("Unmarshal base items failed on order ", order_item.OrderId)
 				return nil, status.Error(500, err.Error())
 			}
 
@@ -132,6 +133,7 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 			var additional_items types.SelectedServiceList
 			err = json.Unmarshal([]byte(order_item.AdditionalItems.String), &additional_items)
 			if err != nil {
+				logx.Error("Unmarshal additional items failed on order ", order_item.OrderId)
 				return nil, status.Error(500, err.Error())
 			}
 

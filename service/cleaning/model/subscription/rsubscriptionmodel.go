@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/redis"
@@ -87,24 +88,26 @@ func (m *defaultRSubscriptionModel) FindAllByContractor(ctx context.Context, con
 func (m *defaultRSubscriptionModel) JoinSubscribeGroup(ctx context.Context, categoryIds *[]int64, contractorId int64) error {
 	rSubscriptionContractorIdKey := fmt.Sprintf("%s%v", cacheRSubscriptionContractorIdPrefix, contractorId)
 	for _, categoryId := range *categoryIds {
-		_, err := m.Insert(ctx, &RSubscription{CategoryId: categoryId, ContractorId: categoryId})
+		_, err := m.Insert(ctx, &RSubscription{CategoryId: categoryId, ContractorId: contractorId})
 		if err != nil {
 			return err
 		}
 	}
-	_, err := m.Sadd(rSubscriptionContractorIdKey, categoryIds)
+
+	_, err := m.Sadd(rSubscriptionContractorIdKey, strings.Split(strings.Trim(fmt.Sprint(*categoryIds), "[]"), " "))
 	return err
 }
 
 func (m *defaultRSubscriptionModel) LeaveSubscribeGroup(ctx context.Context, categoryIds *[]int64, contractorId int64) error {
 	rSubscriptionContractorIdKey := fmt.Sprintf("%s%v", cacheRSubscriptionContractorIdPrefix, contractorId)
 	for _, categoryId := range *categoryIds {
-		err := m.DeleteByCategoryIdContractorId(ctx, categoryId, categoryId)
+		err := m.DeleteByCategoryIdContractorId(ctx, categoryId, contractorId)
 		if err != nil {
 			return err
 		}
 	}
-	_, err := m.Srem(rSubscriptionContractorIdKey, categoryIds)
+
+	_, err := m.Srem(rSubscriptionContractorIdKey, strings.Split(strings.Trim(fmt.Sprint(*categoryIds), "[]"), " "))
 	return err
 }
 
@@ -120,7 +123,9 @@ func (m *defaultRSubscriptionModel) ListSubscribeGroup(ctx context.Context, cont
 		if err != nil {
 			return nil, err
 		}
-		go m.Sadd(rSubscriptionContractorIdKey, ret)
+		if len(*ret) > 0 {
+			go m.Sadd(rSubscriptionContractorIdKey, strings.Split(strings.Trim(fmt.Sprint(*ret), "[]"), " "))
+		}
 		return ret, nil
 	}
 
