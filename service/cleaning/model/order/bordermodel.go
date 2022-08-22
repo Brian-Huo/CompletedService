@@ -100,7 +100,7 @@ func (m *defaultBOrderModel) FindAllByContractor(ctx context.Context, contractor
 
 func (m *defaultBOrderModel) ListContractorSchduled(ctx context.Context, contractorId int64) ([]*BOrder, error) {
 	var resp []*BOrder
-	query := fmt.Sprintf("select %s from %s where `contractor_id` = ? and DATE(`reserve_date`) >= DATE(NOW())", bOrderRows, m.table)
+	query := fmt.Sprintf("select %s from %s where `contractor_id` = ? and (`status` = %d or `status` = %d)", bOrderRows, m.table, Pending, Working)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, contractorId)
 	switch err {
 	case nil:
@@ -114,7 +114,7 @@ func (m *defaultBOrderModel) ListContractorSchduled(ctx context.Context, contrac
 
 func (m *defaultBOrderModel) ListContractorHistories(ctx context.Context, contractorId int64) ([]*BOrder, error) {
 	var resp []*BOrder
-	query := fmt.Sprintf("select %s from %s where `contractor_id` = ? and DATE(`reserve_date`) < DATE(NOW())", bOrderRows, m.table)
+	query := fmt.Sprintf("select %s from %s where `contractor_id` = ? and (`status` = %d or `status` = %d)", bOrderRows, m.table, Unpaid, Completed)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, contractorId)
 	switch err {
 	case nil:

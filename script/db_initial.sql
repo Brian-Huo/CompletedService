@@ -60,27 +60,8 @@ INSERT INTO b_service (service_type, service_scope, service_name, service_descri
 -- General House Cleaning Standards --
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Base Options", "Standard Plan(2hr)", "General house cleaning- Standard Plan(2hr)", 121);
 -- General House Cleaning Additions --
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Bedroom", "General house cleaning - Bedroom", 40);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Livingroom", "General house cleaning  - Livingroom", 40);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Bathroom", "General house cleaning  - Bathroom", 50);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Toilet", "General house cleaning  - Toilet", 25);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Balcony", "General house cleaning  - Balcony", 25);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Garage", "General house cleaning  - Garage", 50);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Garden", "General house cleaning  - Garden", 45);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Microwave", "General House cleaning - Microwave", 20);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Refrigerator", "General House cleaning - Refrigerator", 25);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Dishwasher", "General House cleaning - Dishwasher", 40);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Louver", "General House cleaning - Louver per piece", 20);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Windows Glass", "General House cleaning - Windows glass per piece", 15);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Windows Screen", "General House cleaning - Windows screen per piece", 15);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Air Conditioning Filter", "General Housee cleaning - Air Conditioning Filter per piece", 15);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Mildew on Wall", "General House cleaning - Mildew on Wall", 55);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Wall Stain", "General House cleaning - Wall Stain per face", 10);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Garbage Packing", "General House cleaning - Garbage Packing per hour", 50);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Waste Transportation", "General House cleaning - Waste Transportation per cubic meter", 150);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Pet Hair Cleaning", "General House cleaning - Pet Hair Cleaning", 55);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Carpet Stain", "General House cleaning - Carpet Stain", 55);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Glass Glue Replacement", "General House cleaning - Glass Glue Replacement", 110);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Additional Hour", "General house cleaning - Additional Hour", 60);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (2, "Additional Options", "Carpet Steam (One Room)", "General house cleaning  - Carpet Steam (One Room)", 66);
 
 -- Company Initialize --
 -- QME TECH Company Details --

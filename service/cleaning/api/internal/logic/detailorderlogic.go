@@ -49,7 +49,7 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 	}
 
 	// Verify customer
-	if customer_item.CustomerPhone != req.Contact_details {
+	if customer_item.CustomerPhone != req.Contact_details && customer_item.CustomerEmail != req.Contact_details {
 		return nil, status.Error(404, "Invalid, Order not found.")
 	}
 
@@ -157,10 +157,11 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 		Final_payment:         order_item.FinalPayment.Int64,
 		Final_amount:          order_item.FinalAmount,
 		Final_payment_date:    order_item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
+		Item_amount:           order_item.ItemAmount,
 		Gst_amount:            order_item.GstAmount,
 		Surcharge_item:        order_item.SurchargeItem,
 		Surcharge_rate:        int(order_item.SurchargeRate),
-		Surcharge_amount:      order_item.ItemAmount,
+		Surcharge_amount:      order_item.SurchargeAmount,
 		Total_fee:             order_item.TotalAmount,
 		Order_description:     order_item.OrderDescription.String,
 		Post_date:             order_item.PostDate.Format("2006-01-02 15:04:05"),
