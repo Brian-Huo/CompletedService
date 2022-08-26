@@ -11,6 +11,9 @@ import (
 	"cleaningservice/service/cleaning/model/operation"
 	"cleaningservice/service/cleaning/model/order"
 	"cleaningservice/service/cleaning/model/orderdelay"
+	"cleaningservice/service/cleaning/model/orderqueue/awaitqueue"
+	"cleaningservice/service/cleaning/model/orderqueue/paymentqueue"
+	"cleaningservice/service/cleaning/model/orderqueue/transferqueue"
 	"cleaningservice/service/cleaning/model/payment"
 	"cleaningservice/service/cleaning/model/service"
 	"cleaningservice/service/cleaning/model/subscription"
@@ -37,6 +40,11 @@ type ServiceContext struct {
 	BServiceModel      service.BServiceModel
 	RSubscriptionModel subscription.RSubscriptionModel
 
+	// order queues
+	RAwaitQueueModel    awaitqueue.RAwaitQueueModel
+	RPaymentQueueModel  paymentqueue.RPaymentQueueModel
+	RTransferQueueModel transferqueue.RTransferQueueModel
+
 	// rpc api
 	EmailRpc email.Email
 }
@@ -59,6 +67,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		BPaymentModel:      payment.NewBPaymentModel(conn, c.CacheRedis),
 		BServiceModel:      service.NewBServiceModel(conn, c.CacheRedis),
 		RSubscriptionModel: subscription.NewRSubscriptionModel(conn, c.CacheRedis, c.RedisConf),
+
+		// order queues
+		RAwaitQueueModel:    awaitqueue.NewRAwaitQueueModel(c.RedisConf),
+		RPaymentQueueModel:  paymentqueue.NewRPaymentQueueModel(c.RedisConf),
+		RTransferQueueModel: transferqueue.NewRTransferQueueModel(c.RedisConf),
 
 		// rpc api
 		EmailRpc: email.NewEmail(zrpc.MustNewClient(c.EmailRpc)),

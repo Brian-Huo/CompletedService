@@ -23,5 +23,6 @@ const (
 	Admin
 )
 
-// Checking Timer in
-const Check_time int64 = 86400
+// Checking Timer in order queue
+const Check_time_unit int64 = 3600
+const Check_time_clock int = 24

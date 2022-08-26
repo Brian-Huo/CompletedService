@@ -13,7 +13,6 @@ import (
 	"cleaningservice/service/cleaning/model/category"
 	"cleaningservice/service/cleaning/model/contractor"
 	"cleaningservice/service/cleaning/model/order"
-	"cleaningservice/service/email/rpc/types/email"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -106,16 +105,6 @@ func (l *SurchargeOrderLogic) SurchargeOrder(req *types.SurchargeOrderRequest) (
 		Country_code:   customer_item.CountryCode,
 	}
 
-	// Get customer info for emailing
-	customer_email := email.CustomerMsg{
-		CustomerId:    customer_item.CustomerId,
-		CustomerName:  customer_item.CustomerName,
-		CustomerType:  customer_item.CustomerType,
-		CountryCode:   customer_item.CountryCode,
-		CustomerPhone: customer_item.CustomerPhone,
-		CustomerEmail: customer_item.CustomerEmail,
-	}
-
 	// Get address details
 	address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, order_item.AddressId)
 	if err != nil {
@@ -137,18 +126,6 @@ func (l *SurchargeOrderLogic) SurchargeOrder(req *types.SurchargeOrderRequest) (
 		Formatted:  address_item.Formatted,
 	}
 
-	// Get address info for emailing
-	address_email := email.AddressMsg{
-		AddressId: address_item.AddressId,
-		Street:    address_item.Street,
-		Suburb:    address_item.Suburb,
-		Postcode:  address_item.Postcode,
-		City:      address_item.City,
-		StateCode: address_item.StateCode,
-		Country:   address_item.Country,
-		Formatted: address_item.Formatted,
-	}
-
 	// Get Category Details
 	category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, order_item.CategoryId)
 	if err != nil {
@@ -163,14 +140,6 @@ func (l *SurchargeOrderLogic) SurchargeOrder(req *types.SurchargeOrderRequest) (
 		Category_description: category_item.CategoryDescription,
 	}
 
-	// Get category info for emailing
-	category_email := email.CategoryMsg{
-		CategoryId:          category_item.CategoryId,
-		CategoryAbbr:        category_item.CategoryAddr,
-		CategoryName:        category_item.CategoryName,
-		CategoryDescription: category_item.CategoryDescription,
-	}
-
 	// Get Basic Service Details
 	var basic_items types.SelectedServiceStructure
 	err = json.Unmarshal([]byte(order_item.BasicItems), &basic_items)
@@ -183,29 +152,6 @@ func (l *SurchargeOrderLogic) SurchargeOrder(req *types.SurchargeOrderRequest) (
 	err = json.Unmarshal([]byte(order_item.AdditionalItems.String), &additional_items)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
-	}
-
-	// Get services info for emailing
-	var service_email []*email.ServiceMsg
-	// Get basic service info for emailing
-	service_email = append(service_email, &email.ServiceMsg{
-		ServiceId:          basic_items.Service_id,
-		ServiceScope:       basic_items.Service_scope,
-		ServiceName:        basic_items.Service_name,
-		ServiceDescription: "TODO",
-		ServiceQuantity:    int32(basic_items.Service_quantity),
-		ServicePrice:       basic_items.Service_price,
-	})
-	for _, service_item := range additional_items.Items {
-		// Get additional service info for emailing
-		service_email = append(service_email, &email.ServiceMsg{
-			ServiceId:          service_item.Service_id,
-			ServiceScope:       service_item.Service_scope,
-			ServiceName:        service_item.Service_name,
-			ServiceDescription: "tmp",
-			ServiceQuantity:    int32(service_item.Service_quantity),
-			ServicePrice:       service_item.Service_price,
-		})
 	}
 
 	// Create order response
@@ -237,26 +183,6 @@ func (l *SurchargeOrderLogic) SurchargeOrder(req *types.SurchargeOrderRequest) (
 		Status:                int(order_item.Status),
 		Urgent_flag:           int(order_item.UrgantFlag),
 	}
-
-	// Get order info for emailing
-	order_email := email.OrderMsg{
-		OrderId:        order_item.OrderId,
-		DepositeAmount: order_item.DepositeAmount,
-		FinalAmount:    order_item.FinalAmount,
-		DepositeRate:   int32(order_item.CurrentDepositeRate),
-		GstAmount:      order_item.GstAmount,
-		TotalAmount:    order_item.TotalAmount,
-		ReserveDate:    order_item.ReserveDate.Format("02/01/2006 15:04:05"),
-	}
-
-	// Send order Invoice
-	l.svcCtx.EmailRpc.InvoiceEmail(l.ctx, &email.InvoiceEmailRequest{
-		AddressInfo:  &address_email,
-		CategoryInfo: &category_email,
-		CustomerInfo: &customer_email,
-		ServiceInfo:  service_email,
-		OrderInfo:    &order_email,
-	})
 
 	return &types.SurchargeOrderResponse{
 		Code: 200,

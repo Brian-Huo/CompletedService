@@ -6,6 +6,7 @@ import (
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
+	"cleaningservice/common/orderqueue"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
@@ -61,7 +62,12 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	} else if order_item.Status == order.Pending {
 		return nil, errorx.NewCodeError(401, "Order haven't start yet.")
 	}
-	order_item.Status = order.Unpaid
+
+	// Update order details
+	err = l.svcCtx.BOrderModel.Finish(l.ctx, req.Order_id)
+	if err != nil {
+		return nil, errorx.NewCodeError(500, err.Error())
+	}
 
 	// Get contractor status
 	contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, order_item.ContractorId.Int64)
@@ -77,17 +83,13 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(401, "Contractor is not in work.")
 	}
 
-	// Update order details
-	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
-	if err != nil {
-		return nil, errorx.NewCodeError(500, err.Error())
-	}
-
 	// Update contractor details
 	err = l.svcCtx.BContractorModel.Update(l.ctx, contractor_item)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
+
+	go orderqueue.PushOne(order_item.OrderId)
 
 	return &types.FinishOrderResponse{
 		Code: 200,

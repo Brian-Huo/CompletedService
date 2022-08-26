@@ -75,7 +75,7 @@ func OrderQueueStart() {
 	Init()
 
 	for {
-		time.Sleep(time.Second * time.Duration(variables.Check_time))
+		time.Sleep(time.Second * time.Duration(variables.Check_time_unit))
 		CountOrder()
 		if len(orderawaitqueue) > 0 {
 			SendQueue(AwaitQueueToMsg())

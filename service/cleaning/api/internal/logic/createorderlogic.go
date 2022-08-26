@@ -18,7 +18,6 @@ import (
 	"cleaningservice/service/cleaning/model/payment"
 	"cleaningservice/service/cleaning/model/service"
 	"cleaningservice/service/cleaning/validation"
-	"cleaningservice/service/email/rpc/types/email"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -82,16 +81,6 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	// Get customer info for emailing
-	customer_email := email.CustomerMsg{
-		CustomerId:    customer_item.CustomerId,
-		CustomerName:  customer_item.CustomerName,
-		CustomerType:  customer_item.CustomerType,
-		CountryCode:   customer_item.CountryCode,
-		CustomerPhone: customer_item.CustomerPhone,
-		CustomerEmail: customer_item.CustomerEmail,
-	}
-
 	// Address
 	address_item := &address.BAddress{
 		Street:    req.Address_info.Street,
@@ -116,20 +105,8 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	// Get address info for emailing
-	address_email := email.AddressMsg{
-		AddressId: address_item.AddressId,
-		Street:    address_item.Street,
-		Suburb:    address_item.Suburb,
-		Postcode:  address_item.Postcode,
-		City:      address_item.City,
-		StateCode: address_item.StateCode,
-		Country:   address_item.Country,
-		Formatted: address_item.Formatted,
-	}
-
 	// Get category info for emailing
-	category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, req.Category_id)
+	_, err = l.svcCtx.BCategoryModel.FindOne(l.ctx, req.Category_id)
 	if err != nil {
 		if err == service.ErrNotFound {
 			return nil, errorx.NewCodeError(404, "Invalid, Category not found.")
@@ -137,19 +114,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	// Get category info for emailing
-	category_email := email.CategoryMsg{
-		CategoryId:          category_item.CategoryId,
-		CategoryAbbr:        category_item.CategoryAddr,
-		CategoryName:        category_item.CategoryName,
-		CategoryDescription: category_item.CategoryDescription,
-	}
-
 	// Service
-	// Get services info for emailing
-	var service_email []*email.ServiceMsg
-
-	// Calculate fees and get full service items
 	// Basic Services
 	var item_amount float64 = 0
 	service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, req.Base_items.Service_id)
@@ -159,22 +124,13 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		}
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
+	// Calculate fees and get full service items
 	item_amount += service_item.ServicePrice * float64(req.Base_items.Service_quantity)
 
 	// Get basic items details
 	req.Base_items.Service_name = service_item.ServiceName
 	req.Base_items.Service_scope = service_item.ServiceScope
 	req.Base_items.Service_price = service_item.ServicePrice
-
-	// Get basic service info for emailing
-	service_email = append(service_email, &email.ServiceMsg{
-		ServiceId:          service_item.ServiceId,
-		ServiceScope:       service_item.ServiceScope,
-		ServiceName:        service_item.ServiceName,
-		ServiceDescription: service_item.ServiceDescription,
-		ServiceQuantity:    int32(req.Base_items.Service_quantity),
-		ServicePrice:       service_item.ServicePrice,
-	})
 
 	base_items, err := json.Marshal(req.Base_items)
 	if err != nil {
@@ -196,16 +152,6 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
 		req.Additional_items.Items[index].Service_price = service_item.ServicePrice
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
-
-		// Get additional service info for emailing
-		service_email = append(service_email, &email.ServiceMsg{
-			ServiceId:          service_item.ServiceId,
-			ServiceScope:       service_item.ServiceScope,
-			ServiceName:        service_item.ServiceName,
-			ServiceDescription: service_item.ServiceDescription,
-			ServiceQuantity:    int32(order_service.Service_quantity),
-			ServicePrice:       service_item.ServicePrice,
-		})
 	}
 
 	additional_items, err := json.Marshal(req.Additional_items)
@@ -262,28 +208,10 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	// Get order info for emailing
-	order_email := email.OrderMsg{
-		OrderId:        newId,
-		DepositeAmount: order_item.DepositeAmount,
-		FinalAmount:    order_item.FinalAmount,
-		DepositeRate:   int32(order_item.CurrentDepositeRate),
-		GstAmount:      order_item.GstAmount,
-		TotalAmount:    order_item.TotalAmount,
-		ReserveDate:    order_item.ReserveDate.Format("02/01/2006 15:04:05"),
-	}
-
-	// Send order Invoice
-	l.svcCtx.EmailRpc.InvoiceEmail(l.ctx, &email.InvoiceEmailRequest{
-		AddressInfo:  &address_email,
-		CategoryInfo: &category_email,
-		CustomerInfo: &customer_email,
-		ServiceInfo:  service_email,
-		OrderInfo:    &order_email,
-	})
-
 	// Timing to broadcast the order
 	l.broadcastOrder(newId, req.Category_id)
+
+	go orderqueue.PushOne(newId)
 
 	return &types.CreateOrderResponse{
 		Order_id: newId,
@@ -296,5 +224,5 @@ func (l *CreateOrderLogic) broadcastOrder(orderId int64, categoryId int64) {
 		OrderId: orderId,
 	})
 
-	go orderqueue.Insert(orderId)
+	// go orderqueue.Insert(orderId)
 }
