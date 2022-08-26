@@ -13,22 +13,31 @@ import (
 )
 
 type (
-	AddressMsg           = email.AddressMsg
-	AnnouncementRequest  = email.AnnouncementRequest
-	AnnouncementResponse = email.AnnouncementResponse
-	CategoryMsg          = email.CategoryMsg
-	CustomerMsg          = email.CustomerMsg
-	GeneralEmailRequest  = email.GeneralEmailRequest
-	GeneralEmailResponse = email.GeneralEmailResponse
-	InvoiceEmailRequest  = email.InvoiceEmailRequest
-	InvoiceEmailResponse = email.InvoiceEmailResponse
-	OrderMsg             = email.OrderMsg
-	ServiceMsg           = email.ServiceMsg
+	AddressMsg                      = email.AddressMsg
+	AnnouncementRequest             = email.AnnouncementRequest
+	AnnouncementResponse            = email.AnnouncementResponse
+	CategoryMsg                     = email.CategoryMsg
+	CustomerMsg                     = email.CustomerMsg
+	GeneralEmailRequest             = email.GeneralEmailRequest
+	GeneralEmailResponse            = email.GeneralEmailResponse
+	InvoiceEmailRequest             = email.InvoiceEmailRequest
+	InvoiceEmailResponse            = email.InvoiceEmailResponse
+	OrderAwaitQueueEmailRequest     = email.OrderAwaitQueueEmailRequest
+	OrderAwaitQueueEmailResponse    = email.OrderAwaitQueueEmailResponse
+	OrderMsg                        = email.OrderMsg
+	OrderPaymentQueueEmailRequest   = email.OrderPaymentQueueEmailRequest
+	OrderPaymentQueueEmailResponse  = email.OrderPaymentQueueEmailResponse
+	OrderTransferQueueEmailRequest  = email.OrderTransferQueueEmailRequest
+	OrderTransferQueueEmailResponse = email.OrderTransferQueueEmailResponse
+	ServiceMsg                      = email.ServiceMsg
 
 	Email interface {
 		Announcement(ctx context.Context, in *AnnouncementRequest, opts ...grpc.CallOption) (*AnnouncementResponse, error)
-		InvoiceEmail(ctx context.Context, in *InvoiceEmailRequest, opts ...grpc.CallOption) (*InvoiceEmailResponse, error)
 		GeneralEmail(ctx context.Context, in *GeneralEmailRequest, opts ...grpc.CallOption) (*GeneralEmailResponse, error)
+		InvoiceEmail(ctx context.Context, in *InvoiceEmailRequest, opts ...grpc.CallOption) (*InvoiceEmailResponse, error)
+		OrderAwaitQueueEmail(ctx context.Context, in *OrderAwaitQueueEmailRequest, opts ...grpc.CallOption) (*OrderAwaitQueueEmailResponse, error)
+		OrderPaymentQueueEmail(ctx context.Context, in *OrderPaymentQueueEmailRequest, opts ...grpc.CallOption) (*OrderPaymentQueueEmailResponse, error)
+		OrderTransferQueueEmail(ctx context.Context, in *OrderTransferQueueEmailRequest, opts ...grpc.CallOption) (*OrderTransferQueueEmailResponse, error)
 	}
 
 	defaultEmail struct {
@@ -47,12 +56,27 @@ func (m *defaultEmail) Announcement(ctx context.Context, in *AnnouncementRequest
 	return client.Announcement(ctx, in, opts...)
 }
 
+func (m *defaultEmail) GeneralEmail(ctx context.Context, in *GeneralEmailRequest, opts ...grpc.CallOption) (*GeneralEmailResponse, error) {
+	client := email.NewEmailClient(m.cli.Conn())
+	return client.GeneralEmail(ctx, in, opts...)
+}
+
 func (m *defaultEmail) InvoiceEmail(ctx context.Context, in *InvoiceEmailRequest, opts ...grpc.CallOption) (*InvoiceEmailResponse, error) {
 	client := email.NewEmailClient(m.cli.Conn())
 	return client.InvoiceEmail(ctx, in, opts...)
 }
 
-func (m *defaultEmail) GeneralEmail(ctx context.Context, in *GeneralEmailRequest, opts ...grpc.CallOption) (*GeneralEmailResponse, error) {
+func (m *defaultEmail) OrderAwaitQueueEmail(ctx context.Context, in *OrderAwaitQueueEmailRequest, opts ...grpc.CallOption) (*OrderAwaitQueueEmailResponse, error) {
 	client := email.NewEmailClient(m.cli.Conn())
-	return client.GeneralEmail(ctx, in, opts...)
+	return client.OrderAwaitQueueEmail(ctx, in, opts...)
+}
+
+func (m *defaultEmail) OrderPaymentQueueEmail(ctx context.Context, in *OrderPaymentQueueEmailRequest, opts ...grpc.CallOption) (*OrderPaymentQueueEmailResponse, error) {
+	client := email.NewEmailClient(m.cli.Conn())
+	return client.OrderPaymentQueueEmail(ctx, in, opts...)
+}
+
+func (m *defaultEmail) OrderTransferQueueEmail(ctx context.Context, in *OrderTransferQueueEmailRequest, opts ...grpc.CallOption) (*OrderTransferQueueEmailResponse, error) {
+	client := email.NewEmailClient(m.cli.Conn())
+	return client.OrderTransferQueueEmail(ctx, in, opts...)
 }
