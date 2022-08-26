@@ -5,7 +5,6 @@ import (
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
-	"cleaningservice/common/orderqueue"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
@@ -85,5 +84,6 @@ func (l *AcceptOperationLogic) AcceptOperation(req *types.AcceptOperationRequest
 
 func (l *AcceptOperationLogic) removeBroadcast(groupId int64, orderId int64) {
 	go l.svcCtx.BBroadcastModel.Delete(groupId, orderId)
-	go orderqueue.Delete(orderId)
+	go l.svcCtx.RAwaitQueueModel.Delete(orderId)
+	go l.svcCtx.RTransferQueueModel.Delete(orderId)
 }

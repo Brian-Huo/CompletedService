@@ -5,11 +5,11 @@ import (
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
-	"cleaningservice/common/orderqueue"
 	"cleaningservice/common/variables"
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/order"
+	"cleaningservice/service/cleaning/model/orderqueue/transferqueue"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -68,8 +68,8 @@ func (l *TransferOperationLogic) TransferOperation(req *types.TransferOperationR
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	// TODO: Signal tranfer order
-	go orderqueue.OrderTransferStart(order_item.OrderId, customer_item.CustomerPhone)
+	//Record tranfer order
+	go l.svcCtx.RTransferQueueModel.Insert(&transferqueue.RTransferQueue{OrderId: req.Order_id, Contact: customer_item.CustomerPhone})
 
 	return &types.TransferOperationResponse{
 		Code: 200,

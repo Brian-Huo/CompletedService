@@ -15,6 +15,7 @@ import (
 	"cleaningservice/service/cleaning/model/broadcast"
 	"cleaningservice/service/cleaning/model/customer"
 	"cleaningservice/service/cleaning/model/order"
+	"cleaningservice/service/cleaning/model/orderqueue/awaitqueue"
 	"cleaningservice/service/cleaning/model/payment"
 	"cleaningservice/service/cleaning/model/service"
 	"cleaningservice/service/cleaning/validation"
@@ -211,8 +212,6 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	// Timing to broadcast the order
 	l.broadcastOrder(newId, req.Category_id)
 
-	go orderqueue.PushOne(newId)
-
 	return &types.CreateOrderResponse{
 		Order_id: newId,
 	}, nil
@@ -224,5 +223,6 @@ func (l *CreateOrderLogic) broadcastOrder(orderId int64, categoryId int64) {
 		OrderId: orderId,
 	})
 
-	// go orderqueue.Insert(orderId)
+	go orderqueue.PushOne(orderId)
+	go l.svcCtx.RAwaitQueueModel.Insert(&awaitqueue.RAwaitQueue{OrderId: orderId, Vacancy: 0})
 }
