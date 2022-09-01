@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"strconv"
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
@@ -10,6 +11,7 @@ import (
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/order"
 	"cleaningservice/service/cleaning/model/orderqueue/transferqueue"
+	"cleaningservice/service/email/rpc/types/email"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -68,8 +70,11 @@ func (l *TransferOperationLogic) TransferOperation(req *types.TransferOperationR
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	//Record tranfer order
+	// Record tranfer order
 	go l.svcCtx.RTransferQueueModel.Insert(&transferqueue.RTransferQueue{OrderId: req.Order_id, Contact: customer_item.CustomerPhone})
+
+	// Send transfer reminder email
+	go l.svcCtx.EmailRpc.OrderTransferQueueEmail(l.ctx, &email.OrderTransferQueueEmailRequest{OrderId: strconv.FormatInt(order_item.OrderId, 10), Contact: customer_item.CustomerPhone})
 
 	return &types.TransferOperationResponse{
 		Code: 200,

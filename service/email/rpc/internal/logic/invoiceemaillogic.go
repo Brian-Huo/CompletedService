@@ -126,7 +126,7 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 	emailPayment := fmt.Sprintf("<p>When making payment, you must include your Reference number <em>%s</em> stated in your invoice.</p><br>", doc.Ref)
 
 	// Send email
-	go util.Send(target, subject, emailHi+emailGreetings+emailMain+emailPayment, invoiceLocation)
+	go util.SendToClient(target, subject, emailHi+emailGreetings+emailMain+emailPayment, invoiceLocation)
 
 	return &email.InvoiceEmailResponse{
 		Code: 200,

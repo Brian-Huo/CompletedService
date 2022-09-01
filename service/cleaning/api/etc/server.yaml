@@ -1,6 +1,6 @@
 Name: Server
 Host: 0.0.0.0
-Port: 80
+Port: 5099
 
 Mysql:
   DataSource: root:123456@tcp(127.0.0.1:3306)/cleaningservice?charset=utf8mb4&parseTime=true

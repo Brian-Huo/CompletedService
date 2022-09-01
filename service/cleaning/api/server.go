@@ -45,7 +45,7 @@ func orderQueueInit(svcCtx *svc.ServiceContext) {
 			l := logic.NewSendReminderRequestLogic(context.TODO(), svcCtx)
 			err := l.SendReminderRequest()
 			if err != nil {
-				logx.Alert("Send reminder emails failed")
+				logx.Alert("Order queue system failed")
 			}
 		}
 	}
