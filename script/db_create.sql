@@ -25,7 +25,7 @@ CREATE TABLE `b_address` (
     postcode char(4) NOT NULL,
     city varchar(50) NOT NULL,
     state_code char(3) NOT NULL,
-    country char(2) NOT NULL DEFAULT 'AU',
+    country varchar(35) NOT NULL DEFAULT 'Australia',
     lat DECIMAL(10, 8) NOT NULL,
     lng DECIMAL(11, 8) NOT NULL,
     formatted varchar(255) NOT NULL,
