@@ -20,6 +20,11 @@
 default.etcd/
 
 # Ignore images
-**/static/images/
+**/static/images/*
+**/service/images/contractor/*
+# Don't igonre business images
+!**/static/images/contractor/
+!**/static/images/logos/
+!**/static/images/service/
 # Ignore invoice pdf
 **/static/invoices/
