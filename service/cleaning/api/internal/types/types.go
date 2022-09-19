@@ -57,9 +57,10 @@ type CreateAddressRequest struct {
 	Street     string  `json:"street"`
 	Suburb     string  `json:"suburb"`
 	Postcode   string  `json:"postcode"`
+	Property   string  `json:"property"`
 	City       string  `json:"city"`
 	State_code string  `json:"state_code"`
-	Country    string  `json:"country"`
+	State_name string  `json:"state_name"`
 	Lat        float64 `json:"lat"`
 	Lng        float64 `json:"lng"`
 	Formatted  string  `json:"formatted"`
@@ -74,9 +75,10 @@ type UpdateAddressRequest struct {
 	Street     string  `json:"street"`
 	Suburb     string  `json:"suburb"`
 	Postcode   string  `json:"postcode"`
+	Property   string  `json:"property"`
 	City       string  `json:"city"`
 	State_code string  `json:"state_code"`
-	Country    string  `json:"country"`
+	State_name string  `json:"state_name"`
 	Lat        float64 `json:"lat"`
 	Lng        float64 `json:"lng"`
 	Formatted  string  `json:"formatted"`
@@ -105,9 +107,10 @@ type DetailAddressResponse struct {
 	Street     string  `json:"street"`
 	Suburb     string  `json:"suburb"`
 	Postcode   string  `json:"postcode"`
+	Property   string  `json:"property"`
 	City       string  `json:"city"`
 	State_code string  `json:"state_code"`
-	Country    string  `json:"country"`
+	State_name string  `json:"state_name"`
 	Lat        float64 `json:"lat"`
 	Lng        float64 `json:"lng"`
 	Formatted  string  `json:"formatted"`
@@ -338,7 +341,8 @@ type FinishOrderResponse struct {
 
 type PayOrderRequest struct {
 	Order_id   int64                `json:"order_id"`
-	Final_info CreatePaymentRequest `json:"final_info"`
+	Pay_info   CreatePaymentRequest `json:"pay_info"`
+	Pay_amount float64              `json:"pay_amount"`
 }
 
 type PayOrderResponse struct {
@@ -397,24 +401,22 @@ type DetailOrderResponse struct {
 	Category              DetailCategoryResponse   `json:"category"`
 	Basic_items           SelectedServiceStructure `json:"basic_items"`
 	Additional_items      SelectedServiceList      `json:"additional_items"`
-	Deposite_payment      int64                    `json:"deposite_payment"`
-	Deposite_amount       float64                  `json:"deposite_amount"`
-	Deposite_date         string                   `json:"deposite_date"`
-	Final_payment         int64                    `json:"final_payment"`
-	Final_amount          float64                  `json:"final_amount"`
-	Final_payment_date    string                   `json:"final_payment_date"`
+	Order_description     string                   `json:"order_description"`
+	Order_comments        string                   `json:"order_comments"`
 	Current_deposite_rate int                      `json:"current_deposite_rate"`
+	Deposite_amount       float64                  `json:"deposite_amount"`
+	Final_amount          float64                  `json:"final_amount"`
 	Item_amount           float64                  `json:"item_amount"`
 	Gst_amount            float64                  `json:"gst_amount"`
 	Surcharge_item        string                   `json:"surcharge_item"`
 	Surcharge_rate        int                      `json:"surcharge_rate"`
 	Surcharge_amount      float64                  `json:"surcharge_amount"`
-	Total_fee             float64                  `json:"total_fee"`
-	Order_description     string                   `json:"order_description"`
-	Order_comments        string                   `json:"order_comments"`
+	Total_amount          float64                  `json:"total_amount"`
+	Balance_amount        float64                  `json:"balance_amount"`
 	Post_date             string                   `json:"post_date"`
 	Reserve_date          string                   `json:"reserve_date"`
 	Finish_date           string                   `json:"finish_date"`
+	Payment_date          string                   `json:"payment_date"`
 	Status                int                      `json:"status"`
 	Urgent_flag           int                      `json:"urgent_flag"`
 }
@@ -466,6 +468,12 @@ type DetailServiceResponse struct {
 	Service_photo       string                 `json:"service_photo"`
 	Service_description string                 `json:"service_description"`
 	Service_price       float64                `json:"service_price"`
+}
+
+type EnquireServiceRequest struct {
+	Category_id int64  `json:"category_id"`
+	Postcode    string `json:"postcode"`
+	Property    string `json:"property"`
 }
 
 type ListServiceRequest struct {

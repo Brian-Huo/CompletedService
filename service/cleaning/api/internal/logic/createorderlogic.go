@@ -17,10 +17,13 @@ import (
 	"cleaningservice/service/cleaning/model/order"
 	"cleaningservice/service/cleaning/model/orderqueue/awaitqueue"
 	"cleaningservice/service/cleaning/model/payment"
+	"cleaningservice/service/cleaning/model/property"
+	"cleaningservice/service/cleaning/model/region"
 	"cleaningservice/service/cleaning/model/service"
 	"cleaningservice/service/cleaning/validation"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/status"
 )
 
 type CreateOrderLogic struct {
@@ -82,14 +85,22 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
+	// Region
+	region_item := &region.BRegion{
+		RegionName: req.Address_info.Suburb,
+		RegionType: "Suburb",
+		Postcode:   req.Address_info.Postcode,
+		StateCode:  req.Address_info.State_code,
+		StateName:  req.Address_info.State_name,
+	}
+
 	// Address
 	address_item := &address.BAddress{
 		Street:    req.Address_info.Street,
 		Suburb:    req.Address_info.Suburb,
 		Postcode:  req.Address_info.Postcode,
+		Property:  req.Address_info.Property,
 		City:      req.Address_info.City,
-		StateCode: req.Address_info.State_code,
-		Country:   req.Address_info.Country,
 		Lat:       req.Address_info.Lat,
 		Lng:       req.Address_info.Lng,
 		Formatted: req.Address_info.Formatted,
@@ -100,10 +111,24 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, "Invalid address details"+err.Error())
 	}
 
+	// Enquire region
+	region_item, err = l.svcCtx.BRgionModel.Enquire(l.ctx, region_item)
+	if err != nil {
+		return nil, errorx.NewCodeError(500, err.Error())
+	}
 	// Enquire address
 	err = l.svcCtx.BAddressModel.Enquire(l.ctx, address_item)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
+	}
+
+	// Get Property details
+	property_item, err := l.svcCtx.BPorpertyModel.FindOneByPropertyName(l.ctx, address_item.Property)
+	if err != nil {
+		if err == property.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Property type not found.")
+		}
+		return nil, status.Error(500, err.Error())
 	}
 
 	// Get category info for emailing
@@ -131,7 +156,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	// Get basic items details
 	req.Base_items.Service_name = service_item.ServiceName
 	req.Base_items.Service_scope = service_item.ServiceScope
-	req.Base_items.Service_price = service_item.ServicePrice
+	req.Base_items.Service_price = service_item.ServicePrice * float64(region_item.ChargeAmount+property_item.ChargeAmount)
 
 	base_items, err := json.Marshal(req.Base_items)
 	if err != nil {
@@ -151,7 +176,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
-		req.Additional_items.Items[index].Service_price = service_item.ServicePrice
+		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(region_item.ChargeAmount+property_item.ChargeAmount)
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 
@@ -182,20 +207,18 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		CategoryId:          req.Category_id,
 		BasicItems:          string(base_items),
 		AdditionalItems:     sql.NullString{String: string(additional_items), Valid: len(req.Additional_items.Items) > 0},
-		DepositePayment:     sql.NullInt64{Int64: payment_item.PaymentId, Valid: payment_item.PaymentId != 0},
-		DepositeAmount:      deposite_amount,
-		DepositeDate:        sql.NullTime{Time: time.Now(), Valid: payment_item.PaymentId != 0},
-		FinalPayment:        sql.NullInt64{Int64: 0, Valid: false},
-		FinalAmount:         final_amount,
-		FinalPaymentDate:    sql.NullTime{Time: time.Now().Add(time.Hour * 168), Valid: false},
+		OrderDescription:    sql.NullString{String: req.Order_description, Valid: true},
 		CurrentDepositeRate: int64(variables.Deposite_rate),
+		DepositeAmount:      deposite_amount,
+		FinalAmount:         final_amount,
 		ItemAmount:          item_amount,
 		GstAmount:           gst_amount,
 		TotalAmount:         total_amount,
-		OrderDescription:    sql.NullString{String: req.Order_description, Valid: true},
+		BalanceAmount:       0,
 		PostDate:            time.Now(),
 		ReserveDate:         reserve_date,
 		FinishDate:          sql.NullTime{Time: time.Now(), Valid: false},
+		PaymentDate:         sql.NullTime{Time: time.Now(), Valid: false},
 		Status:              order.Queuing,
 		UrgantFlag:          0,
 	}

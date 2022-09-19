@@ -59,7 +59,7 @@ func (m *defaultBContractorModel) Resign(ctx context.Context, contractorId int64
 	bContractorContractorIdKey := fmt.Sprintf("%s%v", cacheBContractorContractorIdPrefix, data.ContractorId)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `contractor_id` = ?", m.table, bContractorRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus, data.OrderId, data.ContractorId)
+		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus, data.ContractorId)
 	}, bContractorContractorIdKey, bContractorContactDetailsKey)
 	return err
 }

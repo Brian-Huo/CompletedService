@@ -15,6 +15,8 @@ import (
 	"cleaningservice/service/cleaning/model/orderqueue/paymentqueue"
 	"cleaningservice/service/cleaning/model/orderqueue/transferqueue"
 	"cleaningservice/service/cleaning/model/payment"
+	"cleaningservice/service/cleaning/model/property"
+	"cleaningservice/service/cleaning/model/region"
 	"cleaningservice/service/cleaning/model/service"
 	"cleaningservice/service/cleaning/model/subscription"
 	"cleaningservice/service/email/rpc/email"
@@ -37,6 +39,8 @@ type ServiceContext struct {
 	BOrderModel        order.BOrderModel
 	ROrderDelayModel   orderdelay.ROrderDelayModel
 	BPaymentModel      payment.BPaymentModel
+	BPorpertyModel     property.BPropertyModel
+	BRgionModel        region.BRegionModel
 	BServiceModel      service.BServiceModel
 	RSubscriptionModel subscription.RSubscriptionModel
 
@@ -65,6 +69,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		ROrderDelayModel:   orderdelay.NewROrderDelayModel(c.RedisConf),
 		BOperationModel:    operation.NewBOperationModel(conn, c.CacheRedis),
 		BPaymentModel:      payment.NewBPaymentModel(conn, c.CacheRedis),
+		BPorpertyModel:     property.NewBPropertyModel(conn, c.CacheRedis),
+		BRgionModel:        region.NewBRegionModel(conn, c.CacheRedis),
 		BServiceModel:      service.NewBServiceModel(conn, c.CacheRedis),
 		RSubscriptionModel: subscription.NewRSubscriptionModel(conn, c.CacheRedis, c.RedisConf),
 

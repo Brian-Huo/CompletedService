@@ -12,6 +12,7 @@ import (
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/address"
 	"cleaningservice/service/cleaning/model/customer"
+	"cleaningservice/service/cleaning/model/region"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -77,14 +78,28 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 			return nil, errorx.NewCodeError(500, "Address update is futher less than 12 hours.")
 		}
 
+		// Modify region details
+		if req.Address_info.Postcode != address_item.Postcode {
+			// Check address region
+			_, err = l.svcCtx.BRgionModel.Enquire(l.ctx, &region.BRegion{
+				RegionName: req.Address_info.Suburb,
+				RegionType: "Suburb",
+				Postcode:   req.Address_info.Postcode,
+				StateCode:  req.Address_info.State_code,
+				StateName:  req.Address_info.State_name,
+			})
+			if err != nil {
+				return nil, errorx.NewCodeError(500, err.Error())
+			}
+		}
+
 		// Modify address details
 		err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
 			Street:    req.Address_info.Street,
 			Suburb:    req.Address_info.Suburb,
 			Postcode:  req.Address_info.Postcode,
+			Property:  req.Address_info.Property,
 			City:      req.Address_info.City,
-			StateCode: req.Address_info.State_code,
-			Country:   req.Address_info.Country,
 			Lat:       req.Address_info.Lat,
 			Lng:       req.Address_info.Lng,
 			Formatted: req.Address_info.Formatted,

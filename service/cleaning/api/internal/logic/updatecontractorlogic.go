@@ -12,6 +12,7 @@ import (
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/address"
 	"cleaningservice/service/cleaning/model/contractor"
+	"cleaningservice/service/cleaning/model/region"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -69,6 +70,17 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 		}
 	}
 
+	// Check region details
+	_, err = l.svcCtx.BRgionModel.Enquire(l.ctx, &region.BRegion{
+		RegionName: req.Address_info.Suburb,
+		RegionType: "Suburb",
+		Postcode:   req.Address_info.Postcode,
+		StateCode:  req.Address_info.State_code,
+		StateName:  req.Address_info.State_name,
+	})
+	if err != nil {
+		return nil, errorx.NewCodeError(500, err.Error())
+	}
 	// Update address details
 	if !contractor_item.AddressId.Valid {
 		// Create new address
@@ -76,9 +88,8 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 			Street:    req.Address_info.Street,
 			Suburb:    req.Address_info.Suburb,
 			Postcode:  req.Address_info.Postcode,
+			Property:  req.Address_info.Property,
 			City:      req.Address_info.City,
-			StateCode: req.Address_info.State_code,
-			Country:   req.Address_info.Country,
 			Lat:       req.Address_info.Lat,
 			Lng:       req.Address_info.Lng,
 			Formatted: req.Address_info.Formatted,
@@ -103,9 +114,8 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 				Street:    req.Address_info.Street,
 				Suburb:    req.Address_info.Suburb,
 				Postcode:  req.Address_info.Postcode,
+				Property:  req.Address_info.Property,
 				City:      req.Address_info.City,
-				StateCode: req.Address_info.State_code,
-				Country:   req.Address_info.Country,
 				Lat:       req.Address_info.Lat,
 				Lng:       req.Address_info.Lng,
 				Formatted: req.Address_info.Formatted,
@@ -127,7 +137,6 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 		AddressId:       contractor_item.AddressId,
 		LinkCode:        contractor_item.LinkCode,
 		WorkStatus:      contractor_item.WorkStatus,
-		OrderId:         contractor_item.OrderId,
 	})
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())

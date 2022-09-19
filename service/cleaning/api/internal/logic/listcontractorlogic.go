@@ -8,6 +8,7 @@ import (
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/contractor"
+	"cleaningservice/service/cleaning/model/region"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -67,7 +68,6 @@ func (l *ListContractorLogic) ListContractor(req *types.ListContractorRequest) (
 			Postcode:   "Not Found",
 			City:       "Not Found",
 			State_code: "Not Found",
-			Country:    "Not Found",
 			Lng:        -1,
 			Lat:        -1,
 			Formatted:  "Not Found",
@@ -75,13 +75,23 @@ func (l *ListContractorLogic) ListContractor(req *types.ListContractorRequest) (
 
 		address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, item.AddressId.Int64)
 		if err == nil {
+			// Get region details
+			region_item, err := l.svcCtx.BRgionModel.FindOneByPostcode(l.ctx, address_item.Postcode)
+			if err != nil {
+				if err == region.ErrNotFound {
+					return nil, status.Error(404, "Invalid, Region not found.")
+				}
+				return nil, status.Error(500, err.Error())
+			}
+
 			address_response.Address_id = address_item.AddressId
 			address_response.Street = address_item.Street
 			address_response.Suburb = address_item.Suburb
 			address_response.Postcode = address_item.Postcode
+			address_response.Property = address_item.Property
 			address_response.City = address_item.City
-			address_response.State_code = address_item.StateCode
-			address_response.Country = address_item.Country
+			address_response.State_code = region_item.StateCode
+			address_response.State_name = region_item.StateName
 			address_response.Lat = address_item.Lat
 			address_response.Lng = address_item.Lng
 			address_response.Formatted = address_item.Formatted
@@ -92,6 +102,9 @@ func (l *ListContractorLogic) ListContractor(req *types.ListContractorRequest) (
 		if err != nil {
 			return nil, status.Error(404, "Invalid, Category list not found.")
 		}
+
+		// Get contractor current working order
+		cur_order, _ := l.svcCtx.BOrderModel.FindCurrentWorkingOneByContractor(l.ctx, item.ContractorId)
 
 		// Get contractor details
 		contractor_response := types.DetailContractorResponse{
@@ -104,7 +117,7 @@ func (l *ListContractorLogic) ListContractor(req *types.ListContractorRequest) (
 			Finance_id:       item.FinanceId,
 			Link_code:        item.LinkCode,
 			Work_status:      int(item.WorkStatus),
-			Order_id:         item.OrderId.Int64,
+			Order_id:         cur_order,
 			Category_list:    *category_list,
 		}
 

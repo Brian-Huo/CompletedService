@@ -12,6 +12,7 @@ import (
 	"cleaningservice/service/cleaning/model/address"
 	"cleaningservice/service/cleaning/model/company"
 	"cleaningservice/service/cleaning/model/payment"
+	"cleaningservice/service/cleaning/model/region"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -46,14 +47,14 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 		return nil, status.Error(500, err.Error())
 	}
 
-	payment_struct := payment.BPayment{
+	payment_item := payment.BPayment{
 		CardNumber:   req.Payment_info.Card_number,
 		HolderName:   req.Payment_info.Holder_name,
 		ExpiryTime:   exp_time,
 		SecurityCode: req.Payment_info.Security_code,
 	}
 
-	payRes, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment_struct)
+	payRes, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -64,19 +65,31 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 	}
 
 	// Create address for company
-	address_struct := address.BAddress{
+	// Check address region
+	region_item := region.BRegion{
+		RegionName: req.Address_info.Suburb,
+		RegionType: "Suburb",
+		Postcode:   req.Address_info.Postcode,
+		StateCode:  req.Address_info.State_code,
+		StateName:  req.Address_info.State_name,
+	}
+	_, err = l.svcCtx.BRgionModel.Enquire(l.ctx, &region_item)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	address_item := address.BAddress{
 		Street:    req.Address_info.Street,
 		Suburb:    req.Address_info.Suburb,
 		Postcode:  req.Address_info.Postcode,
+		Property:  req.Address_info.Property,
 		City:      req.Address_info.City,
-		StateCode: req.Address_info.State_code,
-		Country:   req.Address_info.Country,
 		Lat:       req.Address_info.Lat,
 		Lng:       req.Address_info.Lng,
 		Formatted: req.Address_info.Formatted,
 	}
 
-	addressRes, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_struct)
+	addressRes, err := l.svcCtx.BAddressModel.Insert(l.ctx, &address_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
@@ -87,17 +100,17 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 	}
 
 	// Create company details
-	company_struct := company.BCompany{
+	company_item := company.BCompany{
 		CompanyName:       req.Company_name,
 		PaymentId:         sql.NullInt64{Int64: paymentId, Valid: true},
 		DirectorName:      sql.NullString{String: req.Director_name, Valid: req.Director_name != ""},
 		ContactDetails:    req.Contact_details,
-		RegisteredAddress: sql.NullInt64{Int64: addressId, Valid: true},
+		RegisteredAddress: addressId,
 		DepositeRate:      int64(req.Deposite_rate),
 		FinanceStatus:     company.Active,
 	}
 
-	res, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &company_struct)
+	res, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &company_item)
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}

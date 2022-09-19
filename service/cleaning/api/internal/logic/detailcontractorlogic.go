@@ -33,6 +33,7 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 		return nil, status.Error(500, "Invalid, JWT format error")
 	}
 
+	// Get contractor details
 	var contractor_item *contractor.BContractor
 	if role == variables.Company {
 		contractor_item, err = l.svcCtx.BContractorModel.FindOne(l.ctx, req.Contractor_id)
@@ -71,16 +72,20 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 	// Get address details
 	address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, contractor_item.AddressId.Int64)
 	if err == nil {
-		address_response.Address_id = address_item.AddressId
-		address_response.Street = address_item.Street
-		address_response.Suburb = address_item.Suburb
-		address_response.Postcode = address_item.Postcode
-		address_response.City = address_item.City
-		address_response.State_code = address_item.StateCode
-		address_response.Country = address_item.Country
-		address_response.Lat = address_item.Lat
-		address_response.Lng = address_item.Lng
-		address_response.Formatted = address_item.Formatted
+		region_item, err := l.svcCtx.BRgionModel.FindOneByPostcode(l.ctx, address_item.Postcode)
+		if err == nil {
+			address_response.Address_id = address_item.AddressId
+			address_response.Street = address_item.Street
+			address_response.Suburb = address_item.Suburb
+			address_response.Postcode = address_item.Postcode
+			address_response.Property = address_item.Property
+			address_response.City = address_item.City
+			address_response.State_code = region_item.StateCode
+			address_response.State_name = region_item.StateName
+			address_response.Lat = address_item.Lat
+			address_response.Lng = address_item.Lng
+			address_response.Formatted = address_item.Formatted
+		}
 	}
 
 	// Get category details
@@ -88,6 +93,9 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 	if err != nil {
 		return nil, status.Error(404, "Invalid, Category list not found.")
 	}
+
+	// Get contractor current working order
+	cur_order, _ := l.svcCtx.BOrderModel.FindCurrentWorkingOneByContractor(l.ctx, contractor_item.ContractorId)
 
 	return &types.DetailContractorResponse{
 		Contractor_id:    contractor_item.ContractorId,
@@ -99,7 +107,7 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 		Finance_id:       contractor_item.FinanceId,
 		Link_code:        contractor_item.LinkCode,
 		Work_status:      int(contractor_item.WorkStatus),
-		Order_id:         contractor_item.OrderId.Int64,
+		Order_id:         cur_order,
 		Category_list:    *category_list,
 	}, nil
 }

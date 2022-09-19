@@ -12,6 +12,7 @@ import (
 	"cleaningservice/service/cleaning/model/category"
 	"cleaningservice/service/cleaning/model/contractor"
 	"cleaningservice/service/cleaning/model/order"
+	"cleaningservice/service/cleaning/model/region"
 	"cleaningservice/util"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -104,6 +105,14 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 				}
 				return nil, status.Error(500, "Find Address2: "+err.Error())
 			}
+			// Get region details
+			order_region, err := l.svcCtx.BRgionModel.FindOneByPostcode(l.ctx, order_address.Postcode)
+			if err != nil {
+				if err == region.ErrNotFound {
+					return nil, status.Error(404, "Invalid, Region not found.")
+				}
+				return nil, status.Error(500, err.Error())
+			}
 
 			// Valid order distance
 			if noAddress {
@@ -152,9 +161,10 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 					Street:     order_address.Street,
 					Suburb:     order_address.Suburb,
 					Postcode:   order_address.Postcode,
+					Property:   order_address.Property,
 					City:       order_address.City,
-					State_code: order_address.StateCode,
-					Country:    order_address.Country,
+					State_code: order_region.StateCode,
+					State_name: order_region.StateName,
 					Lat:        order_address.Lat,
 					Lng:        order_address.Lng,
 					Formatted:  order_address.Formatted,
@@ -167,22 +177,22 @@ func (l *RecommendOrderLogic) RecommendOrder(req *types.RecommendOrderRequest) (
 				},
 				Basic_items:           basic_items,
 				Additional_items:      additional_items,
-				Deposite_payment:      order_item.DepositePayment.Int64,
-				Deposite_amount:       order_item.DepositeAmount,
+				Order_description:     order_item.OrderDescription.String,
+				Order_comments:        order_item.OrderComments.String,
 				Current_deposite_rate: int(order_item.CurrentDepositeRate),
-				Deposite_date:         order_item.DepositeDate.Time.Format("2006-01-02 15:04:05"),
-				Final_payment:         order_item.FinalPayment.Int64,
+				Deposite_amount:       order_item.DepositeAmount,
 				Final_amount:          order_item.FinalAmount,
-				Final_payment_date:    order_item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
+				Item_amount:           order_item.ItemAmount,
 				Gst_amount:            order_item.GstAmount,
 				Surcharge_item:        order_item.SurchargeItem,
 				Surcharge_rate:        int(order_item.SurchargeRate),
-				Surcharge_amount:      order_item.ItemAmount,
-				Total_fee:             order_item.TotalAmount,
-				Order_description:     order_item.OrderDescription.String,
+				Surcharge_amount:      order_item.SurchargeAmount,
+				Total_amount:          order_item.TotalAmount,
+				Balance_amount:        order_item.BalanceAmount,
 				Post_date:             order_item.PostDate.Format("2006-01-02 15:04:05"),
 				Reserve_date:          order_item.ReserveDate.Format("2006-01-02 15:04:05"),
 				Finish_date:           order_item.FinishDate.Time.Format("2006-01-02 15:04:05"),
+				Payment_date:          order_item.PaymentDate.Time.Format("2006-01-02 15:04:05"),
 				Status:                int(order_item.Status),
 				Urgent_flag:           int(order_item.UrgantFlag),
 			}

@@ -53,7 +53,7 @@ func (l *DetailCompanyLogic) DetailCompany(req *types.DetailCompanyRequest) (res
 		Payment_id:         res.PaymentId.Int64,
 		Director_name:      res.DirectorName.String,
 		Contact_details:    res.ContactDetails,
-		Registered_address: res.RegisteredAddress.Int64,
+		Registered_address: res.RegisteredAddress,
 		Deposite_rate:      resp.Deposite_rate,
 	}, nil
 }

@@ -11,6 +11,7 @@ import (
 	"cleaningservice/service/cleaning/model/category"
 	"cleaningservice/service/cleaning/model/contractor"
 	"cleaningservice/service/cleaning/model/order"
+	"cleaningservice/service/cleaning/model/region"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
@@ -79,19 +80,27 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 			}
 			return nil, status.Error(500, err.Error())
 		}
+		// Get region details
+		region_item, err := l.svcCtx.BRgionModel.FindOneByPostcode(l.ctx, address_item.Postcode)
+		if err != nil {
+			if err == region.ErrNotFound {
+				return nil, status.Error(404, "Invalid, Region not found.")
+			}
+			return nil, status.Error(500, err.Error())
+		}
 		address_response := types.DetailAddressResponse{
 			Address_id: address_item.AddressId,
 			Street:     address_item.Street,
 			Suburb:     address_item.Suburb,
 			Postcode:   address_item.Postcode,
+			Property:   address_item.Property,
 			City:       address_item.City,
-			State_code: address_item.StateCode,
-			Country:    address_item.Country,
+			State_code: region_item.StateCode,
+			State_name: region_item.StateName,
 			Lat:        address_item.Lat,
 			Lng:        address_item.Lng,
 			Formatted:  address_item.Formatted,
 		}
-
 		// Get contractor details
 		contractor_item, err := l.svcCtx.BContractorModel.FindOne(l.ctx, item.ContractorId.Int64)
 		if err != nil {
@@ -149,28 +158,28 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 		order_response := types.DetailOrderResponse{
 			Order_id:              item.OrderId,
 			Customer_info:         customer_response,
-			Contractor_info:       contractor_response,
 			Address_info:          address_response,
+			Contractor_info:       contractor_response,
 			Finance_id:            item.FinanceId.Int64,
 			Category:              category_response,
 			Basic_items:           basic_items,
 			Additional_items:      additional_items,
-			Deposite_payment:      item.DepositePayment.Int64,
-			Deposite_amount:       item.DepositeAmount,
+			Order_description:     item.OrderDescription.String,
+			Order_comments:        item.OrderComments.String,
 			Current_deposite_rate: int(item.CurrentDepositeRate),
-			Deposite_date:         item.DepositeDate.Time.Format("2006-01-02 15:04:05"),
-			Final_payment:         item.FinalPayment.Int64,
+			Deposite_amount:       item.DepositeAmount,
 			Final_amount:          item.FinalAmount,
-			Final_payment_date:    item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
+			Item_amount:           item.ItemAmount,
 			Gst_amount:            item.GstAmount,
 			Surcharge_item:        item.SurchargeItem,
 			Surcharge_rate:        int(item.SurchargeRate),
-			Surcharge_amount:      item.ItemAmount,
-			Total_fee:             item.TotalAmount,
-			Order_description:     item.OrderDescription.String,
+			Surcharge_amount:      item.SurchargeAmount,
+			Total_amount:          item.TotalAmount,
+			Balance_amount:        item.BalanceAmount,
 			Post_date:             item.PostDate.Format("2006-01-02 15:04:05"),
 			Reserve_date:          item.ReserveDate.Format("2006-01-02 15:04:05"),
 			Finish_date:           item.FinishDate.Time.Format("2006-01-02 15:04:05"),
+			Payment_date:          item.PaymentDate.Time.Format("2006-01-02 15:04:05"),
 			Status:                int(item.Status),
 			Urgent_flag:           int(item.UrgantFlag),
 		}

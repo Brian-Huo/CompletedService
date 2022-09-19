@@ -14,6 +14,8 @@ import (
 	"cleaningservice/service/cleaning/model/category"
 	"cleaningservice/service/cleaning/model/contractor"
 	"cleaningservice/service/cleaning/model/order"
+	"cleaningservice/service/cleaning/model/property"
+	"cleaningservice/service/cleaning/model/region"
 	"cleaningservice/service/cleaning/model/service"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -56,6 +58,33 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 		return nil, errorx.NewCodeError(401, "Invalid, Not assigned contractor.")
 	}
 
+	// Get address details
+	address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, order_item.AddressId)
+	if err != nil {
+		if err == address.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Address not found.")
+		}
+		return nil, status.Error(500, err.Error())
+	}
+
+	// Get Region details
+	region_item, err := l.svcCtx.BRgionModel.FindOneByPostcode(l.ctx, address_item.Postcode)
+	if err != nil {
+		if err == region.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Region not found.")
+		}
+		return nil, status.Error(500, err.Error())
+	}
+
+	// Get Property details
+	property_item, err := l.svcCtx.BPorpertyModel.FindOneByPropertyName(l.ctx, address_item.Property)
+	if err != nil {
+		if err == property.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Property type not found.")
+		}
+		return nil, status.Error(500, err.Error())
+	}
+
 	// Add extra service
 	// Get New Additional Service Details
 	var additional_items types.SelectedServiceList
@@ -76,7 +105,7 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
-		req.Additional_items.Items[index].Service_price = service_item.ServicePrice
+		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(region_item.ChargeAmount+property_item.ChargeAmount)
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 
@@ -118,21 +147,15 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 	}
 
 	// Get address details
-	address_item, err := l.svcCtx.BAddressModel.FindOne(l.ctx, order_item.AddressId)
-	if err != nil {
-		if err == address.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Address not found.")
-		}
-		return nil, status.Error(500, err.Error())
-	}
 	address_response := types.DetailAddressResponse{
 		Address_id: address_item.AddressId,
 		Street:     address_item.Street,
 		Suburb:     address_item.Suburb,
 		Postcode:   address_item.Postcode,
+		Property:   address_item.Property,
+		State_code: region_item.StateCode,
+		State_name: region_item.StateName,
 		City:       address_item.City,
-		State_code: address_item.StateCode,
-		Country:    address_item.Country,
 		Lat:        address_item.Lat,
 		Lng:        address_item.Lng,
 		Formatted:  address_item.Formatted,
@@ -189,28 +212,28 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 		Data: types.DetailOrderResponse{
 			Order_id:              order_item.OrderId,
 			Customer_info:         customer_response,
-			Contractor_info:       contractor_response,
 			Address_info:          address_response,
+			Contractor_info:       contractor_response,
 			Finance_id:            order_item.FinanceId.Int64,
 			Category:              category_response,
 			Basic_items:           basic_items,
 			Additional_items:      additional_items,
-			Deposite_payment:      order_item.DepositePayment.Int64,
-			Deposite_amount:       order_item.DepositeAmount,
+			Order_description:     order_item.OrderDescription.String,
+			Order_comments:        order_item.OrderComments.String,
 			Current_deposite_rate: int(order_item.CurrentDepositeRate),
-			Deposite_date:         order_item.DepositeDate.Time.Format("2006-01-02 15:04:05"),
-			Final_payment:         order_item.FinalPayment.Int64,
+			Deposite_amount:       order_item.DepositeAmount,
 			Final_amount:          order_item.FinalAmount,
-			Final_payment_date:    order_item.FinalPaymentDate.Time.Format("2006-01-02 15:04:05"),
+			Item_amount:           order_item.ItemAmount,
 			Gst_amount:            order_item.GstAmount,
 			Surcharge_item:        order_item.SurchargeItem,
 			Surcharge_rate:        int(order_item.SurchargeRate),
-			Surcharge_amount:      order_item.ItemAmount,
-			Total_fee:             order_item.TotalAmount,
-			Order_description:     order_item.OrderDescription.String,
+			Surcharge_amount:      order_item.SurchargeAmount,
+			Total_amount:          order_item.TotalAmount,
+			Balance_amount:        order_item.BalanceAmount,
 			Post_date:             order_item.PostDate.Format("2006-01-02 15:04:05"),
 			Reserve_date:          order_item.ReserveDate.Format("2006-01-02 15:04:05"),
 			Finish_date:           order_item.FinishDate.Time.Format("2006-01-02 15:04:05"),
+			Payment_date:          order_item.PaymentDate.Time.Format("2006-01-02 15:04:05"),
 			Status:                int(order_item.Status),
 			Urgent_flag:           int(order_item.UrgantFlag),
 		},

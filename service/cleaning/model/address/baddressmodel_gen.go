@@ -42,9 +42,8 @@ type (
 		Street    string  `db:"street"`
 		Suburb    string  `db:"suburb"`
 		Postcode  string  `db:"postcode"`
+		Property  string  `db:"property"`
 		City      string  `db:"city"`
-		StateCode string  `db:"state_code"`
-		Country   string  `db:"country"`
 		Lat       float64 `db:"lat"`
 		Lng       float64 `db:"lng"`
 		Formatted string  `db:"formatted"`
@@ -61,8 +60,8 @@ func newBAddressModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBAddressMode
 func (m *defaultBAddressModel) Insert(ctx context.Context, data *BAddress) (sql.Result, error) {
 	bAddressAddressIdKey := fmt.Sprintf("%s%v", cacheBAddressAddressIdPrefix, data.AddressId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bAddressRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Street, data.Suburb, data.Postcode, data.City, data.StateCode, data.Country, data.Lat, data.Lng, data.Formatted)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?)", m.table, bAddressRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Street, data.Suburb, data.Postcode, data.Property, data.City, data.Lat, data.Lng, data.Formatted)
 	}, bAddressAddressIdKey)
 	return ret, err
 }
@@ -88,7 +87,7 @@ func (m *defaultBAddressModel) Update(ctx context.Context, data *BAddress) error
 	bAddressAddressIdKey := fmt.Sprintf("%s%v", cacheBAddressAddressIdPrefix, data.AddressId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `address_id` = ?", m.table, bAddressRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.Street, data.Suburb, data.Postcode, data.City, data.StateCode, data.Country, data.Lat, data.Lng, data.Formatted, data.AddressId)
+		return conn.ExecCtx(ctx, query, data.Street, data.Suburb, data.Postcode, data.Property, data.City, data.Lat, data.Lng, data.Formatted, data.AddressId)
 	}, bAddressAddressIdKey)
 	return err
 }

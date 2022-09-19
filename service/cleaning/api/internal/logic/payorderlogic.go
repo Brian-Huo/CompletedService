@@ -9,7 +9,6 @@ import (
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/order"
-	"cleaningservice/service/cleaning/model/payment"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -45,38 +44,46 @@ func (l *PayOrderLogic) PayOrder(req *types.PayOrderRequest) (resp *types.PayOrd
 
 	// Pay order here
 
-	// Create or find payment details
-	exp_time, err := time.Parse("2006-01-02 15:04:05", req.Final_info.Expiry_time)
-	if err != nil {
-		return nil, errorx.NewCodeError(500, err.Error())
-	}
+	// // Create or find payment details
+	// exp_time, err := time.Parse("2006-01-02 15:04:05", req.Final_info.Expiry_time)
+	// if err != nil {
+	// 	return nil, errorx.NewCodeError(500, err.Error())
+	// }
 
-	var paymentId int64
-	res, err := l.svcCtx.BPaymentModel.FindOneByCardNumber(l.ctx, req.Final_info.Card_number)
-	if err == payment.ErrNotFound {
-		payment_item, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment.BPayment{
-			CardNumber:   req.Final_info.Card_number,
-			HolderName:   req.Final_info.Holder_name,
-			ExpiryTime:   exp_time,
-			SecurityCode: req.Final_info.Security_code,
-		})
-		if err != nil {
-			return nil, errorx.NewCodeError(500, err.Error())
-		}
+	// var paymentId int64
+	// res, err := l.svcCtx.BPaymentModel.FindOneByCardNumber(l.ctx, req.Final_info.Card_number)
+	// if err == payment.ErrNotFound {
+	// 	payment_item, err := l.svcCtx.BPaymentModel.Insert(l.ctx, &payment.BPayment{
+	// 		CardNumber:   req.Final_info.Card_number,
+	// 		HolderName:   req.Final_info.Holder_name,
+	// 		ExpiryTime:   exp_time,
+	// 		SecurityCode: req.Final_info.Security_code,
+	// 	})
+	// 	if err != nil {
+	// 		return nil, errorx.NewCodeError(500, err.Error())
+	// 	}
 
-		paymentId, err = payment_item.LastInsertId()
-		if err != nil {
-			return nil, errorx.NewCodeError(500, err.Error())
-		}
-	} else if err == nil {
-		paymentId = res.PaymentId
-	} else {
-		return nil, errorx.NewCodeError(500, err.Error())
-	}
+	// 	paymentId, err = payment_item.LastInsertId()
+	// 	if err != nil {
+	// 		return nil, errorx.NewCodeError(500, err.Error())
+	// 	}
+	// } else if err == nil {
+	// 	paymentId = res.PaymentId
+	// } else {
+	// 	return nil, errorx.NewCodeError(500, err.Error())
+	// }
 
 	// Update order details
-	order_item.FinalPayment = sql.NullInt64{Int64: paymentId, Valid: true}
-	order_item.Status = order.Completed
+	order_item.BalanceAmount += req.Pay_amount
+	order_item.PaymentDate = sql.NullTime{Time: time.Now(), Valid: true}
+
+	if order_item.BalanceAmount == order_item.TotalAmount {
+		order_item.Status = order.Completed
+		go l.svcCtx.RPaymentQueueModel.Delete(order_item.OrderId)
+	} else if order_item.BalanceAmount > order_item.TotalAmount {
+		order_item.Status = order.Overpaid
+		go l.svcCtx.RPaymentQueueModel.Delete(order_item.OrderId)
+	}
 
 	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)
 	if err != nil {

@@ -45,7 +45,7 @@ type (
 		PaymentId         sql.NullInt64  `db:"payment_id"`
 		DirectorName      sql.NullString `db:"director_name"`
 		ContactDetails    string         `db:"contact_details"`
-		RegisteredAddress sql.NullInt64  `db:"registered_address"`
+		RegisteredAddress int64          `db:"registered_address"`
 		DepositeRate      int64          `db:"deposite_rate"`
 		FinanceStatus     int64          `db:"finance_status"`
 	}
@@ -88,10 +88,13 @@ func (m *defaultBCompanyModel) FindOne(ctx context.Context, companyId int64) (*B
 func (m *defaultBCompanyModel) FindOneByContactDetails(ctx context.Context, contactDetails string) (*BCompany, error) {
 	bCompanyContactDetailsKey := fmt.Sprintf("%s%v", cacheBCompanyContactDetailsPrefix, contactDetails)
 	var resp BCompany
-	err := m.QueryRowCtx(ctx, &resp, bCompanyContactDetailsKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
+	err := m.QueryRowIndexCtx(ctx, &resp, bCompanyContactDetailsKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) (i interface{}, e error) {
 		query := fmt.Sprintf("select %s from %s where `contact_details` = ? limit 1", bCompanyRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, contactDetails)
-	})
+		if err := conn.QueryRowCtx(ctx, &resp, query, contactDetails); err != nil {
+			return nil, err
+		}
+		return resp.CompanyId, nil
+	}, m.queryPrimary)
 	switch err {
 	case nil:
 		return &resp, nil

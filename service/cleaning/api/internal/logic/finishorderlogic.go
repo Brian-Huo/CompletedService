@@ -2,7 +2,7 @@ package logic
 
 import (
 	"context"
-	"database/sql"
+	"time"
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
@@ -12,6 +12,7 @@ import (
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/contractor"
 	"cleaningservice/service/cleaning/model/order"
+	"cleaningservice/service/cleaning/model/orderqueue/paymentqueue"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -78,7 +79,6 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	// Validate contractor status
 	if contractor_item.WorkStatus == contractor.InWork {
 		contractor_item.WorkStatus = contractor.Vacant
-		contractor_item.OrderId = sql.NullInt64{Int64: 0, Valid: false}
 	} else {
 		return nil, errorx.NewCodeError(401, "Contractor is not in work.")
 	}
@@ -90,6 +90,10 @@ func (l *FinishOrderLogic) FinishOrder(req *types.FinishOrderRequest) (resp *typ
 	}
 
 	go orderqueue.PushOne(order_item.OrderId)
+	go l.svcCtx.RPaymentQueueModel.Insert(&paymentqueue.RPaymentQueue{
+		OrderId: order_item.OrderId,
+		DueDate: time.Now().Add(time.Hour * 24 * 8).Format("2006-01-02"),
+	})
 
 	return &types.FinishOrderResponse{
 		Code: 200,

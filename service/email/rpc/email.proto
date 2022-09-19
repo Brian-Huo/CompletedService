@@ -12,8 +12,7 @@ message AddressMsg {
     string  Postcode = 4;
     string  City = 5;
     string  StateCode = 6;
-    string  Country = 7;
-    string  Formatted = 8;
+    string  Formatted = 7;
 }
 
 message CategoryMsg {
@@ -40,6 +39,9 @@ message OrderMsg {
     double  GstAmount = 5;
     double  TotalAmount = 6;
     string  ReserveDate = 7;
+    string  SurchargeItem = 8;
+    int32   SurchargeRate = 9;
+    double  SurchargeAmount = 10;
 }
 
 message ServiceMsg {

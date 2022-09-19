@@ -49,7 +49,6 @@ type (
 		AddressId       sql.NullInt64  `db:"address_id"`
 		LinkCode        string         `db:"link_code"`
 		WorkStatus      int64          `db:"work_status"`
-		OrderId         sql.NullInt64  `db:"order_id"`
 	}
 )
 
@@ -64,8 +63,8 @@ func (m *defaultBContractorModel) Insert(ctx context.Context, data *BContractor)
 	bContractorContractorIdKey := fmt.Sprintf("%s%v", cacheBContractorContractorIdPrefix, data.ContractorId)
 	bContractorContactDetailsKey := fmt.Sprintf("%s%v", cacheBContractorContactDetailsPrefix, data.ContactDetails)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bContractorRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus, data.OrderId)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?)", m.table, bContractorRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus)
 	}, bContractorContractorIdKey, bContractorContactDetailsKey)
 	return ret, err
 }
@@ -112,7 +111,7 @@ func (m *defaultBContractorModel) Update(ctx context.Context, data *BContractor)
 	bContractorContactDetailsKey := fmt.Sprintf("%s%v", cacheBContractorContactDetailsPrefix, data.ContactDetails)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `contractor_id` = ?", m.table, bContractorRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus, data.OrderId, data.ContractorId)
+		return conn.ExecCtx(ctx, query, data.ContractorPhoto, data.ContractorName, data.ContractorType, data.ContactDetails, data.FinanceId, data.AddressId, data.LinkCode, data.WorkStatus, data.ContractorId)
 	}, bContractorContractorIdKey, bContractorContactDetailsKey)
 	return err
 }

@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"database/sql"
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
@@ -70,7 +69,6 @@ func (l *StartOrderLogic) StartOrder(req *types.StartOrderRequest) (resp *types.
 	// Validate contractor status
 	if contractor_item.WorkStatus == contractor.Vacant {
 		contractor_item.WorkStatus = contractor.InWork
-		contractor_item.OrderId = sql.NullInt64{Int64: req.Order_id, Valid: true}
 	} else {
 		return nil, errorx.NewCodeError(401, "Contractor is not vacant.")
 	}
@@ -81,9 +79,9 @@ func (l *StartOrderLogic) StartOrder(req *types.StartOrderRequest) (resp *types.
 	} else if order_item.Status == order.Cancelled {
 		return nil, errorx.NewCodeError(401, "Order has been canceled.")
 	} else if order_item.Status == order.Queuing {
-		return nil, errorx.NewCodeError(401, "Order is in queue.")
+		return nil, errorx.NewCodeError(401, "Order is still in queue.")
 	} else if order_item.Status == order.Working {
-		return nil, errorx.NewCodeError(401, "Order is in work.")
+		return nil, errorx.NewCodeError(401, "Order is already in work.")
 	}
 
 	// Validate contractor is available for this order

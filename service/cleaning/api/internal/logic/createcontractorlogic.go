@@ -54,7 +54,6 @@ func (l *CreateContractorLogic) CreateContractor(req *types.CreateContractorRequ
 		AddressId:       sql.NullInt64{Int64: 0, Valid: false},
 		LinkCode:        util.RandStringBytesMaskImprSrcUnsafe(8),
 		WorkStatus:      contractor.Await,
-		OrderId:         sql.NullInt64{Int64: 0, Valid: false},
 	}
 
 	res, err := l.svcCtx.BContractorModel.Insert(l.ctx, &newItem)

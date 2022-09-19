@@ -10,6 +10,7 @@ import (
 	"cleaningservice/service/cleaning/api/internal/types"
 	"cleaningservice/service/cleaning/model/address"
 	"cleaningservice/service/cleaning/model/company"
+	"cleaningservice/service/cleaning/model/region"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -39,7 +40,7 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 		return nil, errorx.NewCodeError(401, "Invalid, Not company.")
 	}
 
-	address_item, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
+	finance_item, err := l.svcCtx.BCompanyModel.FindOne(l.ctx, uid)
 	if err != nil {
 		if err == company.ErrNotFound {
 			return nil, errorx.NewCodeError(404, "Invalid, Company not found.")
@@ -47,8 +48,21 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
-	if address_item.RegisteredAddress.Valid && address_item.RegisteredAddress.Int64 != req.Address_id {
+	if finance_item.RegisteredAddress != req.Address_id {
 		return nil, errorx.NewCodeError(401, "Invalid company address id.")
+	}
+
+	// Check address region
+	region_item := region.BRegion{
+		RegionName: req.Suburb,
+		RegionType: "Suburb",
+		Postcode:   req.Postcode,
+		StateCode:  req.State_code,
+		StateName:  req.State_name,
+	}
+	_, err = l.svcCtx.BRgionModel.Enquire(l.ctx, &region_item)
+	if err != nil {
+		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
 	err = l.svcCtx.BAddressModel.Update(l.ctx, &address.BAddress{
@@ -56,9 +70,8 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 		Street:    req.Street,
 		Suburb:    req.Suburb,
 		Postcode:  req.Postcode,
+		Property:  req.Property,
 		City:      req.City,
-		StateCode: req.State_code,
-		Country:   req.Country,
 		Lat:       req.Lat,
 		Lng:       req.Lng,
 		Formatted: req.Formatted,

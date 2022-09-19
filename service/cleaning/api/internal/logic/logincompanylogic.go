@@ -40,7 +40,7 @@ func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *
 			PaymentId:         sql.NullInt64{Int64: 0, Valid: false},
 			DirectorName:      sql.NullString{String: "", Valid: false},
 			ContactDetails:    req.Contact_details,
-			RegisteredAddress: sql.NullInt64{Int64: 0, Valid: false},
+			RegisteredAddress: 1,
 			DepositeRate:      10,
 			FinanceStatus:     company.Active,
 		})

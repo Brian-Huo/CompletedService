@@ -13,6 +13,7 @@ import (
 	"cleaningservice/service/cleaning/model/category"
 	"cleaningservice/service/cleaning/model/customer"
 	"cleaningservice/service/cleaning/model/order"
+	"cleaningservice/service/cleaning/model/region"
 	"cleaningservice/service/cleaning/model/service"
 	"cleaningservice/service/email/rpc/types/email"
 
@@ -94,6 +95,16 @@ func (l *SendInvoiceRequestLogic) SendInvoiceRequest() (err error) {
 			}
 			return err
 		}
+		// Get region details
+		region_item, err := l.svcCtx.BRgionModel.FindOneByPostcode(l.ctx, address_item.Postcode)
+		if err != nil {
+			if err == region.ErrNotFound {
+				logx.Alert("Address not found")
+				orderqueue.DeleteOne(order_id)
+				continue
+			}
+			return err
+		}
 
 		address_email := email.AddressMsg{
 			AddressId: address_item.AddressId,
@@ -101,8 +112,7 @@ func (l *SendInvoiceRequestLogic) SendInvoiceRequest() (err error) {
 			Suburb:    address_item.Suburb,
 			Postcode:  address_item.Postcode,
 			City:      address_item.City,
-			StateCode: address_item.StateCode,
-			Country:   address_item.Country,
+			StateCode: region_item.StateCode,
 			Formatted: address_item.Formatted,
 		}
 

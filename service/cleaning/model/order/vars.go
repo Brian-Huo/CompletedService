@@ -13,4 +13,5 @@ const (
 	Completed
 	Cancelled
 	Transfering
+	Overpaid
 )

@@ -41,6 +41,7 @@ func (l *ConfirmOrderLogic) ConfirmOrder(req *types.ConfirmOrderRequest) (resp *
 		if err != nil {
 			logx.Info("Confirm order", order_id, "failed by finance", uid)
 		}
+		go l.svcCtx.RPaymentQueueModel.Delete(order_id)
 	}
 
 	return &types.ConfirmOrderResponse{
