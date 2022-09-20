@@ -157,7 +157,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	// Get basic items details
 	req.Base_items.Service_name = service_item.ServiceName
 	req.Base_items.Service_scope = service_item.ServiceScope
-	req.Base_items.Service_price = service_item.ServicePrice * float64(region_item.ChargeAmount+property_item.ChargeAmount)
+	req.Base_items.Service_price = service_item.ServicePrice * float64(1+region_item.ChargeAmount+property_item.ChargeAmount)
 
 	base_items, err := json.Marshal(req.Base_items)
 	if err != nil {
@@ -177,7 +177,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
-		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(region_item.ChargeAmount+property_item.ChargeAmount)
+		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(1+region_item.ChargeAmount+property_item.ChargeAmount)
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 

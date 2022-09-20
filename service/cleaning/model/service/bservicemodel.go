@@ -33,8 +33,8 @@ func NewBServiceModel(conn sqlx.SqlConn, c cache.CacheConf) BServiceModel {
 
 func (m *defaultBServiceModel) FindAllByCategory(ctx context.Context, categoryId int64) ([]*BService, error) {
 	var resp []*BService
-	query := fmt.Sprintf("select %s from %s where `category_id` = ?", bServiceRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query)
+	query := fmt.Sprintf("select %s from %s where `service_type` = ?", bServiceRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, categoryId)
 	switch err {
 	case nil:
 		return resp, nil

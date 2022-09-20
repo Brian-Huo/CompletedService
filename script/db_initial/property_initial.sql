@@ -5,3 +5,4 @@ INSERT INTO b_property (property_name, property_description, charge_type, charge
 INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("apartment", "", 0, 0, 1);
 INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("luxury apartment", "", 0, 5, 1);
 INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("villa", "", 0, 0, 1);
+INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("office", "", 0, 0, 1);

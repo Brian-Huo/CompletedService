@@ -7,7 +7,7 @@ INSERT INTO b_payment (card_number, holder_name, expiry_time, security_code) val
 INSERT INTO b_payment (card_number, holder_name, expiry_time, security_code) values ("2222222222222222", "AK Knowall", "2050-05-21 00:00:00", "222");
 
 -- Address Initialize --
-INSERT INTO b_address (street, suburb, postcode, property, city, lat, lng, formatted) values("6 Dalgety Street", "Oakleigh", "3166", "Melbourne", -37.89205644303595, 145.08993779784805, "Unit 11, 6 Dalgety Street, Oakleigh VIC 3166, AU");
+INSERT INTO b_address (street, suburb, postcode, property, city, lat, lng, formatted) values("6 Dalgety Street", "Oakleigh", "3166", "office", "Melbourne", -37.89205644303595, 145.08993779784805, "Unit 11, 6 Dalgety Street, Oakleigh VIC 3166, AU");
 
 -- Company Initialize --
 -- QME TECH Company Details --

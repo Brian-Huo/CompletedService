@@ -33,10 +33,10 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 	// Get region details
 	region_item, err := l.svcCtx.BRgionModel.FindOneByPostcode(l.ctx, req.Postcode)
 	if err != nil {
-		if err == region.ErrNotFound {
-			return nil, status.Error(404, "Invalid, Region not found.")
+		if err != region.ErrNotFound {
+			return nil, status.Error(500, err.Error())
 		}
-		return nil, status.Error(500, err.Error())
+		region_item = &region.BRegion{ChargeAmount: 0}
 	}
 
 	// Get property details
@@ -73,6 +73,7 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 			Service_id: item.ServiceId,
 			Service_type: types.DetailCategoryResponse{
 				Category_id:          category_item.CategoryId,
+				Category_addr:        category_item.CategoryAddr,
 				Category_name:        category_item.CategoryName,
 				Category_description: category_item.CategoryDescription,
 			},
@@ -80,7 +81,7 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 			Service_name:        item.ServiceName,
 			Service_photo:       item.ServicePhoto.String,
 			Service_description: item.ServiceDescription,
-			Service_price:       item.ServicePrice * float64(region_item.ChargeAmount+property_item.ChargeAmount),
+			Service_price:       item.ServicePrice * float64(1+region_item.ChargeAmount+property_item.ChargeAmount),
 		}
 
 		allItems = append(allItems, service_response)

@@ -78,7 +78,7 @@ type UpdateAddressRequest struct {
 	Property   string  `json:"property"`
 	City       string  `json:"city"`
 	State_code string  `json:"state_code"`
-	State_name string  `json:"state_name"`
+	State_name string  `json:"state_name,optional"`
 	Lat        float64 `json:"lat"`
 	Lng        float64 `json:"lng"`
 	Formatted  string  `json:"formatted"`

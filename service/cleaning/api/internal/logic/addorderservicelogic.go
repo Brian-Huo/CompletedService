@@ -101,11 +101,11 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 			}
 			return nil, errorx.NewCodeError(500, err.Error())
 		}
-		order_item.ItemAmount += service_item.ServicePrice * float64(order_service.Service_quantity)
+		order_item.ItemAmount += service_item.ServicePrice * float64(1+order_service.Service_quantity)
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
-		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(region_item.ChargeAmount+property_item.ChargeAmount)
+		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(1+region_item.ChargeAmount+property_item.ChargeAmount)
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 
@@ -121,6 +121,7 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 	order_item.SurchargeAmount = order_item.ItemAmount * float64(order_item.SurchargeRate) / 100
 	order_item.GstAmount = (order_item.ItemAmount + order_item.SurchargeAmount) / variables.GST
 	order_item.TotalAmount = order_item.ItemAmount + order_item.SurchargeAmount + order_item.GstAmount
+	order_item.FinalAmount = order_item.TotalAmount - order_item.DepositeAmount
 
 	// Update order details
 	err = l.svcCtx.BOrderModel.Update(l.ctx, order_item)

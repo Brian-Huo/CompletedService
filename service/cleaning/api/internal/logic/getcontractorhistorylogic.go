@@ -130,6 +130,7 @@ func (l *GetContractorHistoryLogic) GetContractorHistory(req *types.GetContracto
 		}
 		category_response := types.DetailCategoryResponse{
 			Category_id:          category_item.CategoryId,
+			Category_addr:        category_item.CategoryAddr,
 			Category_name:        category_item.CategoryName,
 			Category_description: category_item.CategoryDescription,
 		}
