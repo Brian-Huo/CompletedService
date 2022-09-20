@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"strings"
 	"time"
 
 	"cleaningservice/common/jwtx"
@@ -82,7 +83,7 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 		Street:    req.Address_info.Street,
 		Suburb:    req.Address_info.Suburb,
 		Postcode:  req.Address_info.Postcode,
-		Property:  req.Address_info.Property,
+		Property:  strings.ToLower(req.Address_info.Property),
 		City:      req.Address_info.City,
 		Lat:       req.Address_info.Lat,
 		Lng:       req.Address_info.Lng,

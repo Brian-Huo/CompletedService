@@ -170,6 +170,7 @@ func (l *DetailOrderLogic) DetailOrder(req *types.DetailOrderRequest) (resp *typ
 		Surcharge_item:        order_item.SurchargeItem,
 		Surcharge_rate:        int(order_item.SurchargeRate),
 		Surcharge_amount:      order_item.SurchargeAmount,
+		Surcharge_description: order_item.SurchargeDescription.String,
 		Total_amount:          order_item.TotalAmount,
 		Balance_amount:        order_item.BalanceAmount,
 		Post_date:             order_item.PostDate.Format("2006-01-02 15:04:05"),

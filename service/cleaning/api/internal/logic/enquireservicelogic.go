@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"strings"
 
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
@@ -38,8 +39,8 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 		return nil, status.Error(500, err.Error())
 	}
 
-	// Get Property details
-	property_item, err := l.svcCtx.BPorpertyModel.FindOneByPropertyName(l.ctx, req.Property)
+	// Get property details
+	property_item, err := l.svcCtx.BPorpertyModel.FindOneByPropertyName(l.ctx, strings.ToLower(req.Property))
 	if err != nil {
 		if err == property.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Property type not found.")
@@ -47,8 +48,17 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 		return nil, status.Error(500, err.Error())
 	}
 
-	// List all service
-	service_items, err := l.svcCtx.BServiceModel.List(l.ctx)
+	// Get category details
+	category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, req.Category_id)
+	if err != nil {
+		if err == category.ErrNotFound {
+			return nil, status.Error(404, "Invalid, Category not found.")
+		}
+		return nil, status.Error(500, err.Error())
+	}
+
+	// List all service in this category
+	service_items, err := l.svcCtx.BServiceModel.FindAllByCategory(l.ctx, category_item.CategoryId)
 	if err != nil {
 		if err == service.ErrNotFound {
 			return nil, status.Error(404, "Invalid, Service not found.")
@@ -59,14 +69,6 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 	allItems := []types.DetailServiceResponse{}
 
 	for _, item := range service_items {
-		category_item, err := l.svcCtx.BCategoryModel.FindOne(l.ctx, item.ServiceType)
-		if err != nil {
-			if err == category.ErrNotFound {
-				return nil, status.Error(404, "Invalid, Category not found.")
-			}
-			return nil, status.Error(500, err.Error())
-		}
-
 		service_response := types.DetailServiceResponse{
 			Service_id: item.ServiceId,
 			Service_type: types.DetailCategoryResponse{
@@ -84,5 +86,7 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 		allItems = append(allItems, service_response)
 	}
 
-	return
+	return &types.ListServiceResponse{
+		Items: allItems,
+	}, nil
 }

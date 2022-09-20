@@ -1,7 +1,11 @@
 package service
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
@@ -12,6 +16,7 @@ type (
 	// and implement the added methods in customBServiceModel.
 	BServiceModel interface {
 		bServiceModel
+		FindAllByCategory(ctx context.Context, categoryId int64) ([]*BService, error)
 	}
 
 	customBServiceModel struct {
@@ -23,5 +28,19 @@ type (
 func NewBServiceModel(conn sqlx.SqlConn, c cache.CacheConf) BServiceModel {
 	return &customBServiceModel{
 		defaultBServiceModel: newBServiceModel(conn, c),
+	}
+}
+
+func (m *defaultBServiceModel) FindAllByCategory(ctx context.Context, categoryId int64) ([]*BService, error) {
+	var resp []*BService
+	query := fmt.Sprintf("select %s from %s where `category_id` = ?", bServiceRows, m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query)
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
 	}
 }

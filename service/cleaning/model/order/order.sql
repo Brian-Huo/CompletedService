@@ -18,6 +18,7 @@ CREATE TABLE `b_order` (
     surcharge_item varchar(255) NOT NULL DEFAULT 'None',
     surcharge_rate int unsigned NOT NULL DEFAULT 0,
     surcharge_amount float unsigned NOT NULL DEFAULT 0,
+    surcharge_description mediumtext,
     total_amount float unsigned NOT NULL,
     balance_amount float unsigned NOT NULL DEFAULT 0,
     post_date datetime NOT NULL,

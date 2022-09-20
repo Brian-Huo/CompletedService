@@ -168,6 +168,7 @@ func (l *GetContractorScheduleLogic) GetContractorSchedule(req *types.GetContrac
 			Surcharge_item:        item.SurchargeItem,
 			Surcharge_rate:        int(item.SurchargeRate),
 			Surcharge_amount:      item.SurchargeAmount,
+			Surcharge_description: item.SurchargeDescription.String,
 			Total_amount:          item.TotalAmount,
 			Balance_amount:        item.BalanceAmount,
 			Post_date:             item.PostDate.Format("2006-01-02 15:04:05"),

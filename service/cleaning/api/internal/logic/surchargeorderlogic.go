@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 
 	"cleaningservice/common/errorx"
@@ -60,6 +61,7 @@ func (l *SurchargeOrderLogic) SurchargeOrder(req *types.SurchargeOrderRequest) (
 	order_item.SurchargeItem = req.Surcharge_item
 	order_item.SurchargeRate = int64(req.Surcharge_rate*variables.Surcharge_factor - 10)
 	order_item.SurchargeAmount = order_item.ItemAmount * float64(req.Surcharge_rate) / 100
+	order_item.SurchargeDescription = sql.NullString{String: req.Surcharge_description, Valid: len(req.Surcharge_description) != 0}
 	order_item.GstAmount = (order_item.ItemAmount + order_item.SurchargeAmount) / variables.GST
 	order_item.TotalAmount = order_item.ItemAmount + order_item.SurchargeAmount + order_item.GstAmount
 

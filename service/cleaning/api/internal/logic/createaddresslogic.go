@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"strings"
 
 	"cleaningservice/service/cleaning/api/internal/svc"
 	"cleaningservice/service/cleaning/api/internal/types"
@@ -44,7 +45,7 @@ func (l *CreateAddressLogic) CreateAddress(req *types.CreateAddressRequest) (res
 		Street:    req.Street,
 		Suburb:    req.Suburb,
 		Postcode:  req.Postcode,
-		Property:  req.Property,
+		Property:  strings.ToLower(req.Property),
 		City:      req.City,
 		Lat:       req.Lat,
 		Lng:       req.Lng,

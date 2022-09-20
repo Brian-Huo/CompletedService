@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"strings"
 
 	"cleaningservice/common/cryptx"
 	"cleaningservice/common/errorx"
@@ -88,7 +89,7 @@ func (l *UpdateContractorLogic) UpdateContractor(req *types.UpdateContractorRequ
 			Street:    req.Address_info.Street,
 			Suburb:    req.Address_info.Suburb,
 			Postcode:  req.Address_info.Postcode,
-			Property:  req.Address_info.Property,
+			Property:  strings.ToLower(req.Address_info.Property),
 			City:      req.Address_info.City,
 			Lat:       req.Address_info.Lat,
 			Lng:       req.Address_info.Lng,

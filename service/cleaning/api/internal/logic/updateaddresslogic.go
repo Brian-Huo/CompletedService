@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"strings"
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
@@ -70,7 +71,7 @@ func (l *UpdateAddressLogic) UpdateAddress(req *types.UpdateAddressRequest) (res
 		Street:    req.Street,
 		Suburb:    req.Suburb,
 		Postcode:  req.Postcode,
-		Property:  req.Property,
+		Property:  strings.ToLower(req.Property),
 		City:      req.City,
 		Lat:       req.Lat,
 		Lng:       req.Lng,

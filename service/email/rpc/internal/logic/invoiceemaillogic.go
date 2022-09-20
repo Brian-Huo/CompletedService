@@ -48,7 +48,7 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 		Pagination: true,
 	})
 
-	doc.SetVersion("version 0.1")
+	doc.SetVersion("version 0.2")
 	doc.SetDescription("Invoice of Items")
 	doc.SetNotes(fmt.Sprintf("<b>BSB: %s </b><br><b>Account No: %s</b><br><b> Account Name: %s</b>", variables.BSB, variables.Account_number, variables.Account_name))
 
@@ -89,7 +89,7 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 			Address:    in.AddressInfo.Formatted,
 			PostalCode: in.AddressInfo.Postcode,
 			City:       in.AddressInfo.City,
-			Country:    in.AddressInfo.Country,
+			Country:    variables.Country,
 		},
 	})
 
@@ -107,6 +107,17 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 			// },
 		})
 	}
+
+	// Set order surcharge
+	doc.AppendItem(&generator.Item{
+		Name:        in.OrderInfo.SurchargeItem,
+		Description: in.OrderInfo.SurchargeDescription,
+		UnitCost:    fmt.Sprintf("%f", in.OrderInfo.SurchargeAmount),
+		Quantity:    "1",
+		Tax: &generator.Tax{
+			Percent: fmt.Sprintf("%.2f", variables.GST),
+		},
+	})
 
 	invoiceLocation, err := util.SaveInvoice(doc, in.OrderInfo.OrderId)
 	if err != nil {

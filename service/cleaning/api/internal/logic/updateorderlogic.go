@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"strings"
 	"time"
 
 	"cleaningservice/common/errorx"
@@ -98,7 +99,7 @@ func (l *UpdateOrderLogic) UpdateOrder(req *types.UpdateOrderRequest) (resp *typ
 			Street:    req.Address_info.Street,
 			Suburb:    req.Address_info.Suburb,
 			Postcode:  req.Address_info.Postcode,
-			Property:  req.Address_info.Property,
+			Property:  strings.ToLower(req.Address_info.Property),
 			City:      req.Address_info.City,
 			Lat:       req.Address_info.Lat,
 			Lng:       req.Address_info.Lng,

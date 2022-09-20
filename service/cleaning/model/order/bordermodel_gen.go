@@ -39,34 +39,35 @@ type (
 	}
 
 	BOrder struct {
-		OrderId             int64          `db:"order_id"`
-		CustomerId          int64          `db:"customer_id"`
-		AddressId           int64          `db:"address_id"`
-		ContractorId        sql.NullInt64  `db:"contractor_id"`
-		FinanceId           sql.NullInt64  `db:"finance_id"`
-		CategoryId          int64          `db:"category_id"`
-		BasicItems          string         `db:"basic_items"`
-		AdditionalItems     sql.NullString `db:"additional_items"`
-		OrderDescription    sql.NullString `db:"order_description"`
-		OrderComments       sql.NullString `db:"order_comments"`
-		CurrentDepositeRate int64          `db:"current_deposite_rate"`
-		DepositeAmount      float64        `db:"deposite_amount"`
-		FinalAmount         float64        `db:"final_amount"`
-		ItemAmount          float64        `db:"item_amount"`
-		GstAmount           float64        `db:"gst_amount"`
-		SurchargeItem       string         `db:"surcharge_item"`
-		SurchargeRate       int64          `db:"surcharge_rate"`
-		SurchargeAmount     float64        `db:"surcharge_amount"`
-		TotalAmount         float64        `db:"total_amount"`
-		BalanceAmount       float64        `db:"balance_amount"`
-		PostDate            time.Time      `db:"post_date"`
-		ReserveDate         time.Time      `db:"reserve_date"`
-		FinishDate          sql.NullTime   `db:"finish_date"`
-		PaymentDate         sql.NullTime   `db:"payment_date"`
-		Status              int64          `db:"status"`
-		UrgantFlag          int64          `db:"urgant_flag"`
-		CreateTime          time.Time      `db:"create_time"`
-		UpdateTime          time.Time      `db:"update_time"`
+		OrderId              int64          `db:"order_id"`
+		CustomerId           int64          `db:"customer_id"`
+		AddressId            int64          `db:"address_id"`
+		ContractorId         sql.NullInt64  `db:"contractor_id"`
+		FinanceId            sql.NullInt64  `db:"finance_id"`
+		CategoryId           int64          `db:"category_id"`
+		BasicItems           string         `db:"basic_items"`
+		AdditionalItems      sql.NullString `db:"additional_items"`
+		OrderDescription     sql.NullString `db:"order_description"`
+		OrderComments        sql.NullString `db:"order_comments"`
+		CurrentDepositeRate  int64          `db:"current_deposite_rate"`
+		DepositeAmount       float64        `db:"deposite_amount"`
+		FinalAmount          float64        `db:"final_amount"`
+		ItemAmount           float64        `db:"item_amount"`
+		GstAmount            float64        `db:"gst_amount"`
+		SurchargeItem        string         `db:"surcharge_item"`
+		SurchargeRate        int64          `db:"surcharge_rate"`
+		SurchargeAmount      float64        `db:"surcharge_amount"`
+		SurchargeDescription sql.NullString `db:"surcharge_description"`
+		TotalAmount          float64        `db:"total_amount"`
+		BalanceAmount        float64        `db:"balance_amount"`
+		PostDate             time.Time      `db:"post_date"`
+		ReserveDate          time.Time      `db:"reserve_date"`
+		FinishDate           sql.NullTime   `db:"finish_date"`
+		PaymentDate          sql.NullTime   `db:"payment_date"`
+		Status               int64          `db:"status"`
+		UrgantFlag           int64          `db:"urgant_flag"`
+		CreateTime           time.Time      `db:"create_time"`
+		UpdateTime           time.Time      `db:"update_time"`
 	}
 )
 
@@ -80,8 +81,8 @@ func newBOrderModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultBOrderModel {
 func (m *defaultBOrderModel) Insert(ctx context.Context, data *BOrder) (sql.Result, error) {
 	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, data.OrderId)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bOrderRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.BasicItems, data.AdditionalItems, data.OrderDescription, data.OrderComments, data.CurrentDepositeRate, data.DepositeAmount, data.FinalAmount, data.ItemAmount, data.GstAmount, data.SurchargeItem, data.SurchargeRate, data.SurchargeAmount, data.TotalAmount, data.BalanceAmount, data.PostDate, data.ReserveDate, data.FinishDate, data.PaymentDate, data.Status, data.UrgantFlag)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, bOrderRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.BasicItems, data.AdditionalItems, data.OrderDescription, data.OrderComments, data.CurrentDepositeRate, data.DepositeAmount, data.FinalAmount, data.ItemAmount, data.GstAmount, data.SurchargeItem, data.SurchargeRate, data.SurchargeAmount, data.SurchargeDescription, data.TotalAmount, data.BalanceAmount, data.PostDate, data.ReserveDate, data.FinishDate, data.PaymentDate, data.Status, data.UrgantFlag)
 	}, bOrderOrderIdKey)
 	return ret, err
 }
@@ -107,7 +108,7 @@ func (m *defaultBOrderModel) Update(ctx context.Context, data *BOrder) error {
 	bOrderOrderIdKey := fmt.Sprintf("%s%v", cacheBOrderOrderIdPrefix, data.OrderId)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `order_id` = ?", m.table, bOrderRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.BasicItems, data.AdditionalItems, data.OrderDescription, data.OrderComments, data.CurrentDepositeRate, data.DepositeAmount, data.FinalAmount, data.ItemAmount, data.GstAmount, data.SurchargeItem, data.SurchargeRate, data.SurchargeAmount, data.TotalAmount, data.BalanceAmount, data.PostDate, data.ReserveDate, data.FinishDate, data.PaymentDate, data.Status, data.UrgantFlag, data.OrderId)
+		return conn.ExecCtx(ctx, query, data.CustomerId, data.AddressId, data.ContractorId, data.FinanceId, data.CategoryId, data.BasicItems, data.AdditionalItems, data.OrderDescription, data.OrderComments, data.CurrentDepositeRate, data.DepositeAmount, data.FinalAmount, data.ItemAmount, data.GstAmount, data.SurchargeItem, data.SurchargeRate, data.SurchargeAmount, data.SurchargeDescription, data.TotalAmount, data.BalanceAmount, data.PostDate, data.ReserveDate, data.FinishDate, data.PaymentDate, data.Status, data.UrgantFlag, data.OrderId)
 	}, bOrderOrderIdKey)
 	return err
 }

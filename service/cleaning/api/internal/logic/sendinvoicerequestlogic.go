@@ -56,13 +56,17 @@ func (l *SendInvoiceRequestLogic) SendInvoiceRequest() (err error) {
 		}
 
 		order_email := email.OrderMsg{
-			OrderId:        order_item.OrderId,
-			DepositeAmount: order_item.DepositeAmount,
-			FinalAmount:    order_item.FinalAmount,
-			DepositeRate:   int32(order_item.CurrentDepositeRate),
-			GstAmount:      order_item.GstAmount,
-			TotalAmount:    order_item.TotalAmount,
-			ReserveDate:    order_item.ReserveDate.Format("02/01/2006 15:04:05"),
+			OrderId:              order_item.OrderId,
+			DepositeAmount:       order_item.DepositeAmount,
+			FinalAmount:          order_item.FinalAmount,
+			DepositeRate:         int32(order_item.CurrentDepositeRate),
+			GstAmount:            order_item.GstAmount,
+			TotalAmount:          order_item.TotalAmount,
+			ReserveDate:          order_item.ReserveDate.Format("02/01/2006 15:04:05"),
+			SurchargeItem:        order_item.SurchargeItem,
+			SurchargeRate:        int32(order_item.SurchargeRate),
+			SurchargeAmount:      order_item.SurchargeAmount,
+			SurchargeDescription: order_item.SurchargeDescription.String,
 		}
 
 		// Customer Info

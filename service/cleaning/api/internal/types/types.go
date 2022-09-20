@@ -360,10 +360,11 @@ type RemoveOrderResponse struct {
 }
 
 type SurchargeOrderRequest struct {
-	Order_id         int64   `json:"order_id"`
-	Surcharge_item   string  `json:"surcharge_item"`
-	Surcharge_rate   int     `json:"surcharge_rate,range=[1:3]"`
-	Surcharge_amount float64 `json:"surcharge_amount,optional"`
+	Order_id              int64   `json:"order_id"`
+	Surcharge_item        string  `json:"surcharge_item"`
+	Surcharge_rate        int     `json:"surcharge_rate,range=[1:3]"`
+	Surcharge_amount      float64 `json:"surcharge_amount,optional"`
+	Surcharge_description string  `json:"surcharge_description,optional"`
 }
 
 type SurchargeOrderResponse struct {
@@ -411,6 +412,7 @@ type DetailOrderResponse struct {
 	Surcharge_item        string                   `json:"surcharge_item"`
 	Surcharge_rate        int                      `json:"surcharge_rate"`
 	Surcharge_amount      float64                  `json:"surcharge_amount"`
+	Surcharge_description string                   `json:"surcharge_description"`
 	Total_amount          float64                  `json:"total_amount"`
 	Balance_amount        float64                  `json:"balance_amount"`
 	Post_date             string                   `json:"post_date"`

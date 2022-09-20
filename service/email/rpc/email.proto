@@ -42,6 +42,7 @@ message OrderMsg {
     string  SurchargeItem = 8;
     int32   SurchargeRate = 9;
     double  SurchargeAmount = 10;
+    string  SurchargeDescription = 11;
 }
 
 message ServiceMsg {
