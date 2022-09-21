@@ -142,7 +142,7 @@ func (l *ListOrderLogic) ListOrder(req *types.ListOrderRequest) (resp *types.Lis
 		}
 
 		// Get Basic Service Details
-		var basic_items types.SelectedServiceStructure
+		var basic_items types.SelectedServiceList
 		err = json.Unmarshal([]byte(item.BasicItems), &basic_items)
 		if err != nil {
 			return nil, status.Error(500, err.Error())

@@ -101,6 +101,10 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 			}
 			return nil, errorx.NewCodeError(500, err.Error())
 		}
+
+		if service_item.ServiceType != order_item.CategoryId {
+			return nil, errorx.NewCodeError(500, "Invalid, Wrong services are intended to be implemented.")
+		}
 		order_item.ItemAmount += service_item.ServicePrice * float64(1+order_service.Service_quantity)
 
 		// Get additional items details
@@ -201,7 +205,7 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 	}
 
 	// Get Basic Service Details
-	var basic_items types.SelectedServiceStructure
+	var basic_items types.SelectedServiceList
 	err = json.Unmarshal([]byte(order_item.BasicItems), &basic_items)
 	if err != nil {
 		return nil, status.Error(500, err.Error())

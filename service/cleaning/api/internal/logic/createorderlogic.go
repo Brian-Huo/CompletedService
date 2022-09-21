@@ -59,7 +59,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		SecurityCode: req.Deposite_info.Security_code,
 	}
 
-	payment_item, err = l.svcCtx.BPaymentModel.Enquire(l.ctx, payment_item)
+	_, err = l.svcCtx.BPaymentModel.Enquire(l.ctx, payment_item)
 	if err != nil {
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
@@ -144,36 +144,47 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 	// Service
 	// Basic Services
 	var item_amount float64 = 0
-	service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, req.Base_items.Service_id)
-	if err != nil {
-		if err == service.ErrNotFound {
-			return nil, errorx.NewCodeError(404, "Invalid, Basic service(s) not found.")
+	for index, basic_service := range req.Basic_items.Items {
+		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, basic_service.Service_id)
+		if err != nil {
+			if err == service.ErrNotFound {
+				return nil, errorx.NewCodeError(404, "Invalid, Basic service(s) not found.")
+			}
+			return nil, errorx.NewCodeError(500, err.Error())
 		}
-		return nil, errorx.NewCodeError(500, err.Error())
+		if req.Category_id != service_item.ServiceType {
+			logx.Alert("Wrong service is intended to be implemented.")
+			continue
+		}
+		// Calculate fees and get full service items
+		item_amount += service_item.ServicePrice * float64(basic_service.Service_quantity)
+
+		// Get basic items details
+		req.Basic_items.Items[index].Service_name = service_item.ServiceName
+		req.Basic_items.Items[index].Service_scope = service_item.ServiceScope
+		req.Basic_items.Items[index].Service_price = service_item.ServicePrice * float64(1+region_item.ChargeAmount+property_item.ChargeAmount)
 	}
-	// Calculate fees and get full service items
-	item_amount += service_item.ServicePrice * float64(req.Base_items.Service_quantity)
 
-	// Get basic items details
-	req.Base_items.Service_name = service_item.ServiceName
-	req.Base_items.Service_scope = service_item.ServiceScope
-	req.Base_items.Service_price = service_item.ServicePrice * float64(1+region_item.ChargeAmount+property_item.ChargeAmount)
-
-	base_items, err := json.Marshal(req.Base_items)
+	basic_items, err := json.Marshal(req.Basic_items)
 	if err != nil {
 		return nil, errorx.NewCodeError(404, "Invalid, Basic service(s) marshal failed.")
 	}
 
 	// Additional Services
-	for index, order_service := range req.Additional_items.Items {
-		service_item, err = l.svcCtx.BServiceModel.FindOne(l.ctx, order_service.Service_id)
+	for index, addition_service := range req.Additional_items.Items {
+		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, addition_service.Service_id)
 		if err != nil {
 			if err == service.ErrNotFound {
 				return nil, errorx.NewCodeError(404, "Invalid, Additional service(s) not found.")
 			}
 			return nil, errorx.NewCodeError(500, err.Error())
 		}
-		item_amount += service_item.ServicePrice * float64(order_service.Service_quantity)
+
+		if req.Category_id != service_item.ServiceType {
+			logx.Alert("Wrong service is intended to be implemented.")
+			continue
+		}
+		item_amount += service_item.ServicePrice * float64(addition_service.Service_quantity)
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
@@ -206,7 +217,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		ContractorId:        sql.NullInt64{Int64: 0, Valid: false},
 		FinanceId:           sql.NullInt64{Int64: 0, Valid: false},
 		CategoryId:          req.Category_id,
-		BasicItems:          string(base_items),
+		BasicItems:          string(basic_items),
 		AdditionalItems:     sql.NullString{String: string(additional_items), Valid: len(req.Additional_items.Items) > 0},
 		OrderDescription:    sql.NullString{String: req.Order_description, Valid: true},
 		CurrentDepositeRate: int64(variables.Deposite_rate),

@@ -283,14 +283,14 @@ type ListContractorResponse struct {
 }
 
 type CreateOrderRequest struct {
-	Customer_info     CreateCustomerRequest    `json:"customer_info"`
-	Address_info      CreateAddressRequest     `json:"address_info"`
-	Category_id       int64                    `json:"category_id"`
-	Base_items        SelectedServiceStructure `json:"base_items"`
-	Additional_items  SelectedServiceList      `json:"additional_items"`
-	Deposite_info     CreatePaymentRequest     `json:"deposite_info,optional"`
-	Order_description string                   `json:"order_description,optional"`
-	Reserve_date      string                   `json:"reserve_date"`
+	Customer_info     CreateCustomerRequest `json:"customer_info"`
+	Address_info      CreateAddressRequest  `json:"address_info"`
+	Category_id       int64                 `json:"category_id"`
+	Basic_items       SelectedServiceList   `json:"basic_items"`
+	Additional_items  SelectedServiceList   `json:"additional_items,optional"`
+	Deposite_info     CreatePaymentRequest  `json:"deposite_info,optional"`
+	Order_description string                `json:"order_description,optional"`
+	Reserve_date      string                `json:"reserve_date"`
 }
 
 type CreateOrderResponse struct {
@@ -400,7 +400,7 @@ type DetailOrderResponse struct {
 	Contractor_info       DetailContractorResponse `json:"contractor_info"`
 	Finance_id            int64                    `json:"finance_id"`
 	Category              DetailCategoryResponse   `json:"category"`
-	Basic_items           SelectedServiceStructure `json:"basic_items"`
+	Basic_items           SelectedServiceList      `json:"basic_items"`
 	Additional_items      SelectedServiceList      `json:"additional_items"`
 	Order_description     string                   `json:"order_description"`
 	Order_comments        string                   `json:"order_comments"`
