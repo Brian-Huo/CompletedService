@@ -21,11 +21,11 @@
 -- INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "5b2h3b", "End of Lease Cleaning - 5b2h3b. 5 Bedroom 2 Hall 3 Bathroom.", 500);
 -- INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "5b2h3b (with carpet)", "End of Lease Cleaning - 5b2h3b with carpet. 5 Bedroom 2 Hall 3 Bathroom combined with Carpet Steam Cleaning.", 650);
 -- End of Lease Cleaning Additions --
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Bedroom", "End of Lease Cleaning - Bedroom cleaning", 40);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Livingroom", "End of Lease Cleaning - Livingroom cleaning", 40);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Bathroom", "End of Lease Cleaning - Bathroom cleaning", 60);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Toilet", "End of Lease Cleaning - Toilet cleaning", 25);
-INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Balcony", "End of Lease Cleaning - Balcony cleaning", 40);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Bedroom", "End of Lease Cleaning - Bedroom cleaning", 40);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Livingroom", "End of Lease Cleaning - Livingroom cleaning", 40);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Bathroom", "End of Lease Cleaning - Bathroom cleaning", 60);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Toilet", "End of Lease Cleaning - Toilet cleaning", 25);
+INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Base Options", "Balcony", "End of Lease Cleaning - Balcony cleaning", 40);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Garage", "End of Lease Cleaning - Garage cleaning", 50);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Garden", "End of Lease Cleaning - Garden cleaning", 100);
 INSERT INTO b_service (service_type, service_scope, service_name, service_description, service_price) values (1, "Additional Options", "Microwave", "End of Lease Cleaning - One Microwave cleaning", 15);
