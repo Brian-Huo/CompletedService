@@ -109,7 +109,7 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
-		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(1+region_item.ChargeAmount+property_item.ChargeAmount)
+		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(1+(region_item.ChargeAmount+property_item.ChargeAmount)/100)
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 

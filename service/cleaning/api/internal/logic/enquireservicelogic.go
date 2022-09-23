@@ -81,7 +81,7 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 			Service_name:        item.ServiceName,
 			Service_photo:       item.ServicePhoto.String,
 			Service_description: item.ServiceDescription,
-			Service_price:       item.ServicePrice * float64(1+region_item.ChargeAmount+property_item.ChargeAmount),
+			Service_price:       item.ServicePrice * float64(1+(region_item.ChargeAmount+property_item.ChargeAmount)/100),
 		}
 
 		allItems = append(allItems, service_response)
