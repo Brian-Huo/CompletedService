@@ -1,8 +1,8 @@
 -- Property Type Initialize --
-INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("house", "", 0, 0, 1);
-INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("townhouse", "", 0, 5, 1);
-INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("luxury house", "", 0, 10, 1);
-INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("apartment", "", 0, 0, 1);
-INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("luxury apartment", "", 0, 5, 1);
-INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("villa", "", 0, 0, 1);
-INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("office", "", 0, 0, 1);
+INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("house", "House is a classified as a stand-alone free standing dwelling on land.", 0, 0, 1);
+INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("townhouse", "Townhouse is a residences share common walls like a semi-detached house,situated within the central city area.", 0, 5, 1);
+INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("luxury house", "Luxury house is a type of house classified as a large stand-alone free standing dwelling on land. House type accommodation, with more than or equals to 4 bedrooms and/or contains a large garden.", 0, 10, 1);
+INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("apartment", "Apartments is the part of a building with multiple units in it, they generally share common internal areas such as a foyer and form part of a body corporate/strata fee structure to go towards.", 0, 0, 1);
+INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("luxury apartment", "Luxury apartment is spacious and situated in premium location, some of which also covers second or even three floors. Apartment type accommodation, with more than or equals to 4 bedroom.", 0, 5, 1);
+INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("villa", "Villa is a suburban house may contain large garden or farm, and the residential buildings is arranged around a courtyard. House type accommodation, with less than or equals to 3 bedrooms.", 0, 0, 1);
+INSERT INTO b_property (property_name, property_description, charge_type, charge_amount, service_status) values ("office", "Office is a commecial working place for a company/corporate.", 0, 0, 1);
