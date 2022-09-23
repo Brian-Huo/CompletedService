@@ -86,7 +86,7 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 	}
 
 	// Property and region charge
-	pr_charge := float64(1.0 + (region_item.ChargeAmount+property_item.ChargeAmount)/100.0)
+	pr_charge := float64(1.0 + float64(region_item.ChargeAmount+property_item.ChargeAmount)/100.0)
 
 	// Add extra service
 	// Get New Additional Service Details

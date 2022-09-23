@@ -67,7 +67,7 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 	}
 
 	// Property and region charge
-	pr_charge := float64(1.0 + (region_item.ChargeAmount+property_item.ChargeAmount)/100.0)
+	pr_charge := float64(1.0 + float64(region_item.ChargeAmount+property_item.ChargeAmount)/100.0)
 
 	allItems := []types.DetailServiceResponse{}
 
