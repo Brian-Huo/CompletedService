@@ -141,6 +141,9 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		return nil, errorx.NewCodeError(500, err.Error())
 	}
 
+	// Property and region charge
+	pr_charge := float64(1.0 + (region_item.ChargeAmount+property_item.ChargeAmount)/100.0)
+
 	// Service
 	// Basic Services
 	var item_amount float64 = 0
@@ -162,7 +165,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 		// Get basic items details
 		req.Basic_items.Items[index].Service_name = service_item.ServiceName
 		req.Basic_items.Items[index].Service_scope = service_item.ServiceScope
-		req.Basic_items.Items[index].Service_price = service_item.ServicePrice * float64(1+region_item.ChargeAmount+property_item.ChargeAmount)
+		req.Basic_items.Items[index].Service_price = service_item.ServicePrice * pr_charge
 	}
 
 	basic_items, err := json.Marshal(req.Basic_items)
@@ -188,7 +191,7 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
-		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(1+(region_item.ChargeAmount+property_item.ChargeAmount)/100)
+		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * pr_charge
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 

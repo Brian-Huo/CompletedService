@@ -66,6 +66,9 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 		return nil, status.Error(500, err.Error())
 	}
 
+	// Property and region charge
+	pr_charge := float64(1.0 + (region_item.ChargeAmount+property_item.ChargeAmount)/100.0)
+
 	allItems := []types.DetailServiceResponse{}
 
 	for _, item := range service_items {
@@ -81,7 +84,7 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 			Service_name:        item.ServiceName,
 			Service_photo:       item.ServicePhoto.String,
 			Service_description: item.ServiceDescription,
-			Service_price:       item.ServicePrice * float64(1+(region_item.ChargeAmount+property_item.ChargeAmount)/100),
+			Service_price:       item.ServicePrice * pr_charge,
 		}
 
 		allItems = append(allItems, service_response)

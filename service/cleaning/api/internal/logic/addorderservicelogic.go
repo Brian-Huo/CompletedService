@@ -85,6 +85,9 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 		return nil, status.Error(500, err.Error())
 	}
 
+	// Property and region charge
+	pr_charge := float64(1.0 + (region_item.ChargeAmount+property_item.ChargeAmount)/100.0)
+
 	// Add extra service
 	// Get New Additional Service Details
 	var additional_items types.SelectedServiceList
@@ -105,11 +108,11 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 		if service_item.ServiceType != order_item.CategoryId {
 			return nil, errorx.NewCodeError(500, "Invalid, Wrong services are intended to be implemented.")
 		}
-		order_item.ItemAmount += service_item.ServicePrice * float64(1+order_service.Service_quantity)
+		order_item.ItemAmount += service_item.ServicePrice * float64(order_service.Service_quantity)
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
-		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * float64(1+(region_item.ChargeAmount+property_item.ChargeAmount)/100)
+		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * pr_charge
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 
