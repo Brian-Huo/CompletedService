@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"math"
 	"strings"
 
 	"cleaningservice/service/cleaning/api/internal/svc"
@@ -84,7 +85,7 @@ func (l *EnquireServiceLogic) EnquireService(req *types.EnquireServiceRequest) (
 			Service_name:        item.ServiceName,
 			Service_photo:       item.ServicePhoto.String,
 			Service_description: item.ServiceDescription,
-			Service_price:       item.ServicePrice * pr_charge,
+			Service_price:       math.Trunc(item.ServicePrice * pr_charge),
 		}
 
 		allItems = append(allItems, service_response)

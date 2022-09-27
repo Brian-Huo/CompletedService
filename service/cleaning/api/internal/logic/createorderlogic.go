@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"math"
 	"strings"
 	"time"
 
@@ -160,12 +161,12 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			continue
 		}
 		// Calculate fees and get full service items
-		item_amount += service_item.ServicePrice * float64(basic_service.Service_quantity)
+		item_amount += math.Trunc(service_item.ServicePrice*pr_charge) * float64(basic_service.Service_quantity)
 
 		// Get basic items details
 		req.Basic_items.Items[index].Service_name = service_item.ServiceName
 		req.Basic_items.Items[index].Service_scope = service_item.ServiceScope
-		req.Basic_items.Items[index].Service_price = service_item.ServicePrice * pr_charge
+		req.Basic_items.Items[index].Service_price = math.Trunc(service_item.ServicePrice * pr_charge)
 	}
 
 	basic_items, err := json.Marshal(req.Basic_items)
@@ -187,11 +188,11 @@ func (l *CreateOrderLogic) CreateOrder(req *types.CreateOrderRequest) (resp *typ
 			logx.Alert("Wrong service is intended to be implemented.")
 			continue
 		}
-		item_amount += service_item.ServicePrice * float64(addition_service.Service_quantity)
+		item_amount += math.Trunc(service_item.ServicePrice*pr_charge) * float64(addition_service.Service_quantity)
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
-		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * pr_charge
+		req.Additional_items.Items[index].Service_price = math.Trunc(service_item.ServicePrice * pr_charge)
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 

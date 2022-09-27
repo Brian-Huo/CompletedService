@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"time"
 
 	"cleaningservice/common/variables"
@@ -119,6 +120,12 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 		},
 	})
 
+	// Discount all decimals
+	doc.SetDiscount(&generator.Discount{
+		Amount: fmt.Sprintf("%f", in.OrderInfo.TotalAmount-math.Trunc(in.OrderInfo.TotalAmount)),
+	})
+
+	// Set invoice pdf
 	invoiceLocation, err := util.SaveInvoice(doc, in.OrderInfo.OrderId)
 	if err != nil {
 		return &email.InvoiceEmailResponse{

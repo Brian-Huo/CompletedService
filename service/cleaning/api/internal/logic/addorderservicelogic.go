@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"math"
 
 	"cleaningservice/common/errorx"
 	"cleaningservice/common/jwtx"
@@ -108,11 +109,11 @@ func (l *AddOrderServiceLogic) AddOrderService(req *types.AddOrderServiceRequest
 		if service_item.ServiceType != order_item.CategoryId {
 			return nil, errorx.NewCodeError(500, "Invalid, Wrong services are intended to be implemented.")
 		}
-		order_item.ItemAmount += service_item.ServicePrice * float64(order_service.Service_quantity)
+		order_item.ItemAmount += math.Trunc(service_item.ServicePrice*pr_charge) * float64(order_service.Service_quantity)
 
 		// Get additional items details
 		req.Additional_items.Items[index].Service_name = service_item.ServiceName
-		req.Additional_items.Items[index].Service_price = service_item.ServicePrice * pr_charge
+		req.Additional_items.Items[index].Service_price = math.Trunc(service_item.ServicePrice * pr_charge)
 		req.Additional_items.Items[index].Service_scope = service_item.ServiceScope
 	}
 
