@@ -102,7 +102,7 @@ func (m *defaultBOrderModel) FindAllByContractor(ctx context.Context, contractor
 
 func (m *defaultBOrderModel) FindCurrentWorkingOneByContractor(ctx context.Context, contractorId int64) (int64, error) {
 	var resp *BOrder
-	query := fmt.Sprintf("select %s from %s where `contractor_id` = ?, `status` = ?", bOrderRows, m.table)
+	query := fmt.Sprintf("select %s from %s where `contractor_id` = ? and `status` = ?", bOrderRows, m.table)
 	err := m.QueryRowNoCacheCtx(ctx, &resp, query, contractorId, Working)
 	switch err {
 	case nil:

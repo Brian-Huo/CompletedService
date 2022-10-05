@@ -94,9 +94,6 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 		return nil, status.Error(404, "Invalid, Category list not found.")
 	}
 
-	// Get contractor current working order
-	cur_order, _ := l.svcCtx.BOrderModel.FindCurrentWorkingOneByContractor(l.ctx, contractor_item.ContractorId)
-
 	return &types.DetailContractorResponse{
 		Contractor_id:    contractor_item.ContractorId,
 		Contractor_photo: contractor_item.ContractorPhoto.String,
@@ -107,7 +104,7 @@ func (l *DetailContractorLogic) DetailContractor(req *types.DetailContractorRequ
 		Finance_id:       contractor_item.FinanceId,
 		Link_code:        contractor_item.LinkCode,
 		Work_status:      int(contractor_item.WorkStatus),
-		Order_id:         cur_order,
+		Order_id:         0,
 		Category_list:    *category_list,
 	}, nil
 }
