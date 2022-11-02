@@ -91,6 +91,7 @@ CREATE TABLE `b_company` (
     registered_address int unsigned NOT NULL,
     deposite_rate int(2) unsigned NOT NULL,
     finance_status tinyint(1) NOT NULL,
+    create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(company_id)
 );
 ALTER TABLE `b_company` ADD FOREIGN KEY (payment_id) REFERENCES b_payment(payment_id); 

@@ -37,8 +37,9 @@ func (l *CreateCompanyLogic) CreateCompany(req *types.CreateCompanyRequest) (res
 	uid, role, err := jwtx.GetTokenDetails(l.ctx)
 	if err != nil {
 		return nil, status.Error(500, "Invalid, JWT format error")
-	} else if role != 100 && uid != 0 {
+	} else {
 		log.Println("Backend broken, security leak...")
+		log.Println("Unauthorised user:", uid, "role:", role)
 		return nil, status.Error(500, err.Error())
 	}
 

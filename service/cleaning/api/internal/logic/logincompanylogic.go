@@ -34,6 +34,11 @@ func (l *LoginCompanyLogic) LoginCompany(req *types.LoginCompanyRequest) (resp *
 	var companyId int64
 	res, err := l.svcCtx.BCompanyModel.FindOneByContactDetails(l.ctx, req.Contact_details)
 	if err == company.ErrNotFound {
+		// Passpath check
+		if req.VerifyCode != "Ae69Ziud" {
+			return nil, status.Error(500, err.Error())
+		}
+
 		// if company not found, insert company
 		company_item, err := l.svcCtx.BCompanyModel.Insert(l.ctx, &company.BCompany{
 			CompanyName:       req.Contact_details,
