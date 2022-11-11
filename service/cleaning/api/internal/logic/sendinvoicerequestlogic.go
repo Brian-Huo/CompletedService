@@ -61,6 +61,7 @@ func (l *SendInvoiceRequestLogic) SendInvoiceRequest() (err error) {
 			FinalAmount:          order_item.FinalAmount,
 			DepositeRate:         int32(order_item.CurrentDepositeRate),
 			GstAmount:            order_item.GstAmount,
+			ItemAmount:           order_item.ItemAmount,
 			TotalAmount:          order_item.TotalAmount,
 			ReserveDate:          order_item.ReserveDate.Format("02/01/2006 15:04:05"),
 			SurchargeItem:        order_item.SurchargeItem,
@@ -141,30 +142,32 @@ func (l *SendInvoiceRequestLogic) SendInvoiceRequest() (err error) {
 		// Services Info
 		var service_email []*email.ServiceMsg
 		// Get Basic Service Details
-		var basic_items types.SelectedServiceStructure
+		var basic_items types.SelectedServiceList
 		err = json.Unmarshal([]byte(order_item.BasicItems), &basic_items)
 		if err != nil {
 			return err
 		}
 
 		// Append
-		service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, basic_items.Service_id)
-		if err != nil {
-			if err == service.ErrNotFound {
-				logx.Alert("Service not found")
-				orderqueue.DeleteOne(order_id)
-				continue
+		for _, basic_item := range basic_items.Items {
+			service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, basic_item.Service_id)
+			if err != nil {
+				if err == service.ErrNotFound {
+					logx.Alert("Service not found [Basic items]")
+					orderqueue.DeleteOne(order_id)
+					continue
+				}
+				return err
 			}
-			return err
+			service_email = append(service_email, &email.ServiceMsg{
+				ServiceId:          basic_item.Service_id,
+				ServiceScope:       basic_item.Service_scope,
+				ServiceName:        basic_item.Service_name,
+				ServiceDescription: service_item.ServiceDescription,
+				ServiceQuantity:    int32(basic_item.Service_quantity),
+				ServicePrice:       basic_item.Service_price,
+			})
 		}
-		service_email = append(service_email, &email.ServiceMsg{
-			ServiceId:          basic_items.Service_id,
-			ServiceScope:       basic_items.Service_scope,
-			ServiceName:        basic_items.Service_name,
-			ServiceDescription: service_item.ServiceDescription,
-			ServiceQuantity:    int32(basic_items.Service_quantity),
-			ServicePrice:       basic_items.Service_price,
-		})
 
 		// Get Additional Service Details
 		var additional_items types.SelectedServiceList
@@ -173,21 +176,21 @@ func (l *SendInvoiceRequestLogic) SendInvoiceRequest() (err error) {
 			return err
 		}
 
-		for _, service_item := range additional_items.Items {
+		for _, addition_item := range additional_items.Items {
 			// Append
-			service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, service_item.Service_id)
+			service_item, err := l.svcCtx.BServiceModel.FindOne(l.ctx, addition_item.Service_id)
 			if err != nil {
 				logx.Info("Get additionl item(s) failed", err)
 				continue
 			}
 
 			service_email = append(service_email, &email.ServiceMsg{
-				ServiceId:          basic_items.Service_id,
-				ServiceScope:       basic_items.Service_scope,
-				ServiceName:        basic_items.Service_name,
+				ServiceId:          addition_item.Service_id,
+				ServiceScope:       addition_item.Service_scope,
+				ServiceName:        addition_item.Service_name,
 				ServiceDescription: service_item.ServiceDescription,
-				ServiceQuantity:    int32(basic_items.Service_quantity),
-				ServicePrice:       basic_items.Service_price,
+				ServiceQuantity:    int32(addition_item.Service_quantity),
+				ServicePrice:       addition_item.Service_price,
 			})
 		}
 
@@ -200,9 +203,9 @@ func (l *SendInvoiceRequestLogic) SendInvoiceRequest() (err error) {
 			OrderInfo:    &order_email,
 		})
 		if err != nil {
-			logx.Alert("Send invoice email failded on order" + strconv.Itoa(int(order_id)))
+			logx.Alert("Send invoice email failded on order " + strconv.Itoa(int(order_id)))
 		} else {
-			logx.Info("Send invoice email success on order", strconv.Itoa(int(order_id)))
+			logx.Info("Send invoice email success on order ", strconv.Itoa(int(order_id)))
 			orderqueue.DeleteOne(order_id)
 		}
 	}

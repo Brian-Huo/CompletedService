@@ -37,12 +37,13 @@ message OrderMsg {
     double  FinalAmount = 3;
     int32   DepositeRate = 4;
     double  GstAmount = 5;
-    double  TotalAmount = 6;
-    string  ReserveDate = 7;
-    string  SurchargeItem = 8;
-    int32   SurchargeRate = 9;
-    double  SurchargeAmount = 10;
-    string  SurchargeDescription = 11;
+    double  ItemAmount = 6;
+    double  TotalAmount = 7;
+    string  ReserveDate = 8;
+    string  SurchargeItem = 9;
+    int32   SurchargeRate = 10;
+    double  SurchargeAmount = 11;
+    string  SurchargeDescription = 12;
 }
 
 message ServiceMsg {

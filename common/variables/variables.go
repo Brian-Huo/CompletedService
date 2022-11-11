@@ -24,5 +24,5 @@ const (
 )
 
 // Checking Timer in order queue
-const Check_time_unit int64 = 3600
-const Check_time_clock int = 24
+const Check_time_unit int64 = 1800
+const Check_time_clock int = 48

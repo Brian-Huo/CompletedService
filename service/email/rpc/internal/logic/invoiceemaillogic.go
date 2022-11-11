@@ -82,15 +82,15 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 	// })
 
 	// Set invoice variables
-	doc.SetRef(fmt.Sprintf("Invoice_%d", in.OrderInfo.OrderId))
+	doc.SetRef(fmt.Sprintf("Invoice_%d%04d", time.Now().Unix(), in.OrderInfo.OrderId))
 
 	doc.SetCustomer(&generator.Contact{
 		Name: in.CustomerInfo.CustomerName,
 		Address: &generator.Address{
 			Address:    in.AddressInfo.Formatted,
-			PostalCode: in.AddressInfo.Postcode,
-			City:       in.AddressInfo.City,
-			Country:    variables.Country,
+			PostalCode: "",
+			City:       "",
+			Country:    "",
 		},
 	})
 
@@ -110,19 +110,21 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 	}
 
 	// Set order surcharge
-	doc.AppendItem(&generator.Item{
-		Name:        in.OrderInfo.SurchargeItem,
-		Description: in.OrderInfo.SurchargeDescription,
-		UnitCost:    fmt.Sprintf("%f", in.OrderInfo.SurchargeAmount),
-		Quantity:    "1",
-		Tax: &generator.Tax{
-			Percent: fmt.Sprintf("%.2f", variables.GST),
-		},
-	})
+	if in.OrderInfo.SurchargeItem != "" || in.OrderInfo.SurchargeAmount != 0 {
+		doc.AppendItem(&generator.Item{
+			Name:        in.OrderInfo.SurchargeItem,
+			Description: in.OrderInfo.SurchargeDescription,
+			UnitCost:    fmt.Sprintf("%f", in.OrderInfo.SurchargeAmount),
+			Quantity:    "1",
+			Tax: &generator.Tax{
+				Percent: fmt.Sprintf("%.2f", variables.GST),
+			},
+		})
+	}
 
 	// Discount all decimals
 	doc.SetDiscount(&generator.Discount{
-		Amount: fmt.Sprintf("%f", in.OrderInfo.TotalAmount-math.Trunc(in.OrderInfo.TotalAmount)),
+		Amount: fmt.Sprintf("%f", in.OrderInfo.ItemAmount-math.Trunc(in.OrderInfo.ItemAmount)),
 	})
 
 	// Set invoice pdf
@@ -137,10 +139,10 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 	// Send Invoice email
 	// Set attributes
 	target := in.GetCustomerInfo().CustomerEmail
-	subject := fmt.Sprintf("Invoice [%d] for [%s] due [%s]", in.GetOrderInfo().OrderId, in.GetCategoryInfo().CategoryName, doc.PaymentTerm)
+	subject := fmt.Sprintf("CleaningService [%s] Invoice for [%s] is Due", in.GetCategoryInfo().CategoryName, in.AddressInfo.Street)
 	emailHi := fmt.Sprintf("<p>Hi %s,</p><br>", in.GetCustomerInfo().CustomerName)
 	emailGreetings := fmt.Sprintf("<p>Thanks for choosing %s.</p><br>", variables.Business_name)
-	emailMain := fmt.Sprintf("<p>Attached is your %s at address %s at %s. Please be awared of your reservation time.</p><br>", subject, in.GetAddressInfo().Formatted, in.GetOrderInfo().ReserveDate)
+	emailMain := fmt.Sprintf("<p>Attached is your %s invoice for address %s at %s. Please be aware of your reservation time.</p><br>", in.GetCategoryInfo().CategoryName, in.GetAddressInfo().Formatted, in.GetOrderInfo().ReserveDate)
 	emailPayment := fmt.Sprintf("<p>When making payment, you must include your Reference number <em>%s</em> stated in your invoice.</p><br>", doc.Ref)
 
 	// Send email
