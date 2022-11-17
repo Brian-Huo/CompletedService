@@ -33,7 +33,7 @@ func NewInvoiceEmailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Invo
 func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.InvoiceEmailResponse, error) {
 	// Create Invoice PDF
 	doc, _ := generator.New(generator.Invoice, &generator.Options{
-		TextTypeInvoice: "QUETO",
+		TextTypeInvoice: "INVOICE",
 		AutoPrint:       true,
 		CurrencySymbol:  "$",
 	})
@@ -45,16 +45,22 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 	})
 
 	doc.SetFooter(&generator.HeaderFooter{
-		Text:       "<center>Important notice:</center><br><center>Powered By QME Technology Ptd. Lty.</center>",
+		Text:       "<center>Important notice: If your services changed, a new invoice will be sent to your email. Please refer to the latest invoice you have received.</center><br><center>Powered By QME Technology Ptd. Lty.</center>",
 		Pagination: true,
 	})
 
-	doc.SetVersion("version 0.2")
+	doc.SetVersion("version 0.3")
 	doc.SetDescription("Invoice of Items")
 	doc.SetNotes(fmt.Sprintf("<b>BSB: %s </b><br><b>Account No: %s</b><br><b> Account Name: %s</b>", variables.BSB, variables.Account_number, variables.Account_name))
 
 	doc.SetDate(time.Now().Format("02/01/2006"))
-	doc.SetPaymentTerm(time.Now().Add(time.Hour * 168).Format("02/01/2006"))
+
+	reserveTime, _ := time.Parse("2006-01-02 15:04:05", in.OrderInfo.ReserveDate)
+	if reserveTime.Before(time.Now()) {
+		doc.SetPaymentTerm(time.Now().Add(time.Hour * 168).Format("02/01/2006"))
+	} else {
+		doc.SetPaymentTerm(reserveTime.Add(time.Hour * 168).Format("02/01/2006"))
+	}
 
 	logoBytes, _ := ioutil.ReadFile(variables.Business_logo)
 
@@ -82,7 +88,8 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 	// })
 
 	// Set invoice variables
-	doc.SetRef(fmt.Sprintf("Invoice_%d%04d", time.Now().Unix(), in.OrderInfo.OrderId))
+	docRef := fmt.Sprintf("Invoice_1%04d%04d", in.CustomerInfo.CustomerId, in.OrderInfo.OrderId)
+	doc.SetRef(docRef)
 
 	doc.SetCustomer(&generator.Contact{
 		Name: in.CustomerInfo.CustomerName,
@@ -128,7 +135,7 @@ func (l *InvoiceEmailLogic) InvoiceEmail(in *email.InvoiceEmailRequest) (*email.
 	})
 
 	// Set invoice pdf
-	invoiceLocation, err := util.SaveInvoice(doc, in.OrderInfo.OrderId)
+	invoiceLocation, err := util.SaveInvoice(doc, docRef)
 	if err != nil {
 		return &email.InvoiceEmailResponse{
 			Code: 500,

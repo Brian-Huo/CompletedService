@@ -7,10 +7,10 @@ const Business_logo string = "../../../static/images/logos/symbol.png"
 const Business_name string = "CleaningService"
 
 // CleaningService working address
-const Unit string = "Unit 11"
-const Street string = "6 Dalgety Street"
-const PostalCode string = "3166"
-const City string = "Oakleigh VIC"
+const Unit string = "Unit 1"
+const Street string = "46 bonview crs"
+const PostalCode string = "3151"
+const City string = "Burwood East VIC"
 const Country string = "AU"
 
 // CleaningService business bank account
