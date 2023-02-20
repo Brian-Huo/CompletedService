@@ -8,7 +8,6 @@ import (
 )
 
 func GetToken(secretKey string, iat int64, seconds int64, uid int64, role int) (string, error) {
-	// role = {0: "company", 1: "employee", 2: "customer"}
 	claims := make(jwt.MapClaims)
 	claims["exp"] = iat + seconds
 	claims["iat"] = iat

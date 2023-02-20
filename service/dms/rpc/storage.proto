@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package storage;
-
-option go_package = "./storage";
-
-service Storage(
-    
-)
