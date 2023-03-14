@@ -1,7 +1,7 @@
 -- Base data table: company --
 CREATE TABLE `b_company` (
     id int unsigned NOT NULL AUTO_INCREMENT,
-    contractor varchar(255),
+    contactor varchar(255),
     company_name varchar(255) NOT NULL,
     company_phone varchar(15) NOT NULL UNIQUE,
     company_address int unsigned NOT NULL,

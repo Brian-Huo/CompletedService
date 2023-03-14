@@ -1,0 +1,117 @@
+type (
+	// -------------------- System -------------------------
+	VerifyCodeRequest {
+		Contact_details string `json:"contact_details"`
+	}
+	VerifyCodeResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	// --------------------- Login ---------------------------
+
+	LoginContractorRequest {
+		Contact_details string `json:"contact_details"`
+		VerifyCode      string `json:"verify_code,optional"`
+		LinkCode        string `json:"link_code"`
+	}
+
+	LoginCompanyRequest {
+		Contact_details string `json:"contact_details"`
+		VerifyCode      string `json:"verify_code"`
+	}
+
+	RefreshTokenRequest {
+	}
+
+	LoginBusinessResponse {
+		Code        int    `json:"code"`
+		Msg         string `json:"msg"`
+		AccessToken string `json:"access_token,optional"`
+	}
+
+	// --------------------- Model --------------------------
+
+	AddressModel {
+		Address_id int64   `json:"address_id"`
+		Address_unit		string `json:"address_unit"`
+		Address_street     string  `json:"address_street"`
+		Address_suburb     string  `json:"address_suburb"`
+		Address_postcode   string  `json:"address_postcode"`
+		Address_statecode string  `json:"address_statecode"`
+		Address_lat        float64 `json:"address_lat"`
+		Address_lng        float64 `json:"address_lng"`
+		Address_formatted  string  `json:"address_formatted"`
+	}
+
+	CompanyModel {
+		Company_id         int64  `json:"company_id"`
+		Contractor			string `json:"contactor"`
+		Company_name       string `json:"company_name"`
+		Company_phone    string `json:"company_phone"`
+		Deposit_rate      int    `json:"deposite_rate"`
+	}
+
+	PropertyModel {
+		Property_id			int64 `json:"property_id"`
+		Property_name		string `json:"property_name"`
+		Property_description	string `json:"property_description"`
+	}
+
+	// -------------------- Company -------------------------
+
+	CreateCompanyRequest {
+		Company_info	CompanyModel		`json:"company_info"`
+		Address_info    AddressModel		 `json:"address_info"`
+		Property_info	PropertyModel		`json:"property_info"`
+		Version			int					`json:"version"`
+	}
+
+	DetailCompanyRequest {
+	}
+
+	UpdateCompanyRequest {
+		Company_info	CompanyModel		`json:"company_info"`
+		Address_info    AddressModel		 `json:"address_info"`
+		Property_info	PropertyModel		`json:"property_info"`
+		Version			int					`json:"version"`
+	}
+
+	RemoveCompanyRequest {
+		Company_id int64 `json:"company_id"`
+		Version         int					`josn:"version"`
+	}
+
+	CompanyResponse {
+		Code int    `json:"code,optional"`
+		Msg  string `json:"msg,optional"`
+		Company_info	CompanyModel		`json:"company_info"`
+		Address_info    AddressModel		 `json:"address_info"`
+		Property_info	PropertyModel		`json:"property_info"`
+		Version			int 			`json:"version"`
+	}
+
+	ListCompanyRequest {
+	}
+	ListCompanyResponse {
+		Code int    `json:"code,optional"`
+		Msg  string `json:"msg,optional"`
+		Items []CompanyResponse `json:"items"`
+	}
+
+	// ------------------- Contractor -----------------------
+
+
+
+	// ------------------- Operation ------------------------
+
+
+	
+	// ------------------ Subscription -----------------------
+
+
+
+	
+	// // -------- Protocal Version 1.0 (old) ---------------
+
+)
