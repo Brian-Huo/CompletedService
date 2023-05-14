@@ -38,10 +38,18 @@ type (
 		Address_street     string  `json:"address_street"`
 		Address_suburb     string  `json:"address_suburb"`
 		Address_postcode   string  `json:"address_postcode"`
-		Address_statecode string  `json:"address_statecode"`
+		Address_statecode 	string  `json:"address_statecode"`
 		Address_lat        float64 `json:"address_lat"`
 		Address_lng        float64 `json:"address_lng"`
 		Address_formatted  string  `json:"address_formatted"`
+	}
+
+	CategoryModel {
+		Category_id  			int64	`json:"category_id"`
+		Category_addr  			string	`json:"category_addr"`
+		Category_name  			string	`json:"category_name"`
+		Category_description  	string		`json:"category_description"`
+		Serve_range				float64			`json:"serve_range"`
 	}
 
 	CompanyModel {
@@ -52,10 +60,72 @@ type (
 		Deposit_rate      int    `json:"deposite_rate"`
 	}
 
+	CustomerModel {
+		Customer_name   	string	`json:"customer_name"`
+		Customer_type    	string	`json:"customer_type"`
+		Country_code		string	`json:"country_code"`
+		Customer_phone    	string	`json:"customer_phone"`
+		Customer_email   	string	`json:"customer_email"`		
+	}
+
+	ItemModel {
+		Item_id     		int64 		`json:"item_id"`
+		Item_category   	int64 		`json:"item_category"`
+		Item_scope     		string 		`json:"item_scope"`
+		Item_name   	  	string         `json:"item_name"`
+		Item_image    		string    	`json:"item_image"`
+		Item_description    string    `json:"item_description"`
+		Item_price       	float64  `json:"item_price"`
+		Item_discount      	int64   `json:"item_discount"`
+	}
+
+	SurchargeModel {
+		Surcharge_id       		int64	 	`json:"surcharge_id"`
+		Surcharge_name        	string 		`json:"surcharge_name"`
+		Surcharge_description   string	     `json:"surcharge_description"`
+		Surcharge_type        	string		`json:"surcharge_type"`
+		Surcharge_amount        float64 	`json:"surcharge_amount"`
+	}
+
+	OperationModel {
+		Operation_id  int64  `json:"operation_id"`
+		Contractor_id int64  `json:"contractor_id"`
+		Order_id      int64  `json:"order_id"`
+		Operation     int64  `json:"operation"`
+		Issue_date    string `json:"issue_date"`
+	}
+
+	OrderModel {
+		Order_id              int64                    `json:"order_id"`
+		Order_description     string                   `json:"order_description"`
+		Order_comments        string                   `json:"order_comments"`
+		Deposit_rate 			int                      `json:"deposite_rate"`
+		Deposit_amount       float64                  `json:"deposite_amount"`
+		Rest_amount          float64                  `json:"final_amount"`
+		Item_amount           float64                  `json:"item_amount"`
+		Gst_amount            float64                  `json:"gst_amount"`
+		Total_amount          float64                  `json:"total_amount"`
+		Balance_amount        float64                  `json:"balance_amount"`
+		Post_date             string                   `json:"post_date"`
+		Reserve_date          string                   `json:"reserve_date"`
+		Finish_date           string                   `json:"finish_date"`
+		Payment_date          string                   `json:"payment_date"`
+		Status                int                      `json:"status"`
+		Urgent_flag           int                      `json:"urgent_flag"`
+	}
+
 	PropertyModel {
 		Property_id			int64 `json:"property_id"`
 		Property_name		string `json:"property_name"`
 		Property_description	string `json:"property_description"`
+		Serve_status        int `json:"serve_status"`
+	}
+
+	SurchargeModel {
+		Surcharge_item        string                   `json:"surcharge_item"`
+		Surcharge_type        int                      `json:"surcharge_rate"`
+		Surcharge_amount      float64                  `json:"surcharge_amount"`
+		Surcharge_description string                   `json:"surcharge_description"`
 	}
 
 	// -------------------- Company -------------------------
@@ -94,8 +164,8 @@ type (
 	ListCompanyRequest {
 	}
 	ListCompanyResponse {
-		Code int    `json:"code,optional"`
-		Msg  string `json:"msg,optional"`
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
 		Items []CompanyResponse `json:"items"`
 	}
 
@@ -103,15 +173,80 @@ type (
 
 
 
-	// ------------------- Operation ------------------------
 
 
+	// ---------------- Contracto-Order ----------------------
+	GetContractorHistoryRequest {
+	}
+
+	GetContractorOrderRequest {
+		Order_id int64 `json:"order_id"`
+	}
+	
+	GetContractorRecommendRequest {
+	}
+
+	GetContractorScheduleRequest {
+	}
+
+	ContractorOrderResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+		Order_info  OrderModel `json:"order_info"`
+	}
+
+	ContractorOrderListResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+		Items []OrderModel `json:"items"`
+	}
+
+	// ------------------- Operation -------------------------
+	AcceptOperationRequest {
+		Order_id int64 `json:"order_id"`
+	}
+
+	DeclineOperationRequest {
+		Order_id int64 `json:"order_id"`
+	}
+
+	TransferOperationRequest {
+		Order_id int64 `json:"order_id"`
+	}
+
+	DetailOperationRequest {
+		Operation_id int64 `json:"operation_id"`
+	}
+
+	OperationResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+		Operation_info  OperationModel `json:"operation_info"`
+	}
+
+	// List Operation
+	ListOperationRequest {
+		Contractor_id int64 `json:"contractor_id"`
+	}
+	ListOperationResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+		Items []OperationModel `json:"items"`
+	}
 	
 	// ------------------ Subscription -----------------------
+	JoinSubscribeGroupRequest {
+		Category_list []int64 `json:"category_list"`
+	}
 
+	LeaveSubscribeGroupRequest {
+		Category_list []int64 `json:"category_list"`
+	}
 
-
+	SubscribeGroupResponse {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+		Category_list []int64 `json:"category_list"`
+	}
 	
-	// // -------- Protocal Version 1.0 (old) ---------------
-
 )

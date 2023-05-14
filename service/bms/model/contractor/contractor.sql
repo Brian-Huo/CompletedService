@@ -17,5 +17,5 @@ CREATE TABLE `b_contractor` (
 );
 ALTER TABLE `b_contractor` ADD FOREIGN KEY (contractor_company) REFERENCES b_company(id);
 ALTER TABLE `b_contractor` ADD FOREIGN KEY (contractor_address) REFERENCES b_address(id);
--- Base data table indexes finance-contractor --
+-- Base data table indexes company-contractor --
 CREATE INDEX IDX_Company_con ON `b_contractor` (contractor_company);

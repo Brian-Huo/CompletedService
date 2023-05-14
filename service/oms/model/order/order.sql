@@ -12,7 +12,7 @@ CREATE TABLE `b_order` (
     gst_amount float unsigned NOT NULL,
     deposit_rate int(2) unsigned NOT NULL,
     deposit_amount float unsigned NOT NULL,
-    final_amount float unsigned NOT NULL,
+    rest_amount float unsigned NOT NULL,
     surcharge_amount float unsigned NOT NULL,
     total_amount float unsigned NOT NULL,
     balance_amount float unsigned NOT NULL DEFAULT 0,

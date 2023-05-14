@@ -1,6 +1,7 @@
 -- Base data table: address --
 CREATE TABLE `b_address` (
     id int unsigned NOT NULL AUTO_INCREMENT,
+    unit varchar(50),
     street varchar(255) NOT NULL,
     suburb varchar(50) NOT NULL,
     postcode char(4) NOT NULL,
